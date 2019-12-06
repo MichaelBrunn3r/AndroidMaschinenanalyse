@@ -11,15 +11,10 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.LargeValueFormatter
 import com.paramsen.noise.Noise
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import androidx.core.app.ComponentActivity
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -56,8 +51,16 @@ class MainActivity : AppCompatActivity() {
         val noise = Noise.real(SAMPLE_SIZE)
 
         disposable.add(audioSrc.observeOn(Schedulers.newThread())
+            .map { samples ->
+                var arr = FloatArray(samples.size)
+                for(i in 0 until samples.size) {
+                    arr[i] = samples[i].toFloat()
+                }
+                return@map arr
+            }
             .subscribe{ samples ->
-                updateAudioChart(samples)
+                val fft = noise.fft(samples, FloatArray(SAMPLE_SIZE+2))
+                updateAudioChart(fft)
             }
         )
     }
@@ -75,9 +78,9 @@ class MainActivity : AppCompatActivity() {
         mAudioChart!!.setDrawGridBackground(false)
         mAudioChart!!.setPinchZoom(false)
         mAudioChart!!.setBackgroundColor(Color.WHITE)
-        mAudioChart!!.setDrawBorders(true)
-        mAudioChart!!.setViewPortOffsets(0f,0f,0f,0f)
-        mAudioChart!!.setVisibleXRangeMaximum(SAMPLE_SIZE.toFloat())
+        mAudioChart!!.setDrawBorders(false)
+        mAudioChart!!.setViewPortOffsets(5f,100f,5f,100f)
+        mAudioChart!!.setVisibleXRangeMaximum(SAMPLE_RATE.toFloat())
 
         // Chart Description
         mAudioChart!!.description.isEnabled = true
@@ -85,19 +88,21 @@ class MainActivity : AppCompatActivity() {
 
         // Chart Data
         val data = LineData()
-        data.setValueTextColor(Color.WHITE)
+        data.setValueTextColor(Color.BLACK)
         mAudioChart!!.data = data
 
         // Legend
         mAudioChart!!.legend.isEnabled = false
 
         // X Axis
-        //mAudioChart!!.setVisibleXRangeMaximum(40f)
         val xAxis = mAudioChart!!.xAxis
-        xAxis.textColor = Color.WHITE
+        xAxis.textColor = Color.BLACK
         xAxis.setDrawGridLines(true)
+        xAxis.setDrawLabels(true)
+        xAxis.setDrawAxisLine(true)
         xAxis.setAvoidFirstLastClipping(true)
         xAxis.isEnabled = true
+        xAxis.valueFormatter = LargeValueFormatter("Hz")
 
         // Y Axis
         val lAxis = mAudioChart!!.axisLeft
@@ -112,7 +117,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Synchronized
-    private fun updateAudioChart(samples:ShortArray) {
+    private fun updateAudioChart(ffts:FloatArray) {
         var data = mAudioChart?.data
 
         if(data != null) {
@@ -121,15 +126,19 @@ class MainActivity : AppCompatActivity() {
             var set = createSet()
             data.addDataSet(set)
 
-
-            for(sample in samples) {
-                data.addEntry(Entry(set.entryCount.toFloat(), sample.toFloat()), 0)
+            for(i in 0 until ffts.size) {
+                //data.addEntry(Entry(set.entryCount.toFloat(), fft), 0)
+                data.addEntry(Entry(fftToFreq(i, SAMPLE_RATE, SAMPLE_SIZE)/2, ffts[i]), 0)
             }
             data.notifyDataChanged()
 
             mAudioChart!!.notifyDataSetChanged()
-            mAudioChart!!.moveViewToX(10f)
+            mAudioChart!!.moveViewToX(0f)
         }
+    }
+
+    private fun fftToFreq(index:Int, rate:Int, samples:Int):Float {
+        return (index * (rate/samples)).toFloat()
     }
 
     private fun createSet(): LineDataSet {
