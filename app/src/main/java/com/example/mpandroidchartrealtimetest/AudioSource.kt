@@ -8,14 +8,13 @@ import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
 import java.lang.RuntimeException
 import java.nio.FloatBuffer
+import kotlin.math.max
 
-const val SAMPLE_RATE = 44100
-const val SAMPLE_SIZE = 4096
 const val AUDIO_SRC = MediaRecorder.AudioSource.MIC
 const val AUDIO_CHANNEL_CFG = AudioFormat.CHANNEL_IN_MONO
 const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
 
-class AudioSource {
+class AudioSource(private val SAMPLE_RATE:Int, private val SAMPLE_SIZE:Int) {
     private val flowable: Flowable<FloatArray>
 
     init {
@@ -36,7 +35,7 @@ class AudioSource {
                 recorder.release()
             }
 
-            val samplesBuffer = ShortArray(512) // Intermediate audio samples buffer
+            val samplesBuffer = ShortArray(SAMPLE_SIZE/8) // Intermediate audio samples buffer
             val audioDataBuffer = FloatBuffer.allocate(SAMPLE_SIZE)
             var samplesRead = 0
 
