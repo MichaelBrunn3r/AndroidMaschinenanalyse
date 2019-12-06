@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Synchronized
-    private fun updateAudioChart(samples:FloatArray) {
+    private fun updateAudioChart(samples:ShortArray) {
         var data = mAudioChart?.data
 
         if(data != null) {
@@ -123,7 +123,7 @@ class MainActivity : AppCompatActivity() {
 
 
             for(sample in samples) {
-                data.addEntry(Entry(set.entryCount.toFloat(), sample), 0)
+                data.addEntry(Entry(set.entryCount.toFloat(), sample.toFloat()), 0)
             }
             data.notifyDataChanged()
 
