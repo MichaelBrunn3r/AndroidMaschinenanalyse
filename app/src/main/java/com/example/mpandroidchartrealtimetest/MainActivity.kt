@@ -14,6 +14,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.LargeValueFormatter
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.paramsen.noise.Noise
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -25,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     private val SAMPLE_RATE = 44100
     private val SAMPLE_SIZE = 4096
 
-    private var mAudioChart: LineChart? = null
+    private var mAudioSpectrogram: LineChart? = null
 
     val disposable: CompositeDisposable = CompositeDisposable()
 
@@ -59,12 +60,17 @@ class MainActivity : AppCompatActivity() {
                 for(i in 0 until samples.size) {
                     arr[i] = samples[i].toFloat()
                 }
-                return@map arr
-            }
-            .subscribe{ samples ->
-                    val fft = noise.fft(samples, FloatArray(SAMPLE_SIZE+2))
-                    updateAudioChart(fft)
+                return@map noise.fft(arr, FloatArray(SAMPLE_SIZE+2))
+            }.map {fft ->
+                var magnitudes = FloatArray(fft.size)
+                for (i in 0 until fft.size/2) {
+                    magnitudes[i] = complexAbs(fft[i*2],fft[i*2+1])
                 }
+                    return@map magnitudes
+            }
+            .subscribe{ magnitudes ->
+                updateAudioSpectrogram(magnitudes)
+            }
         )
     }
 
@@ -73,28 +79,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun configAudioChart() {
-        mAudioChart = findViewById(R.id.chartAudio)
+        mAudioSpectrogram = findViewById(R.id.chartAudio)
 
-        mAudioChart!!.setHardwareAccelerationEnabled(true)
-        mAudioChart!!.setTouchEnabled(false)
-        mAudioChart!!.isDragEnabled = false
-        mAudioChart!!.setScaleEnabled(false)
-        mAudioChart!!.setDrawGridBackground(false)
-        mAudioChart!!.setPinchZoom(false)
-        mAudioChart!!.setViewPortOffsets(80f,50f,0f,10f)
-        mAudioChart!!.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.colorPrimaryDark))
+        mAudioSpectrogram!!.setHardwareAccelerationEnabled(true)
+        mAudioSpectrogram!!.setTouchEnabled(false)
+        mAudioSpectrogram!!.isDragEnabled = false
+        mAudioSpectrogram!!.setScaleEnabled(false)
+        mAudioSpectrogram!!.setDrawGridBackground(false)
+        mAudioSpectrogram!!.setPinchZoom(false)
+        mAudioSpectrogram!!.setViewPortOffsets(80f,50f,0f,10f)
+        mAudioSpectrogram!!.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.colorPrimaryDark))
 
         // Chart Description
-        mAudioChart!!.description.isEnabled = false
+        mAudioSpectrogram!!.description.isEnabled = false
 
         // Chart Data
-        mAudioChart!!.data =  LineData()
+        mAudioSpectrogram!!.data =  LineData()
 
         // Legend
-        mAudioChart!!.legend.isEnabled = false
+        mAudioSpectrogram!!.legend.isEnabled = false
 
         // X Axis
-        val xAxis = mAudioChart!!.xAxis
+        val xAxis = mAudioSpectrogram!!.xAxis
         xAxis.setDrawGridLines(true)
         xAxis.axisMaximum = SAMPLE_RATE.toFloat()/2
         xAxis.axisMinimum = 0f
@@ -104,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         xAxis.valueFormatter = LargeValueFormatter("Hz")
 
         // Y Axis
-        val lAxis = mAudioChart!!.axisLeft
+        val lAxis = mAudioSpectrogram!!.axisLeft
         lAxis.setDrawGridLines(true)
         lAxis.axisMaximum = 32768f*15
         lAxis.axisMinimum = 0f
@@ -113,36 +119,44 @@ class MainActivity : AppCompatActivity() {
         lAxis.valueFormatter = LargeValueFormatter()
 
         // Other Axis
-        val rAxis = mAudioChart!!.axisRight
+        val rAxis = mAudioSpectrogram!!.axisRight
         rAxis.isEnabled = false
     }
 
     @Synchronized
-    private fun updateAudioChart(ffts:FloatArray) {
-        var data = mAudioChart?.data
+    private fun updateAudioSpectrogram(magnitudes:FloatArray) {
+        var data = mAudioSpectrogram?.data
 
         if(data != null) {
-            data.clearValues()
-
-            var set = createSet()
-            data.addDataSet(set)
-
-            for(i in 0 until ffts.size/2) {
-                data.addEntry(Entry(fftToFreq(i, SAMPLE_RATE, SAMPLE_SIZE), fftMagnitude(ffts[i*2],ffts[i*2+1])), 0)
+            var set: ILineDataSet? = data.getDataSetByIndex(0)
+            if(set == null) {
+                set = createSet()
+                data.addDataSet(set)
             }
+
+            if(set.entryCount == 0) {
+                for(i in 0 until magnitudes.size) {
+                    data.addEntry(Entry(fft_frequenzy_bin(i, SAMPLE_RATE, SAMPLE_SIZE), magnitudes[i]), 0)
+                }
+            } else {
+                for(i in 0 until magnitudes.size) {
+                    set.getEntryForIndex(i).y = magnitudes[i]
+                }
+            }
+
             data.notifyDataChanged()
 
-            mAudioChart!!.notifyDataSetChanged()
-            mAudioChart!!.invalidate()
+            mAudioSpectrogram!!.notifyDataSetChanged()
+            mAudioSpectrogram!!.invalidate()
         }
     }
 
-    private fun fftToFreq(index:Int, rate:Int, samples:Int):Float {
+    private fun fft_frequenzy_bin(index:Int, rate:Int, samples:Int):Float {
         return (index * (rate/samples)).toFloat()
     }
 
-    private fun fftMagnitude(real:Float, imaginary:Float):Float {
-        return sqrt(real.pow(2)+imaginary.pow(2))
+    private fun complexAbs(Re:Float, Im:Float):Float {
+        return sqrt(Re.pow(2)+Im.pow(2))
     }
 
     private fun createSet(): LineDataSet {
