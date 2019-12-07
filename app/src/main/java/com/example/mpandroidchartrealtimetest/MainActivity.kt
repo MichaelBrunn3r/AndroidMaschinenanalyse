@@ -2,6 +2,8 @@ package com.example.mpandroidchartrealtimetest
 
 import android.Manifest.permission.RECORD_AUDIO
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.media.AudioFormat
+import android.media.MediaRecorder
 import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -20,12 +22,10 @@ import kotlin.math.sqrt
 
 
 class MainActivity : AppCompatActivity() {
-    private val TAG = "MainActivity"
-
-    private var mAudioChart: LineChart? = null
-
     private val SAMPLE_RATE = 44100
     private val SAMPLE_SIZE = 4096
+
+    private var mAudioChart: LineChart? = null
 
     val disposable: CompositeDisposable = CompositeDisposable()
 
@@ -38,20 +38,21 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if(requestAudioPermissions() && disposable.size() == 0) {
-            startAudioPlot()
+        if(requestAudioPermissions()) {
+            startAudioSampling()
         }
     }
 
     override fun onStop() {
-        stopAudioPlot()
+        stopAudioSampling()
         super.onStop()
     }
 
-    private fun startAudioPlot() {
-        val audioSrc = AudioSource(SAMPLE_RATE, SAMPLE_SIZE).stream()
-        val noise = Noise.real(SAMPLE_SIZE)
+    private fun startAudioSampling() {
+        if(disposable.size() != 0) return
 
+        val audioSrc = AudioSamplesPublisher(SAMPLE_RATE, SAMPLE_SIZE, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream()
+        val noise = Noise.real(SAMPLE_SIZE)
         disposable.add(audioSrc.observeOn(Schedulers.newThread())
             .map { samples ->
                 var arr = FloatArray(samples.size)
@@ -61,13 +62,13 @@ class MainActivity : AppCompatActivity() {
                 return@map arr
             }
             .subscribe{ samples ->
-                val fft = noise.fft(samples, FloatArray(SAMPLE_SIZE+2))
-                updateAudioChart(fft)
-            }
+                    val fft = noise.fft(samples, FloatArray(SAMPLE_SIZE+2))
+                    updateAudioChart(fft)
+                }
         )
     }
 
-    private fun stopAudioPlot() {
+    private fun stopAudioSampling() {
         disposable.clear()
     }
 
@@ -132,7 +133,7 @@ class MainActivity : AppCompatActivity() {
             data.notifyDataChanged()
 
             mAudioChart!!.notifyDataSetChanged()
-            mAudioChart!!.moveViewToX(0f)
+            mAudioChart!!.invalidate()
         }
     }
 
@@ -164,5 +165,9 @@ class MainActivity : AppCompatActivity() {
             return false
         }
         return true
+    }
+
+    companion object {
+        private val TAG = "MainActivity"
     }
 }

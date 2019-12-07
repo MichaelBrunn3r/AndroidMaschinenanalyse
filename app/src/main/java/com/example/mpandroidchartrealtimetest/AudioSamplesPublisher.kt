@@ -1,31 +1,25 @@
 package com.example.mpandroidchartrealtimetest
 
-import android.media.AudioFormat
 import android.media.AudioRecord
-import android.media.MediaRecorder
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
 import java.lang.RuntimeException
 
-const val AUDIO_SRC = MediaRecorder.AudioSource.MIC
-const val AUDIO_CHANNEL_CFG = AudioFormat.CHANNEL_IN_MONO
-const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
-
-class AudioSource(private val SAMPLE_RATE:Int, private val SAMPLE_SIZE:Int) {
+class AudioSamplesPublisher(private var mSampleRate:Int, private var mSamples:Int, private var mAudioSrc:Int, private var mChannelCfg:Int, private var mAudioFormat:Int) {
     private val flowable: Flowable<ShortArray>
 
     init {
         flowable = Flowable.create<ShortArray>({emitter ->
 
-            val minAudioBufSizeInBytes = AudioRecord.getMinBufferSize(SAMPLE_RATE, AUDIO_CHANNEL_CFG, AUDIO_FORMAT)
+            val minAudioBufSizeInBytes = AudioRecord.getMinBufferSize(mSampleRate, mChannelCfg, mAudioFormat)
 
             if(minAudioBufSizeInBytes <= 0) {
                 emitter.onError(RuntimeException("Could not allocate audio buffer on this device. Emulator? No Mic?"))
                 return@create
             }
 
-            val recorder = AudioRecord(AUDIO_SRC, SAMPLE_RATE, AUDIO_CHANNEL_CFG, AUDIO_FORMAT, minAudioBufSizeInBytes)
+            val recorder = AudioRecord(mAudioSrc, mSampleRate, mChannelCfg, mAudioFormat, minAudioBufSizeInBytes)
 
             recorder.startRecording()
             emitter.setCancellable {
@@ -33,7 +27,7 @@ class AudioSource(private val SAMPLE_RATE:Int, private val SAMPLE_SIZE:Int) {
                 recorder.release()
             }
 
-            val audioDataBuffer = ShortArray(SAMPLE_SIZE)
+            val audioDataBuffer = ShortArray(mSamples)
             var samplesRead = 0
 
             while(!emitter.isCancelled) {
