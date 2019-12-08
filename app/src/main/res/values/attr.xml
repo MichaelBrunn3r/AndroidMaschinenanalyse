@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SpectrogramView">
+        <attr name="enableScaling">
+            <flag name="none" value="0"/>
+            <flag name="xAxis" value="0x01"/>
+            <flag name="yAxis" value="0x02"/>
+            <flag name="both" value="0x03"/>
+        </attr>
+
+        <!-- General Appearance -->
+        <attr name="bgColor" format="color" />
+        <attr name="viewPortOffsetLeft" format="float" />
+        <attr name="viewPortOffsetRight" format="float" />
+        <attr name="viewPortOffsetTop" format="float" />
+        <attr name="viewPortOffsetBottom" format="float" />
+        <attr name="descr" format="string" />
+        <attr name="descrTextColor" format="color" />
+
+        <!-- Graph -->
+        <attr name="graphColor" format="color" />
+        <attr name="graphWidth" format="dimension" />
+
+        <attr name="showLegend" format="boolean" />
+
+        <!-- Axis -->
+        <attr name="drawGridLines" format="boolean">
+            <flag name="none" value="0" />
+            <flag name="xAxis" value="0x01" />
+            <flag name="yAxis" value="0x02" />
+            <flag name="both" value="0x03" />
+        </attr>
+        <attr name="drawLabels">
+            <flag name="none" value="0"/>
+            <flag name="xAxis" value="0x01"/>
+            <flag name="yAxis" value="0x02"/>
+            <flag name="both" value="0x03"/>
+        </attr>
+    </declare-styleable>
+</resources>
