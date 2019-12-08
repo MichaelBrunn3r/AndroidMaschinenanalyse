@@ -17,7 +17,7 @@
         android:visibility="visible"
         app:titleTextColor="@color/colorTextOnPrimary" />
 
-    <com.github.mikephil.charting.charts.LineChart
+    <com.example.mpandroidchartrealtimetest.SpectrogramView
         android:id="@+id/chartAudio"
         android:layout_width="match_parent"
         android:layout_height="0dp"

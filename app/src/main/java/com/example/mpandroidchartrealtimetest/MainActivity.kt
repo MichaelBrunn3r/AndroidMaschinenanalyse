@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     private var mSampleRate = 44100
     private val mSampleSize = 4096
 
-    private var mAudioSpectrogram: LineChart? = null
+    private var mAudioSpectrogram: SpectrogramView? = null
     private var mToolbar: Toolbar? = null
 
     private var mIsSampling:Boolean = false
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(mToolbar)
 
         mAudioSpectrogram = findViewById(R.id.chartAudio)
-        configAudioSpectrogram()
+        mAudioSpectrogram?.config(mSampleRate)
         mAudioSpectrogram?.setOnClickListener { view ->
             toggleToolbar()
         }
@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
                         return@map magnitudes
                     }
                     .subscribe{ magnitudes ->
-                        updateAudioSpectrogram(magnitudes)
+                        mAudioSpectrogram?.update(magnitudes) { index -> fft_frequenzy_bin(index, mSampleRate, mSampleSize)}
                     }
             )
         } else {
@@ -110,97 +110,12 @@ class MainActivity : AppCompatActivity() {
         mIsSampling = isSampling
     }
 
-    private fun configAudioSpectrogram() {
-        mAudioSpectrogram!!.setHardwareAccelerationEnabled(true)
-        mAudioSpectrogram!!.setTouchEnabled(true)
-        mAudioSpectrogram!!.isClickable = true
-        mAudioSpectrogram!!.isDragEnabled = false
-        mAudioSpectrogram!!.setScaleEnabled(false)
-        mAudioSpectrogram!!.setDrawGridBackground(false)
-        mAudioSpectrogram!!.setPinchZoom(false)
-        mAudioSpectrogram!!.setViewPortOffsets(80f,50f,0f,10f)
-        mAudioSpectrogram!!.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.colorPrimaryDark))
-
-        // Chart Description
-        mAudioSpectrogram!!.description.isEnabled = false
-
-        // Chart Data
-        mAudioSpectrogram!!.data =  LineData()
-
-        // Legend
-        mAudioSpectrogram!!.legend.isEnabled = false
-
-        // X Axis
-        val xAxis = mAudioSpectrogram!!.xAxis
-        xAxis.setDrawGridLines(true)
-        xAxis.axisMaximum = mSampleRate.toFloat()/2
-        xAxis.axisMinimum = 0f
-        xAxis.setDrawLabels(true)
-        xAxis.setAvoidFirstLastClipping(true)
-        xAxis.textColor = ContextCompat.getColor(applicationContext, R.color.colorTextOnPrimary)
-        xAxis.valueFormatter = LargeValueFormatter("Hz")
-
-        // Y Axis
-        val lAxis = mAudioSpectrogram!!.axisLeft
-        lAxis.setDrawGridLines(true)
-        lAxis.axisMaximum = 32768f*15
-        lAxis.axisMinimum = 0f
-        lAxis.setDrawTopYLabelEntry(true)
-        lAxis.textColor = ContextCompat.getColor(applicationContext, R.color.colorTextOnPrimary)
-        lAxis.valueFormatter = LargeValueFormatter()
-
-        // Other Axis
-        val rAxis = mAudioSpectrogram!!.axisRight
-        rAxis.isEnabled = false
-    }
-
-    @Synchronized
-    private fun updateAudioSpectrogram(magnitudes:FloatArray) {
-        var data = mAudioSpectrogram?.data
-
-        if(data != null) {
-            var set: ILineDataSet? = data.getDataSetByIndex(0)
-            if(set == null) {
-                set = createSet()
-                data.addDataSet(set)
-            }
-
-            if(set.entryCount == 0) {
-                for(i in 0 until magnitudes.size) {
-                    data.addEntry(Entry(fft_frequenzy_bin(i, mSampleRate, mSampleSize), magnitudes[i]), 0)
-                }
-            } else {
-                for(i in 0 until magnitudes.size) {
-                    set.getEntryForIndex(i).y = magnitudes[i]
-                }
-            }
-
-            data.notifyDataChanged()
-
-            mAudioSpectrogram!!.notifyDataSetChanged()
-            mAudioSpectrogram!!.invalidate()
-        }
-    }
-
-    private fun fft_frequenzy_bin(index:Int, rate:Int, samples:Int):Float {
-        return (index * (rate/samples)).toFloat()
-    }
-
     private fun complexAbs(Re:Float, Im:Float):Float {
         return sqrt(Re.pow(2)+Im.pow(2))
     }
 
-    private fun createSet(): LineDataSet {
-        val set = LineDataSet(null, "Dynamic")
-        set.axisDependency = YAxis.AxisDependency.LEFT
-        set.lineWidth = 1f
-        set.color = ContextCompat.getColor(applicationContext, R.color.colorAccent)
-        set.isHighlightEnabled = false
-        set.setDrawValues(false)
-        set.setDrawCircles(false)
-        set.mode = LineDataSet.Mode.CUBIC_BEZIER
-        set.cubicIntensity = 1f
-        return set
+    private fun fft_frequenzy_bin(index:Int, rate:Int, samples:Int):Float {
+        return (index * (rate/samples)).toFloat()
     }
 
     private fun requestAudioPermissions():Boolean {
