@@ -5,4 +5,6 @@
     <color name="colorPrimaryDark">#161616</color>
     <color name="colorAccent">#ffa726</color>
     <color name="colorTextOnPrimary">#ffffff</color>
+
+    <color name="colorToolbarBtn">@color/colorAccent</color>
 </resources>

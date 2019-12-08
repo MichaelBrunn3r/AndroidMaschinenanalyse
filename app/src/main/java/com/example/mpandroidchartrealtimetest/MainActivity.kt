@@ -6,7 +6,11 @@ import android.media.AudioFormat
 import android.media.MediaRecorder
 import android.os.Build
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.YAxis
@@ -23,10 +27,13 @@ import kotlin.math.sqrt
 
 
 class MainActivity : AppCompatActivity() {
-    private val SAMPLE_RATE = 44100
-    private val SAMPLE_SIZE = 4096
+    private var mSampleRate = 44100
+    private val mSampleSize = 4096
 
     private var mAudioSpectrogram: LineChart? = null
+    private var mToolbar: Toolbar? = null
+
+    private var mIsSampling:Boolean = false
 
     val disposable: CompositeDisposable = CompositeDisposable()
 
@@ -34,55 +41,79 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        configAudioChart()
-    }
+        mToolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(mToolbar)
 
-    override fun onResume() {
-        super.onResume()
-        if(requestAudioPermissions()) {
-            startAudioSampling()
+        mAudioSpectrogram = findViewById(R.id.chartAudio)
+        configAudioSpectrogram()
+        mAudioSpectrogram?.setOnClickListener { view ->
+            toggleToolbar()
         }
     }
 
     override fun onStop() {
-        stopAudioSampling()
+        setSamplingState(false)
         super.onStop()
     }
 
-    private fun startAudioSampling() {
-        if(disposable.size() != 0) return
-
-        val audioSrc = AudioSamplesPublisher(SAMPLE_RATE, SAMPLE_SIZE, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream()
-        val noise = Noise.real(SAMPLE_SIZE)
-        disposable.add(audioSrc.observeOn(Schedulers.newThread())
-            .map { samples ->
-                var arr = FloatArray(samples.size)
-                for(i in 0 until samples.size) {
-                    arr[i] = samples[i].toFloat()
-                }
-                return@map noise.fft(arr, FloatArray(SAMPLE_SIZE+2))
-            }.map {fft ->
-                var magnitudes = FloatArray(fft.size)
-                for (i in 0 until fft.size/2) {
-                    magnitudes[i] = complexAbs(fft[i*2],fft[i*2+1])
-                }
-                    return@map magnitudes
-            }
-            .subscribe{ magnitudes ->
-                updateAudioSpectrogram(magnitudes)
-            }
-        )
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
     }
 
-    private fun stopAudioSampling() {
-        disposable.clear()
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.miStartStop -> setSamplingState(!mIsSampling)
+        }
+        return true
     }
 
-    private fun configAudioChart() {
-        mAudioSpectrogram = findViewById(R.id.chartAudio)
+    private fun toggleToolbar() {
+        if(mToolbar?.visibility == View.VISIBLE) {
+            mToolbar?.visibility = View.GONE
+        } else {
+            mToolbar?.visibility = View.VISIBLE
+        }
+    }
 
+    private fun setSamplingState(isSampling:Boolean) {
+        if(isSampling) {
+            if(disposable.size() != 0) return
+
+            val audioSrc = AudioSamplesPublisher(mSampleRate, mSampleSize, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream()
+            val noise = Noise.real(mSampleSize)
+            disposable.add(audioSrc.observeOn(Schedulers.newThread())
+                    .map { samples ->
+                        var arr = FloatArray(samples.size)
+                        for(i in 0 until samples.size) {
+                            arr[i] = samples[i].toFloat()
+                        }
+                        return@map noise.fft(arr, FloatArray(mSampleSize+2))
+                    }.map {fft ->
+                        var magnitudes = FloatArray(fft.size)
+                        for (i in 0 until fft.size/2) {
+                            magnitudes[i] = complexAbs(fft[i*2],fft[i*2+1])
+                        }
+                        return@map magnitudes
+                    }
+                    .subscribe{ magnitudes ->
+                        updateAudioSpectrogram(magnitudes)
+                    }
+            )
+        } else {
+            disposable.clear()
+        }
+
+        var startStopMenuItem: MenuItem? = mToolbar?.menu?.findItem(R.id.miStartStop)
+        if(isSampling) startStopMenuItem?.icon = getDrawable(R.drawable.pause_btn)
+        else startStopMenuItem?.icon = getDrawable(R.drawable.play_btn)
+        mIsSampling = isSampling
+    }
+
+    private fun configAudioSpectrogram() {
         mAudioSpectrogram!!.setHardwareAccelerationEnabled(true)
-        mAudioSpectrogram!!.setTouchEnabled(false)
+        mAudioSpectrogram!!.setTouchEnabled(true)
+        mAudioSpectrogram!!.isClickable = true
         mAudioSpectrogram!!.isDragEnabled = false
         mAudioSpectrogram!!.setScaleEnabled(false)
         mAudioSpectrogram!!.setDrawGridBackground(false)
@@ -102,7 +133,7 @@ class MainActivity : AppCompatActivity() {
         // X Axis
         val xAxis = mAudioSpectrogram!!.xAxis
         xAxis.setDrawGridLines(true)
-        xAxis.axisMaximum = SAMPLE_RATE.toFloat()/2
+        xAxis.axisMaximum = mSampleRate.toFloat()/2
         xAxis.axisMinimum = 0f
         xAxis.setDrawLabels(true)
         xAxis.setAvoidFirstLastClipping(true)
@@ -136,7 +167,7 @@ class MainActivity : AppCompatActivity() {
 
             if(set.entryCount == 0) {
                 for(i in 0 until magnitudes.size) {
-                    data.addEntry(Entry(fft_frequenzy_bin(i, SAMPLE_RATE, SAMPLE_SIZE), magnitudes[i]), 0)
+                    data.addEntry(Entry(fft_frequenzy_bin(i, mSampleRate, mSampleSize), magnitudes[i]), 0)
                 }
             } else {
                 for(i in 0 until magnitudes.size) {
