@@ -1,4 +1,4 @@
-package com.example.mpandroidchartrealtimetest
+package com.github.michaelbrunn3r.maschinenanalyse
 
 import android.media.AudioRecord
 import io.reactivex.BackpressureStrategy

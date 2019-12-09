@@ -1,4 +1,4 @@
-package com.example.mpandroidchartrealtimetest
+package com.github.michaelbrunn3r.maschinenanalyse
 
 import android.content.Context
 import android.graphics.Color

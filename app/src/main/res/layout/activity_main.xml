@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
-    tools:context=".MainActivity">
+    tools:context="com.github.michaelbrunn3r.maschinenanalyse.MainActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -17,7 +17,7 @@
         android:visibility="visible"
         app:titleTextColor="@color/colorTextOnPrimary" />
 
-    <com.example.mpandroidchartrealtimetest.SpectrogramView
+    <com.github.michaelbrunn3r.maschinenanalyse.SpectrogramView
         android:id="@+id/chartAudio"
         android:layout_width="match_parent"
         android:layout_height="0dp"
