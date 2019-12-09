@@ -4,7 +4,12 @@
         android:id="@+id/miStartStop"
         app:showAsAction="always"
         android:icon="@drawable/play_btn"
-        android:iconTint="@color/colorAccent"
-        android:title="StartStop">
-    </item>
+        android:title="StartStop" />
+
+    <item
+        android:id="@+id/miSettings"
+        app:showAsAction="always"
+        android:icon="@drawable/settings"
+        android:title="Settings"
+        />
 </menu>

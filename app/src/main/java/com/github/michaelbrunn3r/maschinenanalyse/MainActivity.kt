@@ -1,6 +1,7 @@
 package com.github.michaelbrunn3r.maschinenanalyse
 
 import android.Manifest.permission.RECORD_AUDIO
+import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.media.AudioFormat
 import android.media.MediaRecorder
@@ -11,6 +12,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.preference.PreferenceManager
 import com.paramsen.noise.Noise
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -20,14 +22,14 @@ import kotlin.math.sqrt
 
 class MainActivity : AppCompatActivity() {
     private var mSampleRate = 44100
-    private val mSampleSize = 4096
+    private var mSampleSize = 4096
 
     private var mAudioSpectrogram: SpectrogramView? = null
     private var mToolbar: Toolbar? = null
 
     private var mIsSampling:Boolean = false
 
-    val disposable: CompositeDisposable = CompositeDisposable()
+    private val mDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,14 +39,26 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(mToolbar)
 
         mAudioSpectrogram = findViewById(R.id.chartAudio)
-        mAudioSpectrogram?.config(mSampleRate)
-        mAudioSpectrogram?.setOnClickListener { view ->
+        mAudioSpectrogram?.setFrequencyRange(0f, (mSampleRate/2).toFloat())
+        mAudioSpectrogram?.setOnClickListener { _ ->
             toggleToolbar()
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        val preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        mSampleSize = preferences.getString("fftAudioSamples", "4096")!!.toInt()
+        mAudioSpectrogram?.setFrequencyRange(0f, (mSampleRate/2).toFloat())
+
+        if(mIsSampling && requestAudioPermissions() && mDisposable.size() == 0) {
+            startSampling()
+        }
+    }
+
     override fun onStop() {
-        setSamplingState(false)
+        pauseSampling()
         super.onStop()
     }
 
@@ -55,7 +69,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.miStartStop -> setSamplingState(!mIsSampling)
+            R.id.miStartStop -> if(requestAudioPermissions()) {
+                if(mIsSampling) stopSampling()
+                else startSampling()
+            }
+            R.id.miSettings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+            }
         }
         return true
     }
@@ -68,38 +89,48 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setSamplingState(isSampling:Boolean) {
-        if(isSampling) {
-            if(disposable.size() != 0) return
-
-            val audioSrc = AudioSamplesPublisher(mSampleRate, mSampleSize, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream()
-            val noise = Noise.real(mSampleSize)
-            disposable.add(audioSrc.observeOn(Schedulers.newThread())
-                    .map { samples ->
-                        var arr = FloatArray(samples.size)
-                        for(i in 0 until samples.size) {
-                            arr[i] = samples[i].toFloat()
-                        }
-                        return@map noise.fft(arr, FloatArray(mSampleSize+2))
-                    }.map {fft ->
-                        var magnitudes = FloatArray(fft.size)
-                        for (i in 0 until fft.size/2) {
-                            magnitudes[i] = complexAbs(fft[i*2],fft[i*2+1])
-                        }
-                        return@map magnitudes
-                    }
-                    .subscribe{ magnitudes ->
-                        mAudioSpectrogram?.update(magnitudes) { index -> fft_frequenzy_bin(index, mSampleRate, mSampleSize)}
-                    }
-            )
-        } else {
-            disposable.clear()
-        }
-
-        var startStopMenuItem: MenuItem? = mToolbar?.menu?.findItem(R.id.miStartStop)
+    private fun setStartStopBtnState(isSampling: Boolean) {
+        val startStopMenuItem: MenuItem? = mToolbar?.menu?.findItem(R.id.miStartStop)
         if(isSampling) startStopMenuItem?.icon = getDrawable(R.drawable.pause_btn)
         else startStopMenuItem?.icon = getDrawable(R.drawable.play_btn)
-        mIsSampling = isSampling
+    }
+
+    private fun startSampling() {
+        setStartStopBtnState(true)
+        if(mDisposable.size() != 0) return
+
+        val audioSrc = AudioSamplesPublisher(mSampleRate, mSampleSize, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream()
+        val noise = Noise.real(mSampleSize)
+
+        mDisposable.add(audioSrc.observeOn(Schedulers.newThread())
+                .map { samples ->
+                    var arr = FloatArray(samples.size)
+                    for(i in 0 until samples.size) {
+                        arr[i] = samples[i].toFloat()
+                    }
+                    return@map noise.fft(arr, FloatArray(mSampleSize+2))
+                }.map {fft ->
+                    var magnitudes = FloatArray(fft.size)
+                    for (i in 0 until fft.size/2) {
+                        magnitudes[i] = complexAbs(fft[i*2],fft[i*2+1])
+                    }
+                    return@map magnitudes
+                }
+                .subscribe{ magnitudes ->
+                    mAudioSpectrogram?.update(magnitudes) { index -> fft_frequenzy_bin(index, mSampleRate, mSampleSize)}
+                })
+
+        mIsSampling = true
+    }
+
+    private fun pauseSampling() {
+        mDisposable.clear()
+    }
+
+    private fun stopSampling() {
+        setStartStopBtnState(false)
+        mDisposable.clear()
+        mIsSampling = false
     }
 
     private fun complexAbs(Re:Float, Im:Float):Float {

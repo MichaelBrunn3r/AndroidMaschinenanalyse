@@ -11,6 +11,9 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.LargeValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+
+
 
 class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(context, attrs) {
 
@@ -20,6 +23,22 @@ class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(context,
     init {
         data = LineData()
         setHardwareAccelerationEnabled(true)
+        setDrawGridBackground(false)
+        setTouchEnabled(true)
+        isClickable = true
+        isDragEnabled = false
+        setPinchZoom(false)
+
+        xAxis.textColor = ContextCompat.getColor(context, R.color.colorTextOnPrimary)
+        xAxis.valueFormatter = LargeValueFormatter("Hz")
+        setFrequencyRange(0f, 4096.toFloat()/2) // Default Value
+
+        axisLeft.axisMinimum = 0f
+        axisLeft.axisMaximum = 300f
+        axisLeft.textColor = ContextCompat.getColor(context, R.color.colorTextOnPrimary)
+        axisLeft.valueFormatter = LargeValueFormatter()
+
+        axisRight.isEnabled = false
 
         context.theme.obtainStyledAttributes(attrs, R.styleable.SpectrogramView, 0, 0).apply {
             val scale = resources.displayMetrics.scaledDensity
@@ -32,7 +51,6 @@ class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(context,
             mGraphLineWidth = getDimensionPixelSize(R.styleable.SpectrogramView_graphWidth, 1)/scale
 
             // Background
-            setDrawGridBackground(false)
             setBackgroundColor(getColor(R.styleable.SpectrogramView_bgColor, Color.WHITE))
 
             setViewPortOffsets(
@@ -55,31 +73,17 @@ class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(context,
             xAxis.setDrawGridLines(isFlagSet(getInt(R.styleable.SpectrogramView_drawGridLines, FLAG_DRAW_GRID_LINES_BOTH), FLAG_DRAW_GRID_LINES_X))
             xAxis.setDrawLabels(isFlagSet(getInt(R.styleable.SpectrogramView_drawLabels, FLAG_DRAW_LABELS_BOTH), FLAG_DRAW_LABELS_X))
             xAxis.setAvoidFirstLastClipping(true)
-            xAxis.valueFormatter = LargeValueFormatter("Hz")
-            xAxis.textColor = ContextCompat.getColor(context, R.color.colorTextOnPrimary)
-            xAxis.axisMinimum = 0f
 
             axisLeft.setDrawGridLines(isFlagSet(getInt(R.styleable.SpectrogramView_drawGridLines, FLAG_DRAW_GRID_LINES_BOTH), FLAG_DRAW_GRID_LINES_Y))
             axisLeft.setDrawLabels(isFlagSet(getInt(R.styleable.SpectrogramView_drawLabels, FLAG_DRAW_LABELS_BOTH), FLAG_DRAW_LABELS_Y))
-            axisLeft.valueFormatter = LargeValueFormatter()
-            axisLeft.textColor = ContextCompat.getColor(context, R.color.colorTextOnPrimary)
-            axisLeft.axisMinimum = 0f
-
-            axisRight.isEnabled = false
         }
     }
 
-    fun config(samplingRate:Int) {
-        setTouchEnabled(true)
-        isClickable = true
-        isDragEnabled = false
-        setPinchZoom(false)
-
-        // X Axis
-        xAxis.axisMaximum = samplingRate.toFloat()/2
-
-        // Y Axis
-        axisLeft.axisMaximum = 32768f*15
+    fun setFrequencyRange(min:Float, max:Float) {
+        xAxis.axisMinimum = min
+        xAxis.axisMaximum = max
+        data.clearValues()
+        invalidate()
     }
 
     @Synchronized
@@ -91,13 +95,13 @@ class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(context,
                 data.addDataSet(set)
             }
 
-            if(set.entryCount == 0) {
+            if(set.entryCount < magnitudes.size) {
                 for(i in 0 until magnitudes.size) {
                     data.addEntry(Entry(frequenzyForIndex(i), magnitudes[i]), 0)
                 }
             } else {
                 for(i in 0 until magnitudes.size) {
-                    set.getEntryForIndex(i).y = magnitudes[i]
+                    set.getEntryForIndex(i).y = (magnitudes[i]/magnitudes.size)
                 }
             }
 
