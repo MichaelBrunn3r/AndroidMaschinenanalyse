@@ -7,6 +7,7 @@ import android.media.AudioFormat
 import android.media.MediaRecorder
 import android.os.Build
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -45,6 +46,13 @@ class MainActivity : AppCompatActivity() {
 
         mAudioSpectrogram = findViewById(R.id.chartAudio)
         mAudioSpectrogram?.setFrequencyRange(0f, (mSampleRate/2).toFloat())
+
+        if(savedInstanceState != null) {
+            mIsSampling = savedInstanceState.getBoolean("isSampling", false)
+            if(savedInstanceState.getBoolean("isToolbarHidden", false)) {
+                toggleToolbar()
+            }
+        }
     }
 
     override fun onResume() {
@@ -62,6 +70,12 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         pauseSampling()
         super.onStop()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean("isSampling", mIsSampling)
+        outState.putBoolean("isToolbarHidden", (mToolbar?.visibility ?: View.VISIBLE) != View.VISIBLE)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

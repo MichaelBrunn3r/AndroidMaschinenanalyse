@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ListPreference
         android:key="fftAudioSamples"
         android:title="FFT Audio Samples"
-        android:summary="Number of samples to calculate frequency spectrum"
+        app:useSimpleSummaryProvider="true"
         android:defaultValue="4096"
         android:entries="@array/fftAudioSampleEntries"
         android:entryValues="@array/fftAudioSamples" />
