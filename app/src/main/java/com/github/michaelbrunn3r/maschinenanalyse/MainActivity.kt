@@ -38,11 +38,13 @@ class MainActivity : AppCompatActivity() {
         mToolbar = findViewById(R.id.toolbar)
         setSupportActionBar(mToolbar)
 
-        mAudioSpectrogram = findViewById(R.id.chartAudio)
-        mAudioSpectrogram?.setFrequencyRange(0f, (mSampleRate/2).toFloat())
-        mAudioSpectrogram?.setOnClickListener { _ ->
+        val overlay:TouchOverlay = findViewById(R.id.touchFilter)
+        overlay.setOnShortClickListener {
             toggleToolbar()
         }
+
+        mAudioSpectrogram = findViewById(R.id.chartAudio)
+        mAudioSpectrogram?.setFrequencyRange(0f, (mSampleRate/2).toFloat())
     }
 
     override fun onResume() {

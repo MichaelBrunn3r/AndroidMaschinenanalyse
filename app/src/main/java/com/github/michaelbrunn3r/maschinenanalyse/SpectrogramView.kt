@@ -11,15 +11,11 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.LargeValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
-
 
 class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(context, attrs) {
 
     private var mGraphColor = Color.BLACK
     private var mGraphLineWidth:Float = 1f
-
     init {
         data = LineData()
         setHardwareAccelerationEnabled(true)
@@ -43,8 +39,11 @@ class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(context,
         context.theme.obtainStyledAttributes(attrs, R.styleable.SpectrogramView, 0, 0).apply {
             val scale = resources.displayMetrics.scaledDensity
 
+            // Interaction
             isScaleXEnabled = isFlagSet(getInt(R.styleable.SpectrogramView_enableScaling, FLAG_SCALE_NONE), FLAG_SCALE_X_AXIS)
             isScaleYEnabled = isFlagSet(getInt(R.styleable.SpectrogramView_enableScaling, FLAG_SCALE_NONE), FLAG_SCALE_Y_AXIS)
+            isDragXEnabled = isFlagSet(getInt(R.styleable.SpectrogramView_enableDragging, FLAG_DRAG_NONE), FLAG_DRAG_X)
+            isDragYEnabled = isFlagSet(getInt(R.styleable.SpectrogramView_enableDragging, FLAG_DRAG_NONE), FLAG_DRAG_Y)
 
             // Graph
             mGraphColor = getColor(R.styleable.SpectrogramView_graphColor, Color.WHITE)
@@ -120,8 +119,7 @@ class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(context,
         set.isHighlightEnabled = false
         set.setDrawValues(false)
         set.setDrawCircles(false)
-        set.mode = LineDataSet.Mode.CUBIC_BEZIER
-        set.cubicIntensity = 1f
+        set.mode = LineDataSet.Mode.LINEAR
         return set
     }
 
@@ -140,6 +138,11 @@ class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(context,
         private const val FLAG_DRAW_LABELS_X = 1
         private const val FLAG_DRAW_LABELS_Y = 2
         private const val FLAG_DRAW_LABELS_BOTH = 3
+
+        private const val FLAG_DRAG_NONE = 0
+        private const val FLAG_DRAG_X = 1
+        private const val FLAG_DRAG_Y = 2
+        private const val FLAG_DRAG_BOTH = 3
 
         inline fun isFlagSet(value:Int, flag:Int):Boolean {return value and flag != 0}
     }

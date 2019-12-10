@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="SpectrogramView">
+        <!-- Interaction -->
         <attr name="enableScaling">
+            <flag name="none" value="0"/>
+            <flag name="xAxis" value="0x01"/>
+            <flag name="yAxis" value="0x02"/>
+            <flag name="both" value="0x03"/>
+        </attr>
+        <attr name="enableDragging">
             <flag name="none" value="0"/>
             <flag name="xAxis" value="0x01"/>
             <flag name="yAxis" value="0x02"/>
@@ -36,5 +43,9 @@
             <flag name="yAxis" value="0x02"/>
             <flag name="both" value="0x03"/>
         </attr>
+    </declare-styleable>
+
+    <declare-styleable name="TouchOverlay">
+        <attr name="maxShortClickDurationMs" format="integer" />
     </declare-styleable>
 </resources>
