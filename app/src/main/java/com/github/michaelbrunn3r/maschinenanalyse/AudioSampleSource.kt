@@ -6,20 +6,20 @@ import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
 import java.lang.RuntimeException
 
-class AudioSamplesPublisher(private var mSampleRate:Int, private var mSamples:Int, private var mAudioSrc:Int, private var mChannelCfg:Int, private var mAudioFormat:Int) {
+class AudioSampleSource(var sampleRate:Int, var samples:Int, var audioSrc:Int, var channelCfg:Int, var audioFormat:Int) {
     private val flowable: Flowable<ShortArray>
 
     init {
         flowable = Flowable.create<ShortArray>({emitter ->
 
-            val minAudioBufSizeInBytes = AudioRecord.getMinBufferSize(mSampleRate, mChannelCfg, mAudioFormat)
+            val minAudioBufSizeInBytes = AudioRecord.getMinBufferSize(sampleRate, channelCfg, audioFormat)
 
             if(minAudioBufSizeInBytes <= 0) {
                 emitter.onError(RuntimeException("Could not allocate audio buffer on this device. Emulator? No Mic?"))
                 return@create
             }
 
-            val recorder = AudioRecord(mAudioSrc, mSampleRate, mChannelCfg, mAudioFormat, minAudioBufSizeInBytes)
+            val recorder = AudioRecord(audioSrc, sampleRate, channelCfg, audioFormat, minAudioBufSizeInBytes)
 
             recorder.startRecording()
             emitter.setCancellable {
@@ -27,7 +27,7 @@ class AudioSamplesPublisher(private var mSampleRate:Int, private var mSamples:In
                 recorder.release()
             }
 
-            val audioDataBuffer = ShortArray(mSamples)
+            val audioDataBuffer = ShortArray(samples)
             var samplesRead = 0
 
             while(!emitter.isCancelled) {
