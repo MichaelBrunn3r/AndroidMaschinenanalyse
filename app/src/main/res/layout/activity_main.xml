@@ -17,27 +17,12 @@
         android:visibility="visible"
         app:titleTextColor="@color/colorTextOnPrimary" />
 
-    <com.github.michaelbrunn3r.maschinenanalyse.TouchOverlay
-        android:id="@+id/touchFilter"
+    <fragment
+        android:id="@+id/nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:maxShortClickDurationMs="300">
-
-        <com.github.michaelbrunn3r.maschinenanalyse.SpectrogramView
-            android:id="@+id/chartAudio"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:bgColor="@color/colorPrimaryDark"
-            app:drawGridLines="xAxis|yAxis"
-            app:enableDragging="yAxis|xAxis"
-            app:enableScaling="yAxis|xAxis"
-            app:graphColor="@color/colorAccent"
-            app:graphWidth="0.8dp"
-            app:showLegend="false"
-            app:viewPortOffsetBottom="10"
-            app:viewPortOffsetLeft="80"
-            app:viewPortOffsetRight="0"
-            app:viewPortOffsetTop="50" />
-    </com.github.michaelbrunn3r.maschinenanalyse.TouchOverlay>
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph" />
 
 </LinearLayout>

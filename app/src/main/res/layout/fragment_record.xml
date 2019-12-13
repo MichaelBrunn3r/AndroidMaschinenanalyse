@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Nimm Frequenzen auf" />
+
+    <Button
+        android:id="@+id/btn_start_recording"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start" />
+
+    <com.github.michaelbrunn3r.maschinenanalyse.SpectrogramView
+        android:id="@+id/chartRecordedFrequencies"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:bgColor="@color/colorPrimaryDark"
+        app:drawGridLines="xAxis|yAxis"
+        app:enableDragging="yAxis|xAxis"
+        app:enableScaling="yAxis|xAxis"
+        app:graphColor="@color/colorAccent"
+        app:graphWidth="0.8dp"
+        app:showLegend="false"
+        app:viewPortOffsetBottom="10"
+        app:viewPortOffsetLeft="80"
+        app:viewPortOffsetRight="0"
+        app:viewPortOffsetTop="50" />
+
+</LinearLayout>

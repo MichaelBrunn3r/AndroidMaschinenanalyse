@@ -100,7 +100,7 @@ class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(context,
                 }
             } else {
                 for(i in 0 until magnitudes.size) {
-                    set.getEntryForIndex(i).y = (magnitudes[i]/magnitudes.size)
+                    set.getEntryForIndex(i).y = magnitudes[i]
                 }
             }
 
