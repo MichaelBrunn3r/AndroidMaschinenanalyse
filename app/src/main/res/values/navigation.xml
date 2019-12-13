@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="navFragmentAnimDuration">220</integer>
+    <integer name="navSettingsAnimDuration">150</integer>
+</resources>

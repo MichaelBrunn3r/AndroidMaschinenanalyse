@@ -1,29 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph"
-    app:startDestination="@id/mainFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@+id/mainFragment">
 
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.MainFragment"
-        android:label="MainFragment" >
+        android:label="MainFragment">
         <action
             android:id="@+id/action_mainFragment_to_recordingFragment"
-            app:destination="@id/recordingFragment" />
+            app:destination="@id/recordingFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_mainFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/settings_in_bottom" />
         <action
             android:id="@+id/action_mainFragment_to_monitorFragment"
-            app:destination="@id/monitorFragment" />
+            app:destination="@id/monitorFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/recordingFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.RecordingFragment"
-        android:label="RecordingFragment" >
+        android:label="RecordingFragment">
         <action
             android:id="@+id/action_recordingFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/settings_in_bottom" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -32,9 +43,10 @@
     <fragment
         android:id="@+id/monitorFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.MonitorFragment"
-        android:label="MonitorFragment" >
+        android:label="MonitorFragment">
         <action
             android:id="@+id/action_monitorFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/settings_in_bottom" />
     </fragment>
 </navigation>
