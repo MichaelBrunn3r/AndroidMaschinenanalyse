@@ -5,14 +5,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:minHeight="?attr/actionBarSize"
-        android:visibility="visible"
-        app:titleTextColor="@color/colorTextOnPrimary" />
+    <include layout="@layout/app_bar" />
 
     <Button
         android:id="@+id/btn_nav_to_recording"
