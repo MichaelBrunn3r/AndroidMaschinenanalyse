@@ -4,5 +4,6 @@
     <item
         android:id="@+id/miSettings"
         app:showAsAction="always"
-        android:icon="@drawable/settings" />
+        android:icon="@drawable/settings"
+        android:title="Settings" />
 </menu>

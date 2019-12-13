@@ -45,7 +45,7 @@ class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
         mToolbar = view.findViewById(R.id.toolbar)
         mToolbar.setTitle(R.string.title_record_fragment)
-        mToolbar.setNavigationIcon(R.drawable.ic_back)
+        mToolbar.setNavigationIcon(R.drawable.back)
         mToolbar.setNavigationOnClickListener {
             mNavController.navigateUp()
         }
@@ -80,6 +80,7 @@ class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
     private fun startRecording() {
         if(mIsRecording || mDisposable.size() != 0) return
+        setRecordBtnState(true)
 
         val audioSrc = AudioSamplesPublisher(mSampleRate, mSampleSize, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream()
         val noise = Noise.real(mSampleSize)
@@ -110,8 +111,8 @@ class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener {
     }
 
     private fun stopRecording() {
+        setRecordBtnState(false)
         mDisposable.clear()
-        println("I recorded $mNumRecordedFrames frames")
 
         if(mRecordingBuffer != null) {
             for(i in mRecordingBuffer!!.indices) {
@@ -120,5 +121,11 @@ class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         }
 
         mAudioSpectrogram.update(mRecordingBuffer!!) { index -> fftFrequenzyBin(index, mSampleRate, mSampleSize)}
+    }
+
+    private fun setRecordBtnState(isSampling: Boolean) {
+        val startStopMenuItem: MenuItem? = mToolbar.menu?.findItem(R.id.miRecord)
+        if(isSampling) startStopMenuItem?.icon = resources.getDrawable(R.drawable.stop_recording, activity!!.theme)
+        else startStopMenuItem?.icon = resources.getDrawable(R.drawable.record, activity!!.theme)
     }
 }
