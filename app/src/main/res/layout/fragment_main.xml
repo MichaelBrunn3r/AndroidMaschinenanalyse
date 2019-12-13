@@ -15,22 +15,10 @@
         app:titleTextColor="@color/colorTextOnPrimary" />
 
     <Button
-        android:id="@+id/btn_nav_to_spectrogram"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Spectrogram" />
-
-    <Button
         android:id="@+id/btn_nav_to_recording"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Aufnahme" />
-
-    <Button
-        android:id="@+id/btn_nav_to_settings"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Settings" />
 
     <Button
         android:id="@+id/btn_nav_to_monitor"

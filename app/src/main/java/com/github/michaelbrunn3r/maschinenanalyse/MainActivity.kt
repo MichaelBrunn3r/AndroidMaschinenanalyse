@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-class MainFragment : Fragment(), View.OnClickListener {
+class MainFragment : Fragment(), View.OnClickListener, Toolbar.OnMenuItemClickListener {
 
     private lateinit var mNavController:NavController
     private lateinit var mToolbar: Toolbar
@@ -32,18 +32,27 @@ class MainFragment : Fragment(), View.OnClickListener {
 
         mToolbar = view.findViewById(R.id.toolbar)
         mToolbar.setTitle(R.string.app_name)
+        mToolbar.inflateMenu(R.menu.menu_main)
+        mToolbar.setOnMenuItemClickListener(this)
 
-        view.findViewById<Button>(R.id.btn_nav_to_spectrogram).setOnClickListener(this)
         view.findViewById<Button>(R.id.btn_nav_to_recording).setOnClickListener(this)
-        view.findViewById<Button>(R.id.btn_nav_to_settings).setOnClickListener(this)
         view.findViewById<Button>(R.id.btn_nav_to_monitor).setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
         when(v!!.id) {
             R.id.btn_nav_to_recording -> mNavController!!.navigate(R.id.action_mainFragment_to_recordingFragment)
-            R.id.btn_nav_to_settings -> mNavController!!.navigate(R.id.action_mainFragment_to_settingsFragment)
             R.id.btn_nav_to_monitor -> mNavController!!.navigate(R.id.action_mainFragment_to_monitorFragment)
         }
+    }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        when(item?.itemId) {
+            R.id.miSettings -> {
+                mNavController.navigate(R.id.action_mainFragment_to_settingsFragment)
+                return true
+            }
+        }
+        return false
     }
 }

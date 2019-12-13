@@ -96,6 +96,7 @@ class MonitorFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             R.id.miStartStop -> {
                 if(mIsSampling) stopAudioSampling()
                 else startAudioSampling()
+                return true
             }
         }
         return false

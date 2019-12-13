@@ -68,9 +68,11 @@ class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         when(item?.itemId) {
             R.id.miSettings -> {
                 mNavController.navigate(R.id.action_recordingFragment_to_settingsFragment)
+                return true
             }
             R.id.miRecord -> {
                 startRecording()
+                return true
             }
         }
         return false
