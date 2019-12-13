@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Maschinentest</string>
+    <string name="title_record_fragment">Referenz Aufnehmen</string>
 </resources>

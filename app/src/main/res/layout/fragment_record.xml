@@ -5,19 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/editText"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Nimm Frequenzen auf" />
-
-    <Button
-        android:id="@+id/btn_start_recording"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Start" />
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:visibility="visible"
+        app:titleTextColor="@color/colorTextOnPrimary" />
 
     <com.github.michaelbrunn3r.maschinenanalyse.SpectrogramView
         android:id="@+id/chartRecordedFrequencies"

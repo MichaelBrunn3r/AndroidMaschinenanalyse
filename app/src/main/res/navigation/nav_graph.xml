@@ -20,7 +20,11 @@
     <fragment
         android:id="@+id/recordingFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.RecordingFragment"
-        android:label="RecordingFragment" />
+        android:label="RecordingFragment" >
+        <action
+            android:id="@+id/action_recordingFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.SettingsFragment"

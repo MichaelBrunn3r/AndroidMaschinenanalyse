@@ -5,16 +5,23 @@ import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.preference.PreferenceManager
 import com.paramsen.noise.Noise
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class RecordingFragment : Fragment(), View.OnClickListener {
+class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener {
+
+    private lateinit var mNavController: NavController
+    private lateinit var mToolbar: Toolbar
 
     private var mSampleRate = 44100
     private var mSampleSize = 4096
@@ -34,10 +41,19 @@ class RecordingFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        mNavController = Navigation.findNavController(view)
+
+        mToolbar = view.findViewById(R.id.toolbar)
+        mToolbar.setTitle(R.string.title_record_fragment)
+        mToolbar.setNavigationIcon(R.drawable.ic_back)
+        mToolbar.setNavigationOnClickListener {
+            mNavController.navigateUp()
+        }
+        mToolbar.inflateMenu(R.menu.menu_record)
+        mToolbar.setOnMenuItemClickListener(this)
+
         mAudioSpectrogram = view.findViewById(R.id.chartRecordedFrequencies)
         mAudioSpectrogram?.setFrequencyRange(0f, (mSampleRate/2).toFloat())
-
-        view.findViewById<Button>(R.id.btn_start_recording).setOnClickListener(this)
     }
 
     override fun onResume() {
@@ -48,12 +64,16 @@ class RecordingFragment : Fragment(), View.OnClickListener {
         mSampleRate = preferences.getString("fftSampleRate", "44100")!!.toInt()
     }
 
-    override fun onClick(v: View?) {
-        when(v!!.id) {
-            R.id.btn_start_recording -> {
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        when(item?.itemId) {
+            R.id.miSettings -> {
+                mNavController.navigate(R.id.action_recordingFragment_to_settingsFragment)
+            }
+            R.id.miRecord -> {
                 startRecording()
             }
         }
+        return false
     }
 
     private fun startRecording() {
@@ -99,5 +119,4 @@ class RecordingFragment : Fragment(), View.OnClickListener {
 
         mAudioSpectrogram.update(mRecordingBuffer!!) { index -> fftFrequenzyBin(index, mSampleRate, mSampleSize)}
     }
-
 }

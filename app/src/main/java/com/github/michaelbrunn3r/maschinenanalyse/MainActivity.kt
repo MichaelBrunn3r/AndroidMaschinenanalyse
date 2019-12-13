@@ -19,7 +19,8 @@ class MainActivity : AppCompatActivity() {
 
 class MainFragment : Fragment(), View.OnClickListener {
 
-    private lateinit var navController:NavController
+    private lateinit var mNavController:NavController
+    private lateinit var mToolbar: Toolbar
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_main, container, false)
@@ -27,7 +28,10 @@ class MainFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        navController = Navigation.findNavController(view)
+        mNavController = Navigation.findNavController(view)
+
+        mToolbar = view.findViewById(R.id.toolbar)
+        mToolbar.setTitle(R.string.app_name)
 
         view.findViewById<Button>(R.id.btn_nav_to_spectrogram).setOnClickListener(this)
         view.findViewById<Button>(R.id.btn_nav_to_recording).setOnClickListener(this)
@@ -37,9 +41,9 @@ class MainFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when(v!!.id) {
-            R.id.btn_nav_to_recording -> navController!!.navigate(R.id.action_mainFragment_to_recordingFragment)
-            R.id.btn_nav_to_settings -> navController!!.navigate(R.id.action_mainFragment_to_settingsFragment)
-            R.id.btn_nav_to_monitor -> navController!!.navigate(R.id.action_mainFragment_to_monitorFragment)
+            R.id.btn_nav_to_recording -> mNavController!!.navigate(R.id.action_mainFragment_to_recordingFragment)
+            R.id.btn_nav_to_settings -> mNavController!!.navigate(R.id.action_mainFragment_to_settingsFragment)
+            R.id.btn_nav_to_monitor -> mNavController!!.navigate(R.id.action_mainFragment_to_monitorFragment)
         }
     }
 }
