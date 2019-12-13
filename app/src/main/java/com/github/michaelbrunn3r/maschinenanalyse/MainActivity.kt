@@ -11,14 +11,9 @@ import androidx.navigation.Navigation
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var mToolbar: Toolbar
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        mToolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(mToolbar)
     }
 }
 

@@ -7,15 +7,22 @@ import android.media.MediaRecorder
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.preference.PreferenceManager
 import com.paramsen.noise.Noise
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class MonitorFragment : Fragment() {
+class MonitorFragment : Fragment(), Toolbar.OnMenuItemClickListener {
+
+    private lateinit var mNavController: NavController
+    private lateinit var mToolbar: Toolbar
 
     private var mAudioSpectrogram: SpectrogramView? = null
     private var mAccelSpectrogram: SpectrogramView? = null
@@ -33,11 +40,29 @@ class MonitorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        mNavController = Navigation.findNavController(view)
+
+        mToolbar = view.findViewById(R.id.toolbar)
+        mToolbar.setNavigationIcon(R.drawable.ic_back)
+        mToolbar.setNavigationOnClickListener {
+            mNavController.navigateUp()
+        }
+        mToolbar.inflateMenu(R.menu.menu_monitor)
+        mToolbar.setOnMenuItemClickListener(this)
+
         mAudioSpectrogram = view.findViewById(R.id.chartAudio)
         mAccelSpectrogram = view.findViewById(R.id.chartAccel)
 
+        val overlay = view.findViewById<TouchOverlay>(R.id.touchOverlay)
+        overlay.setOnShortClickListener {
+            toggleToolbar()
+        }
+
         if(savedInstanceState != null) {
             mIsSampling = savedInstanceState.getBoolean("isSampling", false)
+            if(savedInstanceState.getBoolean("isToolbarHidden", false)) {
+                toggleToolbar()
+            }
         }
     }
 
@@ -59,10 +84,26 @@ class MonitorFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean("isSampling", mIsSampling)
+        outState.putBoolean("isToolbarHidden", mToolbar.visibility != View.VISIBLE)
+    }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        when(item?.itemId) {
+            R.id.miSettings -> {
+                mNavController!!.navigate(R.id.action_monitorFragment_to_settingsFragment)
+                return true
+            }
+            R.id.miStartStop -> {
+                if(mIsSampling) stopAudioSampling()
+                else startAudioSampling()
+            }
+        }
+        return false
     }
 
     private fun startAudioSampling() {
         if(!requestAudioPermissions() || mDisposable.size() != 0) return
+        setStartStopBtnState(true)
 
         val audioSrc = AudioSamplesPublisher(mAudioSampleRate, mAudioSampleSize, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream()
         val noise = Noise.real(mAudioSampleSize)
@@ -88,8 +129,23 @@ class MonitorFragment : Fragment() {
     }
 
     private fun stopAudioSampling() {
+        setStartStopBtnState(false)
         mDisposable.clear()
         mIsSampling = false
+    }
+
+    private fun setStartStopBtnState(isSampling: Boolean) {
+        val startStopMenuItem: MenuItem? = mToolbar?.menu?.findItem(R.id.miStartStop)
+        if(isSampling) startStopMenuItem?.icon = resources.getDrawable(R.drawable.pause_btn, activity!!.theme)
+        else startStopMenuItem?.icon = resources.getDrawable(R.drawable.play_btn, activity!!.theme)
+    }
+
+    private fun toggleToolbar() {
+        if(mToolbar?.visibility == View.VISIBLE) {
+            mToolbar?.visibility = View.GONE
+        } else {
+            mToolbar?.visibility = View.VISIBLE
+        }
     }
 
     private fun requestAudioPermissions():Boolean {
