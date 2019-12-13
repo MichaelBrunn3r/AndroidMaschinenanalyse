@@ -87,8 +87,7 @@ class SpectrogramActivity : AppCompatActivity() {
                 else startSampling()
             }
             R.id.miSettings -> {
-                val intent = Intent(this, SettingsActivity::class.java)
-                startActivity(intent)
+                // TODO add navigation to Settings Fragment
             }
         }
         return true
