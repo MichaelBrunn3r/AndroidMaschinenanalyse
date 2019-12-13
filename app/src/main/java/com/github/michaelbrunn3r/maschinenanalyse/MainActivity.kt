@@ -37,12 +37,14 @@ class MainFragment : Fragment(), View.OnClickListener {
         view.findViewById<Button>(R.id.btn_nav_to_spectrogram).setOnClickListener(this)
         view.findViewById<Button>(R.id.btn_nav_to_recording).setOnClickListener(this)
         view.findViewById<Button>(R.id.btn_nav_to_settings).setOnClickListener(this)
+        view.findViewById<Button>(R.id.btn_nav_to_monitor).setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
         when(v!!.id) {
             R.id.btn_nav_to_recording -> navController!!.navigate(R.id.action_mainFragment_to_recordingFragment)
             R.id.btn_nav_to_settings -> navController!!.navigate(R.id.action_mainFragment_to_settingsFragment)
+            R.id.btn_nav_to_monitor -> navController!!.navigate(R.id.action_mainFragment_to_monitorFragment)
         }
     }
 }

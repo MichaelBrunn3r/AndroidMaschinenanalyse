@@ -4,8 +4,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 
-class TouchOverlay(context:Context, attrs:AttributeSet): FrameLayout(context, attrs) {
+class TouchOverlay(context:Context, attrs:AttributeSet): LinearLayout(context, attrs) {
 
     private var mLastAction:Int? = -1
     private var mOnShortClickListener:(()->Unit)? = null

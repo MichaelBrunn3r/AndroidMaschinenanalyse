@@ -1,7 +1,6 @@
 package com.github.michaelbrunn3r.maschinenanalyse
 
 import android.Manifest.permission.RECORD_AUDIO
-import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.media.AudioFormat
 import android.media.MediaRecorder
@@ -52,20 +51,20 @@ class SpectrogramActivity : AppCompatActivity() {
         }
     }
 
-        override fun onResume() {
-            super.onResume()
+    override fun onResume() {
+        super.onResume()
 
-            val preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-            mSampleSize = preferences.getString("fftAudioSamples", "4096")!!.toInt()
-            mAudioSpectrogram?.setFrequencyRange(0f, (mSampleRate/2).toFloat())
+        val preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        mSampleSize = preferences.getString("fftAudioSamples", "4096")!!.toInt()
+        mAudioSpectrogram?.setFrequencyRange(0f, (mSampleRate/2).toFloat())
 
-            if(mIsSampling && requestAudioPermissions() && mDisposable.size() == 0) {
-                startSampling()
-            }
+        if(mIsSampling && requestAudioPermissions() && mDisposable.size() == 0) {
+            startSampling()
         }
+    }
 
-        override fun onStop() {
-            pauseSampling()
+    override fun onStop() {
+        pauseSampling()
         super.onStop()
     }
 
