@@ -81,7 +81,7 @@ class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         if(mIsRecording || mDisposable.size() != 0) return
         setRecordBtnState(true)
 
-        val audioSrc = AudioSampleSource(mSampleRate, mSampleSize, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream()
+        val audioSrc = AudioSamplesSource(mSampleRate, mSampleSize, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream()
         val noise = Noise.real(mSampleSize)
 
         mRecordingHandler.postDelayed({

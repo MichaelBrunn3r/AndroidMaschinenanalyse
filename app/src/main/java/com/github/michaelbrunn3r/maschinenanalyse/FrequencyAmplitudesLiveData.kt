@@ -2,11 +2,13 @@ package com.github.michaelbrunn3r.maschinenanalyse
 
 import androidx.lifecycle.LiveData
 import com.paramsen.noise.Noise
+import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class AudioAmplitudesLiveData(var mAudioSampleSource:AudioSampleSource) : LiveData<FloatArray>() {
+class FrequencyAmplitudesLiveData : LiveData<FloatArray>() {
 
+    private var mSamplesSource:Flowable<ShortArray>? = null
     private val mDisposable: CompositeDisposable = CompositeDisposable()
     private var mOnSamplingStateChangedListener : ((Boolean) -> Unit)? = null
     var isSampling:Boolean = false
@@ -32,19 +34,17 @@ class AudioAmplitudesLiveData(var mAudioSampleSource:AudioSampleSource) : LiveDa
         else stopSampling()
     }
 
+    fun setSamplesSource(sampleSource:Flowable<ShortArray>) {
+        mSamplesSource = sampleSource
+    }
+
     private fun startSampling() {
-        if(mDisposable.size() != 0) return
+        if(mDisposable.size() != 0 || mSamplesSource == null) return
 
-        val noise = Noise.real(mAudioSampleSource.samples)
-
-        mDisposable.add(mAudioSampleSource.stream().observeOn(Schedulers.newThread())
-            .map { samples ->
-                return@map noise.fft(shortArrToFloatArr(samples), FloatArray(samples.size+2))
-            }.map {fft ->
-                return@map calcFFTMagnitudes(fft)
-            }.subscribe{ audioAmplitudes ->
-                postValue(audioAmplitudes)
-            })
+        mDisposable.add(FrequencyAmplitudesSource(mSamplesSource!!).stream().observeOn(Schedulers.newThread())
+                .subscribe {audioAmplitudes ->
+                    postValue(audioAmplitudes)
+                })
 
         isSampling = true
     }
@@ -56,6 +56,21 @@ class AudioAmplitudesLiveData(var mAudioSampleSource:AudioSampleSource) : LiveDa
     private fun stopSampling() {
         mDisposable.clear()
         isSampling = false
+    }
+}
+
+class FrequencyAmplitudesSource(val sampleSource:Flowable<ShortArray>) {
+
+    private var mNoise: Noise? = null
+
+    fun stream() : Flowable<FloatArray> {
+        return sampleSource.map {samples ->
+            if(mNoise == null) mNoise = Noise.real(samples.size)
+
+            val fft = FloatArray(samples.size+2)
+            mNoise!!.fft(shortArrToFloatArr(samples), fft)
+            return@map calcFFTMagnitudes(fft)
+        }
     }
 
     private fun shortArrToFloatArr(shortArr:ShortArray): FloatArray {

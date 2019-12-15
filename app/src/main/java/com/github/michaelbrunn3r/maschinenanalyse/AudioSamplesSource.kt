@@ -6,11 +6,11 @@ import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
 import java.lang.RuntimeException
 
-class AudioSampleSource(var sampleRate:Int, var samples:Int, var audioSrc:Int, var channelCfg:Int, var audioFormat:Int) {
-    private val flowable: Flowable<ShortArray>
+class AudioSamplesSource(var sampleRate:Int, var samples:Int, var audioSrc:Int, var channelCfg:Int, var audioFormat:Int) {
+    private val mFlowable: Flowable<ShortArray>
 
     init {
-        flowable = Flowable.create<ShortArray>({emitter ->
+        mFlowable = Flowable.create<ShortArray>({ emitter ->
 
             val minAudioBufSizeInBytes = AudioRecord.getMinBufferSize(sampleRate, channelCfg, audioFormat)
 
@@ -48,6 +48,6 @@ class AudioSampleSource(var sampleRate:Int, var samples:Int, var audioSrc:Int, v
     }
 
     fun stream(): Flowable<ShortArray> {
-        return flowable
+        return mFlowable
     }
 }
