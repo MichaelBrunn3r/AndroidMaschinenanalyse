@@ -94,12 +94,13 @@ class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(context,
                 data.addDataSet(set)
             }
 
-            if(set.entryCount < magnitudes.size) {
-                for(i in 0 until magnitudes.size) {
+            if(set.entryCount != magnitudes.size) {
+                set.clear()
+                for(i in magnitudes.indices) {
                     data.addEntry(Entry(frequenzyForIndex(i), magnitudes[i]), 0)
                 }
             } else {
-                for(i in 0 until magnitudes.size) {
+                for(i in magnitudes.indices) {
                     set.getEntryForIndex(i).y = magnitudes[i]
                 }
             }

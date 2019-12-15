@@ -36,6 +36,10 @@ class FrequencyAmplitudesLiveData : LiveData<FloatArray>() {
 
     fun setSamplesSource(sampleSource:Flowable<ShortArray>) {
         mSamplesSource = sampleSource
+        mDisposable.clear()
+        if(isSampling) {
+            startSampling()
+        }
     }
 
     private fun startSampling() {

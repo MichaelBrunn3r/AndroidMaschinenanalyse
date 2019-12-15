@@ -22,13 +22,13 @@ class MonitorFragment : Fragment(), Toolbar.OnMenuItemClickListener {
     private lateinit var mNavController: NavController
     private lateinit var mToolbar: Toolbar
 
-    private var mAudioSpectrogram: SpectrogramView? = null
-    private var mAccelSpectrogram: SpectrogramView? = null
+    private lateinit var mAudioSpectrogram: SpectrogramView
+    private lateinit var mAccelSpectrogram: SpectrogramView
 
     private var mAudioSampleRate = 44100
     private var mAudioSampleSize = 4096
 
-    private var mAudioAmplitudesSource: FrequencyAmplitudesLiveData? = null
+    private var mAudioAmplitudesSource = FrequencyAmplitudesLiveData()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_monitor, container, false)
@@ -60,11 +60,10 @@ class MonitorFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         super.onActivityCreated(savedInstanceState)
 
         if(requestAudioPermissions()) {
-            mAudioAmplitudesSource = FrequencyAmplitudesLiveData()
-            mAudioAmplitudesSource!!.observe(this, Observer { audioAmplitudes ->
-                mAudioSpectrogram?.update(audioAmplitudes) { index -> fftFrequenzyBin(index, mAudioSampleRate, mAudioSampleSize)}
+            mAudioAmplitudesSource.observe(this, Observer { audioAmplitudes ->
+                mAudioSpectrogram.update(audioAmplitudes) { index -> fftFrequenzyBin(index, mAudioSampleRate, mAudioSampleSize)}
             })
-            mAudioAmplitudesSource!!.setOnSamplingStateChangedListener { isSampling ->
+            mAudioAmplitudesSource.setOnSamplingStateChangedListener { isSampling ->
                 val startStopMenuItem: MenuItem? = mToolbar.menu?.findItem(R.id.miStartStop)
                 if(isSampling) startStopMenuItem?.icon = resources.getDrawable(R.drawable.pause_btn, activity!!.theme)
                 else startStopMenuItem?.icon = resources.getDrawable(R.drawable.play_btn, activity!!.theme)
@@ -72,10 +71,8 @@ class MonitorFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         }
 
         if(savedInstanceState != null) {
-            mAudioAmplitudesSource?.setSamplingState(savedInstanceState.getBoolean("isSampling", false))
-            if(savedInstanceState.getBoolean("isToolbarHidden", false)) {
-                toggleToolbar()
-            }
+            mAudioAmplitudesSource.setSamplingState(savedInstanceState.getBoolean("isSampling", false))
+            if(savedInstanceState.getBoolean("isToolbarHidden", false)) toggleToolbar()
         }
     }
 
@@ -84,14 +81,14 @@ class MonitorFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         mAudioSampleSize = preferences.getString("fftAudioSamples", "4096")!!.toInt()
-        mAudioSpectrogram?.setFrequencyRange(0f, (mAudioSampleRate/2).toFloat())
+        mAudioSpectrogram.setFrequencyRange(0f, (mAudioSampleRate/2).toFloat())
 
-        mAudioAmplitudesSource?.setSamplesSource(AudioSamplesSource(mAudioSampleRate, mAudioSampleSize, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream())
+        mAudioAmplitudesSource.setSamplesSource(AudioSamplesSource(mAudioSampleRate, mAudioSampleSize, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream())
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean("isSampling", mAudioAmplitudesSource?.isSampling?: false)
+        outState.putBoolean("isSampling", mAudioAmplitudesSource.isSampling)
         outState.putBoolean("isToolbarHidden", mToolbar.visibility != View.VISIBLE)
     }
 
@@ -102,7 +99,7 @@ class MonitorFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 return true
             }
             R.id.miStartStop -> {
-                mAudioAmplitudesSource?.setSamplingState(!(mAudioAmplitudesSource!!.isSampling))
+                mAudioAmplitudesSource.setSamplingState(!(mAudioAmplitudesSource.isSampling))
             }
         }
         return false
