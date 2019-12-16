@@ -15,7 +15,7 @@
         android:orientation="vertical"
         app:maxShortClickDurationMs="300">
 
-        <com.github.michaelbrunn3r.maschinenanalyse.SpectrogramView
+        <com.github.michaelbrunn3r.maschinenanalyse.RealtimeLinearView
             android:id="@+id/chartAccel"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -30,7 +30,7 @@
             app:viewPortOffsetBottom="10"
             app:viewPortOffsetLeft="80"
             app:viewPortOffsetRight="0"
-            app:viewPortOffsetTop="50" />
+            app:viewPortOffsetTop="10" />
 
         <com.github.michaelbrunn3r.maschinenanalyse.SpectrogramView
             android:id="@+id/chartAudio"

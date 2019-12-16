@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="SpectrogramView">
+    <declare-styleable name="MPAndroidChart">
         <!-- Interaction -->
         <attr name="enableScaling">
             <flag name="none" value="0"/>

@@ -12,7 +12,7 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.LargeValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 
-class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(context, attrs) {
+class RealtimeLinearView(context: Context, attrs: AttributeSet): LineChart(context, attrs) {
 
     private var mGraphColor = Color.BLACK
     private var mGraphLineWidth:Float = 1f
@@ -25,14 +25,13 @@ class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(context,
         isDragEnabled = false
         setPinchZoom(false)
 
+        isAutoScaleMinMaxEnabled = true
+
         xAxis.textColor = ContextCompat.getColor(context, R.color.colorTextOnPrimary)
-        xAxis.valueFormatter = LargeValueFormatter("Hz")
-        setFrequencyRange(0f, 4096.toFloat()/2) // Default Value
+        xAxis.setDrawLabels(false)
 
         axisLeft.axisMinimum = 0f
-        axisLeft.axisMaximum = 300f
         axisLeft.textColor = ContextCompat.getColor(context, R.color.colorTextOnPrimary)
-        axisLeft.valueFormatter = LargeValueFormatter()
 
         axisRight.isEnabled = false
 
@@ -70,43 +69,29 @@ class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(context,
 
             // Axis
             xAxis.setDrawGridLines(isFlagSet(getInt(R.styleable.MPAndroidChart_drawGridLines, FLAG_DRAW_GRID_LINES_BOTH), FLAG_DRAW_GRID_LINES_X))
-            xAxis.setDrawLabels(isFlagSet(getInt(R.styleable.MPAndroidChart_drawLabels, FLAG_DRAW_LABELS_BOTH), FLAG_DRAW_LABELS_X))
-            xAxis.setAvoidFirstLastClipping(true)
 
             axisLeft.setDrawGridLines(isFlagSet(getInt(R.styleable.MPAndroidChart_drawGridLines, FLAG_DRAW_GRID_LINES_BOTH), FLAG_DRAW_GRID_LINES_Y))
             axisLeft.setDrawLabels(isFlagSet(getInt(R.styleable.MPAndroidChart_drawLabels, FLAG_DRAW_LABELS_BOTH), FLAG_DRAW_LABELS_Y))
         }
-    }
 
-    fun setFrequencyRange(min:Float, max:Float) {
-        xAxis.axisMinimum = min
-        xAxis.axisMaximum = max
-        data.clearValues()
+        data.addDataSet(createSet())
+        for(i in 0 until 500) {
+            data.addEntry(Entry(i.toFloat(), 0f), 0)
+        }
         invalidate()
     }
 
     @Synchronized
-    fun update(magnitudes:FloatArray, frequenzyForIndex: (index:Int) -> Float) {
+    fun update(value:Float) {
         if(data != null) {
-            var set: ILineDataSet? = data.getDataSetByIndex(0)
-            if(set == null) {
-                set = createSet()
-                data.addDataSet(set)
-            }
+            val set: ILineDataSet = data.getDataSetByIndex(0)
 
-            if(set.entryCount != magnitudes.size) {
-                set.clear()
-                for(i in magnitudes.indices) {
-                    data.addEntry(Entry(frequenzyForIndex(i), magnitudes[i]), 0)
-                }
-            } else {
-                for(i in magnitudes.indices) {
-                    set.getEntryForIndex(i).y = magnitudes[i]
-                }
+            for(i in 0 until set.entryCount-1) {
+                set.getEntryForIndex(i).y = set.getEntryForIndex(i+1).y
             }
+            set.getEntryForIndex(set.entryCount -1).y = value
 
             data.notifyDataChanged()
-
             notifyDataSetChanged()
             invalidate()
         }
