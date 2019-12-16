@@ -1,5 +1,10 @@
 package com.github.michaelbrunn3r.maschinenanalyse
 
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.media.AudioFormat
 import android.media.MediaRecorder
 import android.os.Bundle
@@ -8,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -16,8 +22,10 @@ import androidx.preference.PreferenceManager
 import com.paramsen.noise.Noise
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlin.math.pow
+import kotlin.math.sqrt
 
-class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener {
+class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventListener {
 
     private lateinit var mNavController: NavController
     private lateinit var mToolbar: Toolbar
@@ -32,6 +40,15 @@ class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener {
     private var mRecordingBuffer:FloatArray? = null
 
     private lateinit var mAudioSpectrogram: SpectrogramView
+
+    private lateinit var mAccelMeanView: TextView
+
+    private var mSensorManager: SensorManager? = null
+    private var mAccelerometer: Sensor? = null
+    private var mRecordedAccelSamples = 0
+    private var mAccelBuffer = 0f
+    private var mAccelLastVal = 0f
+    private var mMaxCooldown = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_record, container, false)
@@ -52,7 +69,16 @@ class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         mToolbar.setOnMenuItemClickListener(this)
 
         mAudioSpectrogram = view.findViewById(R.id.chartRecordedFrequencies)
-        mAudioSpectrogram?.setFrequencyRange(0f, (mSampleRate/2).toFloat())
+        mAudioSpectrogram.setFrequencyRange(0f, (mSampleRate/2).toFloat())
+
+        mAccelMeanView = view.findViewById(R.id.meanAccel)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        mSensorManager = activity?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        mAccelerometer = mSensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
     }
 
     override fun onResume() {
@@ -77,9 +103,34 @@ class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         return false
     }
 
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        if(event != null) {
+            when(event.sensor.type) {
+                Sensor.TYPE_ACCELEROMETER -> {
+                    val v = sqrt(event.values[0].pow(2) + event.values[1].pow(2) + event.values[2].pow(2)) - 9.81f
+                    if(v > 0 && v < mAccelLastVal && !mMaxCooldown) {
+                        mRecordedAccelSamples++
+                        mAccelBuffer += mAccelLastVal
+                        mMaxCooldown = true
+                    }
+                    if(v > mAccelLastVal) mMaxCooldown = false
+                    mAccelLastVal = v
+                }
+            }
+        }
+    }
+
     private fun startRecording() {
         if(mIsRecording || mDisposable.size() != 0) return
         setRecordBtnState(true)
+
+        mAccelBuffer = 0f
+        mRecordedAccelSamples = 0
+        mSensorManager?.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME)
 
         val audioSrc = AudioSamplesSource(mSampleRate, mSampleSize, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream()
         val noise = Noise.real(mSampleSize)
@@ -120,6 +171,9 @@ class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         }
 
         mAudioSpectrogram.update(mRecordingBuffer!!) { index -> fftFrequenzyBin(index, mSampleRate, mSampleSize)}
+
+        mAccelMeanView.text = (mAccelBuffer/mRecordedAccelSamples).toString()
+        mSensorManager?.unregisterListener(this)
     }
 
     private fun setRecordBtnState(isSampling: Boolean) {

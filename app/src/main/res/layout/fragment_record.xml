@@ -7,6 +7,22 @@
 
     <include layout="@layout/app_bar" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mean Acceleration: " />
+
+        <TextView
+            android:id="@+id/meanAccel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
     <com.github.michaelbrunn3r.maschinenanalyse.SpectrogramView
         android:id="@+id/chartRecordedFrequencies"
         android:layout_width="match_parent"
