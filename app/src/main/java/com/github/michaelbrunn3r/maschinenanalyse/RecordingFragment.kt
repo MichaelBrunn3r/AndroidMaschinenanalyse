@@ -16,9 +16,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.preference.PreferenceManager
+import androidx.room.Room
 import com.paramsen.noise.Noise
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -50,6 +54,8 @@ class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEve
     private var mAccelLastVal = 0f
     private var mMaxCooldown = false
 
+    private lateinit var mMachineanalysisViewModel: MachineanalysisViewModel
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_record, container, false)
     }
@@ -79,6 +85,10 @@ class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEve
 
         mSensorManager = activity?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         mAccelerometer = mSensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+
+        mMachineanalysisViewModel = activity?.run {
+            ViewModelProviders.of(this)[MachineanalysisViewModel::class.java]
+        } ?: throw Exception("Invalid Activity")
     }
 
     override fun onResume() {
