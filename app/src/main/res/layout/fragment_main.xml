@@ -10,21 +10,24 @@
         layout="@layout/app_bar" />
 
     <Button
-        android:id="@+id/btn_nav_to_recording"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/title_monitor_fragment"
-
-    <Button
         android:id="@+id/btn_nav_to_monitor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/title_monitor_fragment"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <Button
+        android:id="@+id/btn_nav_to_recording"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="@string/title_record_fragment"
+        app:layout_constraintTop_toBottomOf="@+id/btn_nav_to_monitor" />
 
     <Button
         android:id="@+id/btn_nav_to_recordings_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/title_recording_list"
+        app:layout_constraintTop_toBottomOf="@+id/btn_nav_to_recording" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

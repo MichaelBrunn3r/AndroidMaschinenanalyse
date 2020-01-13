@@ -32,7 +32,7 @@
     </fragment>
     <fragment
         android:id="@+id/recordingFragment"
-        android:name="com.github.michaelbrunn3r.maschinenanalyse.RecordingFragment"
+        android:name="com.github.michaelbrunn3r.maschinenanalyse.RecordFragment"
         android:label="RecordingFragment">
         <action
             android:id="@+id/action_recordingFragment_to_settingsFragment"
@@ -55,5 +55,13 @@
     <fragment
         android:id="@+id/recordingsListFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.RecordingsListFragment"
-        android:label="RecordingsListFragment" />
+        android:label="RecordingsListFragment" >
+        <action
+            android:id="@+id/action_recordingsListFragment_to_recordingDetailsFragment"
+            app:destination="@id/recordingDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/recordingDetailsFragment"
+        android:name="com.github.michaelbrunn3r.maschinenanalyse.RecordingDetailsFragment"
+        android:label="RecordingDetailsFragment" />
 </navigation>

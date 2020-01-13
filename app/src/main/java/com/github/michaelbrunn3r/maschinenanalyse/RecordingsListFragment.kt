@@ -6,11 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -36,9 +38,14 @@ class RecordingsListFragment: Fragment() {
         }
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerview)
-        val adapter = RecordingListAdapter(context!!)
+        val adapter = RecordingListAdapter(context!!, mNavController, object : RecordingListAdapter.RecordingClickedListener {
+            override fun onClicked(idx: Int) {
+                mNavController.navigate(R.id.action_recordingsListFragment_to_recordingDetailsFragment)
+            }
+        })
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context!!)
+        recyclerView.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
 
         mMachineanalysisViewModel = ViewModelProviders.of(this)[MachineanalysisViewModel::class.java]
         mMachineanalysisViewModel.recordings.observe(this, Observer { recordings ->
@@ -47,27 +54,36 @@ class RecordingsListFragment: Fragment() {
     }
 }
 
-class RecordingListAdapter internal constructor(context: Context) : RecyclerView.Adapter<RecordingListAdapter.RecordingViewHolder>() {
+class RecordingListAdapter internal constructor(context: Context, navController:NavController, val recordingListener:RecordingClickedListener) : RecyclerView.Adapter<RecordingListAdapter.RecordingViewHolder>() {
 
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
     private var mRecordings = emptyList<Recording>() // Cached Recordings
 
-    inner class RecordingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class RecordingViewHolder(itemView: View, l:RecordingClickedListener) : RecyclerView.ViewHolder(itemView) {
         val nameView: TextView = itemView.findViewById(R.id.name)
         val sampleRateView: TextView = itemView.findViewById(R.id.sample_rate)
         val sampleSizeView: TextView = itemView.findViewById(R.id.sample_size)
+
+        init {
+            itemView.setOnClickListener {
+                l.onClicked(adapterPosition)
+            }
+        }
+
+        fun bind(recording:Recording) {
+            nameView.text = recording.name
+            sampleRateView.text = recording.audioSampleRate.toString()
+            sampleSizeView.text = recording.audioFFTSamples.toString()
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecordingViewHolder {
-        val itemView = mInflater.inflate(R.layout.item_recording, parent, false)
-        return RecordingViewHolder(itemView)
+        val itemView:View = mInflater.inflate(R.layout.item_recording, parent, false)
+        return RecordingViewHolder(itemView, recordingListener)
     }
 
     override fun onBindViewHolder(holder: RecordingViewHolder, position: Int) {
-        val current = mRecordings[position]
-        holder.nameView.text = current.name
-        holder.sampleRateView.text = current.audioSampleRate.toString()
-        holder.sampleSizeView.text = current.audioFFTSamples.toString()
+        holder.bind(mRecordings[position])
     }
 
     override fun getItemCount() = mRecordings.size
@@ -75,5 +91,9 @@ class RecordingListAdapter internal constructor(context: Context) : RecyclerView
     internal fun setRecordings(recordings: List<Recording>) {
         mRecordings = recordings
         notifyDataSetChanged()
+    }
+
+    interface RecordingClickedListener {
+        fun onClicked(idx:Int)
     }
 }
