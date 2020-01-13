@@ -6,7 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/app_bar" />
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/app_bar" />
 
     <com.github.michaelbrunn3r.maschinenanalyse.TouchOverlay
         android:id="@+id/touchOverlay"
@@ -20,11 +22,11 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.5"
-            app:bgColor="@color/colorPrimaryDark"
+            app:bgColor="@color/surfaceDark"
             app:drawGridLines="xAxis|yAxis"
             app:enableDragging="yAxis|xAxis"
             app:enableScaling="yAxis|xAxis"
-            app:graphColor="@color/colorAccent"
+            app:graphColor="@color/accent"
             app:graphWidth="0.8dp"
             app:showLegend="false"
             app:viewPortOffsetBottom="10"
@@ -37,11 +39,11 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.5"
-            app:bgColor="@color/colorPrimaryDark"
+            app:bgColor="@color/surfaceDark"
             app:drawGridLines="xAxis|yAxis"
             app:enableDragging="yAxis|xAxis"
             app:enableScaling="yAxis|xAxis"
-            app:graphColor="@color/colorAccent"
+            app:graphColor="@color/accent"
             app:graphWidth="0.8dp"
             app:showLegend="false"
             app:viewPortOffsetBottom="10"
