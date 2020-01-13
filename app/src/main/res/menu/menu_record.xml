@@ -4,6 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/miSaveRecording"
+        app:showAsAction="always"
+        android:icon="@drawable/save"
+        android:title="Save" />
+
+    <item
         android:id="@+id/miRecord"
         app:showAsAction="always"
         android:icon="@drawable/record"

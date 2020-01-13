@@ -45,6 +45,7 @@ class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEve
 
     private lateinit var mAudioSpectrogram: SpectrogramView
 
+    private var mAccelMean:Float = 0f
     private lateinit var mAccelMeanView: TextView
 
     private var mSensorManager: SensorManager? = null
@@ -109,6 +110,14 @@ class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEve
                 startRecording()
                 return true
             }
+            R.id.miSaveRecording -> {
+                if(mRecordingBuffer != null) {
+                    val s:String = mRecordingBuffer!!.joinToString(separator = ";") { it -> "${it}" }
+                    mMachineanalysisViewModel.insert(Recording(0, "test", mSampleRate, mSampleSize, mAccelMean, s))
+                    println("Aufnahme gespeichert")
+                }
+
+            }
         }
         return false
     }
@@ -138,17 +147,24 @@ class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEve
         if(mIsRecording || mDisposable.size() != 0) return
         setRecordBtnState(true)
 
+        /*
+            Start Accelerometer Recording
+        */
         mAccelBuffer = 0f
         mRecordedAccelSamples = 0
         mSensorManager?.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME)
 
+        /*
+            Start Audio Recording
+        */
         val audioSrc = AudioSamplesSource(mSampleRate, mSampleSize, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream()
         val noise = Noise.real(mSampleSize)
 
+        val recordingDuration = 10000L
         mRecordingHandler.postDelayed({
             println("Stopping recording")
             stopRecording()
-        }, 10000)
+        }, recordingDuration)
 
         mNumRecordedFrames = 0
         mRecordingBuffer = FloatArray(mSampleSize+2)
@@ -174,6 +190,7 @@ class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEve
         setRecordBtnState(false)
         mDisposable.clear()
 
+        // Calculate mean for each amplitude
         if(mRecordingBuffer != null) {
             for(i in mRecordingBuffer!!.indices) {
                 mRecordingBuffer!![i] = mRecordingBuffer!![i] / mNumRecordedFrames
@@ -182,7 +199,8 @@ class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEve
 
         mAudioSpectrogram.update(mRecordingBuffer!!) { index -> fftFrequenzyBin(index, mSampleRate, mSampleSize)}
 
-        mAccelMeanView.text = (mAccelBuffer/mRecordedAccelSamples).toString()
+        mAccelMean = mAccelBuffer/mRecordedAccelSamples
+        mAccelMeanView.text = mAccelMean.toString()
         mSensorManager?.unregisterListener(this)
     }
 
