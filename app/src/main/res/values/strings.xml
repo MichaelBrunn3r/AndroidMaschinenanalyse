@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Maschinentest</string>
     <string name="title_record_fragment">Referenz Aufnehmen</string>
+
+    <string name="recording_sample_rate">Sample Rate:</string>
+    <string name="recording_sample_size">Samples:</string>
+    <string name="recording_sample_rate_placeholder">0</string>
+    <string name="recording_sample_size_placeholder">0</string>
 </resources>

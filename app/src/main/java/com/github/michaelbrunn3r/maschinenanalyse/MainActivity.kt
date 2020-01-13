@@ -37,12 +37,14 @@ class MainFragment : Fragment(), View.OnClickListener, Toolbar.OnMenuItemClickLi
 
         view.findViewById<Button>(R.id.btn_nav_to_recording).setOnClickListener(this)
         view.findViewById<Button>(R.id.btn_nav_to_monitor).setOnClickListener(this)
+        view.findViewById<Button>(R.id.btn_nav_to_recordings_list).setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
         when(v!!.id) {
             R.id.btn_nav_to_recording -> mNavController!!.navigate(R.id.action_mainFragment_to_recordingFragment)
             R.id.btn_nav_to_monitor -> mNavController!!.navigate(R.id.action_mainFragment_to_monitorFragment)
+            R.id.btn_nav_to_recordings_list -> mNavController!!.navigate(R.id.action_mainFragment_to_recordingsListFragment)
         }
     }
 

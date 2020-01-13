@@ -26,6 +26,9 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_mainFragment_to_recordingsListFragment"
+            app:destination="@id/recordingsListFragment" />
     </fragment>
     <fragment
         android:id="@+id/recordingFragment"
@@ -49,4 +52,8 @@
             app:destination="@id/settingsFragment"
             app:enterAnim="@anim/settings_in_bottom" />
     </fragment>
+    <fragment
+        android:id="@+id/recordingsListFragment"
+        android:name="com.github.michaelbrunn3r.maschinenanalyse.RecordingsListFragment"
+        android:label="RecordingsListFragment" />
 </navigation>
