@@ -13,18 +13,18 @@
         android:id="@+id/btn_nav_to_recording"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Aufnahme" />
+        android:text="@string/title_monitor_fragment"
 
     <Button
         android:id="@+id/btn_nav_to_monitor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Monitor" />
+        android:text="@string/title_record_fragment"
 
     <Button
         android:id="@+id/btn_nav_to_recordings_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Liste aller Aufnahmen" />
+        android:text="@string/title_recording_list"
 
 </LinearLayout>

@@ -1,9 +1,13 @@
 <resources>
     <string name="app_name">Maschinentest</string>
-    <string name="title_record_fragment">Referenz Aufnehmen</string>
+    <string name="title_record_fragment">Aufnehmen</string>
+    <string name="title_monitor_fragment">Monitor</string>
+    <string name="title_recording_list">Aufnahmen</string>
 
-    <string name="recording_sample_rate">Sample Rate:</string>
-    <string name="recording_sample_size">Samples:</string>
-    <string name="recording_sample_rate_placeholder">0</string>
-    <string name="recording_sample_size_placeholder">0</string>
+    <string name="number_placeholder">N/A</string>
+
+    <string name="recording_sample_rate">Abtastrate:</string>
+    <string name="recording_sample_size">Abtastungen:</string>
+    <string name="recording_mean_acceleration">Mean Accel:</string>
+
 </resources>
