@@ -29,7 +29,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class RecordingFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventListener {
+class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventListener {
 
     private lateinit var mNavController: NavController
     private lateinit var mToolbar: Toolbar
