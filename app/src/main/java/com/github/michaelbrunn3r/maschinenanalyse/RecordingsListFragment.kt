@@ -9,11 +9,15 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 class RecordingsListFragment: Fragment() {
 
+    private lateinit var mNavController:NavController
+    private lateinit var mToolbar: Toolbar
     private lateinit var mMachineanalysisViewModel: MachineanalysisViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -22,6 +26,14 @@ class RecordingsListFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        mNavController = Navigation.findNavController(view)
+
+        mToolbar = view.findViewById(R.id.toolbar)
+        mToolbar.setNavigationIcon(R.drawable.back)
+        mToolbar.setNavigationOnClickListener {
+            mNavController.navigateUp()
+        }
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerview)
         val adapter = RecordingListAdapter(context!!)
