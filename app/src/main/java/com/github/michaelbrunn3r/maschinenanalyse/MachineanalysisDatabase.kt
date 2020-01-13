@@ -2,26 +2,29 @@ package com.github.michaelbrunn3r.maschinenanalyse
 
 import android.app.Application
 import android.content.Context
+import androidx.annotation.NonNull
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import androidx.room.*
+import androidx.sqlite.db.SupportSQLiteDatabase
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Entity(tableName = "recordings")
 data class Recording(
-    @PrimaryKey(autoGenerate = true) val uid: Int,
-    @ColumnInfo(name = "recording_name") val recordingName: String?,
-    @ColumnInfo(name = "audio_fft_samples") val audioFFTSamples: Int,
-    @ColumnInfo(name = "audio_sample_rate") val audioSampleRate: Int,
-    @ColumnInfo(name = "accel_peak_mean") val accelPeakMean: Float,
-    @ColumnInfo(name = "audio_mean_fft") val audioMeanFFT: String
+        @PrimaryKey(autoGenerate = true) val uid: Int,
+        @NonNull @ColumnInfo(name = "recording_name") val name: String?,
+        @NonNull @ColumnInfo(name = "audio_sample_rate_hz") val audioSampleRate: Int, // Sample rate in Hz
+        @NonNull @ColumnInfo(name = "audio_fft_num_samples") val audioFFTSamples: Int, // Number of Samples per FFT Frame
+        @NonNull @ColumnInfo(name = "accel_peak_mean") val accelPeakMean: Float, // Mean over acceleration intensity peaks
+        @NonNull @ColumnInfo(name = "audio_frequency_amplitude_means") val audioMeanFFT: String // Mean Amplitude per Frequency
 )
 
 @Dao
 interface RecordingDao {
     @Query("SELECT * FROM recordings")
-    fun getAll(): LiveData<List<Recording>>
+    fun getRecordings(): LiveData<List<Recording>>
 
     @Query("SELECT * FROM recordings WHERE recording_name LIKE :name LIMIT 1")
     suspend fun findByName(name: String): Recording
@@ -30,7 +33,10 @@ interface RecordingDao {
     suspend fun insert(recording: Recording)
 
     @Delete
-    fun delete(recording: Recording)
+    suspend fun delete(recording: Recording)
+
+    @Query("DELETE FROM recordings")
+    suspend fun deleteAll()
 }
 
 @Database(entities = arrayOf(Recording::class), version = 1, exportSchema = false)
@@ -59,8 +65,13 @@ abstract class MachineanalysisDatabase : RoomDatabase() {
 }
 
 class MachineanalysisViewModel(application: Application): AndroidViewModel(application) {
-    private var mRecordingsDao = MachineanalysisDatabase.instance(application).recordingDao()
-    var recordings = mRecordingsDao.getAll()
+    private var mRecordingsDao:RecordingDao
+    lateinit var recordings:LiveData<List<Recording>>
+
+    init {
+        mRecordingsDao = MachineanalysisDatabase.instance(application).recordingDao()
+        recordings = mRecordingsDao.getRecordings()
+    }
 
     fun insert(recording: Recording) = viewModelScope.launch {
         mRecordingsDao.insert(recording)
