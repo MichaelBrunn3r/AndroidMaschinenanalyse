@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#37474f</color>
-    <color name="primaryDark">#2F3D44</color>
-    <color name="accent">#ffa726</color>
-    <color name="surfaceDark">#212121</color>
-
-    <color name="textOnPrimary">#ffffff</color>
-    <color name="textOnSurfaceDark">#757577</color>
-
-    <color name="orange">#ffa726</color>
+    <color name="white">#ffffff</color>
+    <color name="boulder">#757575</color>
+    <color name="limed_spruce">#37474f</color>
+    <color name="limed_spruce_dark">#2F3D44</color>
+    <color name="sunshade">#ffa726</color>
+    <color name="mine_shaft">#212121</color>
 </resources>

@@ -1,37 +1,21 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="Theme.App" parent="Theme.AppCompat.NoActionBar">
         <!-- Colors -->
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primaryDark</item> <!-- status bar color -->
-        <item name="colorAccent">@color/accent</item>
+        <item name="colorPrimary">@color/limed_spruce</item>
+        <item name="colorPrimaryDark">@color/limed_spruce_dark</item> <!-- also used by status bar-->
+        <item name="colorAccent">@color/sunshade</item>
 
-        <!-- Text Colors-->
-        <item name="android:textColorPrimary">@color/textOnPrimary</item>
-        <item name="android:textColor">@color/textOnSurfaceDark</item>
-        <item name="actionMenuTextColor">@color/textOnPrimary</item>
+        <item name="android:colorBackground">@color/mine_shaft</item>
+        <item name="android:colorButtonNormal">@color/mine_shaft</item>
 
-        <!-- Other colors -->
-        <item name="android:background">@color/surfaceDark</item>
+        <item name="android:textColorPrimary">@color/white</item> <!--Text color on primary -->
+        <item name="android:textColor">@color/boulder</item> <!-- Standard text color -->
 
-        <item name="toolbarStyle">@style/AppTheme.Toolbar</item>
-        <item name="android:itemTextAppearance">@style/menu_text</item>
-        <item name="buttonStyle">@style/AppTheme.Button</item>
+        <!-- Widgets -->
+        <item name="buttonStyle">@style/Widget.App.Button</item>
     </style>
 
-    <style name="AppTheme.Toolbar" parent="Theme.AppCompat.DayNight.DarkActionBar" >
-        <item name="android:background">@color/primary</item>
-        <item name="android:paddingStart">4dp</item>
-        <item name="android:paddingEnd">4dp</item>
-        <item name="android:textColorPrimary">@color/textOnPrimary</item>
-    </style>
-
-    <style name="menu_text" parent="@android:style/TextAppearance.Widget.IconMenu.Item">
-        <item name="android:textColor">@color/textOnPrimary</item>
-    </style>
-
-    <style name="AppTheme.Button" parent="Widget.AppCompat.Button.Borderless">
-        <item name="android:textAlignment">center</item>
-    </style>
+    <style name="Widget.App.Button" parent="Widget.AppCompat.Button.Borderless"/>
 </resources>

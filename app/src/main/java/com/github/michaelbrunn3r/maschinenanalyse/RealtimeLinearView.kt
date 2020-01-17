@@ -27,11 +27,11 @@ class RealtimeLinearView(context: Context, attrs: AttributeSet): LineChart(conte
 
         isAutoScaleMinMaxEnabled = true
 
-        xAxis.textColor = ContextCompat.getColor(context, R.color.textOnSurfaceDark)
+        xAxis.textColor = ContextCompat.getColor(context, R.color.boulder)
         xAxis.setDrawLabels(false)
 
         axisLeft.axisMinimum = 0f
-        axisLeft.textColor = ContextCompat.getColor(context, R.color.textOnSurfaceDark)
+        axisLeft.textColor = ContextCompat.getColor(context, R.color.boulder)
 
         axisRight.isEnabled = false
 
