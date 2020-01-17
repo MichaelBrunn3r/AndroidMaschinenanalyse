@@ -1,13 +1,16 @@
 package com.github.michaelbrunn3r.maschinenanalyse
 
+import android.Manifest
 import android.app.Dialog
 import android.content.Context
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.media.AudioFormat
 import android.media.MediaRecorder
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.text.InputType
@@ -21,6 +24,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -35,11 +39,6 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
 
     private lateinit var mNavController: NavController
     private lateinit var mToolbar: Toolbar
-
-    private var mSampleRate = 44100
-    private var mSampleSize = 4096
-    private var mIsRecording:Boolean = false
-    private val mDisposable: CompositeDisposable = CompositeDisposable()
 
     private var mRecordingHandler:Handler = Handler()
     private var mNumRecordedFrames = 0
@@ -56,6 +55,11 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
     private var mAccelBuffer = 0f
     private var mAccelLastVal = 0f
     private var mMaxCooldown = false
+
+    private var mAudioSampleRate = 44100
+    private var mNumAudioSamples = 4096
+    private var mAudioAmplitudesSource = FrequencyAmplitudesLiveData()
+    private var mIsRecording:Boolean = false
 
     private lateinit var mMachineanalysisViewModel: MachineanalysisViewModel
 
@@ -78,8 +82,6 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
         mToolbar.setOnMenuItemClickListener(this)
 
         mAudioSpectrogram = view.findViewById(R.id.chartRecordedFrequencies)
-        mAudioSpectrogram.setFrequencyRange(0f, (mSampleRate/2).toFloat())
-
         mAccelMeanView = view.findViewById(R.id.meanAccel)
     }
 
@@ -92,14 +94,26 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
         mMachineanalysisViewModel = activity?.run {
             ViewModelProviders.of(this)[MachineanalysisViewModel::class.java]
         } ?: throw Exception("Invalid Activity")
+
+        if(requestAudioPermissions()) {
+            mAudioAmplitudesSource.observe(this, Observer { audioAmplitudes ->
+                mNumRecordedFrames++
+                for(i in audioAmplitudes.indices) {
+                    mRecordingBuffer!![i] += audioAmplitudes[i]
+                }
+            })
+        }
     }
 
     override fun onResume() {
         super.onResume()
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-        mSampleSize = preferences.getString("fftAudioSamples", "4096")!!.toInt()
-        mSampleRate = preferences.getString("fftSampleRate", "44100")!!.toInt()
+        mAudioSampleRate = preferences.getString("fftSampleRate", "44100")!!.toInt()
+        mNumAudioSamples = preferences.getString("fftAudioSamples", "4096")!!.toInt()
+
+        mAudioSpectrogram.setFrequencyRange(0f, (mAudioSampleRate/2).toFloat())
+        mAudioAmplitudesSource.setSamplesSource(AudioSamplesSource(mAudioSampleRate, mNumAudioSamples, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream())
     }
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
@@ -142,64 +156,48 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
     }
 
     private fun startRecording() {
-        if(mIsRecording || mDisposable.size() != 0) return
+        if(mIsRecording) return
         setRecordBtnState(true)
 
-        /*
-            Start Accelerometer Recording
-        */
+        // Start Accelerometer Recording
         mAccelBuffer = 0f
         mRecordedAccelSamples = 0
         mSensorManager?.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME)
 
-        /*
-            Start Audio Recording
-        */
-        val audioSrc = AudioSamplesSource(mSampleRate, mSampleSize, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream()
-        val noise = Noise.real(mSampleSize)
+        // Start Audio Recording
+        mNumRecordedFrames = 0
+        mRecordingBuffer = FloatArray(mNumAudioSamples+2)
+        mAudioAmplitudesSource.setSamplingState(true)
 
-        val recordingDuration = 10000L
+        // Start Timer
+        val recordingDuration = 10000L // in ms
         mRecordingHandler.postDelayed({
-            println("Stopping recording")
             stopRecording()
         }, recordingDuration)
-
-        mNumRecordedFrames = 0
-        mRecordingBuffer = FloatArray(mSampleSize+2)
-
-        mDisposable.add(audioSrc.observeOn(Schedulers.newThread())
-            .map { samples ->
-                var arr = FloatArray(samples.size)
-                for(i in 0 until samples.size) {
-                    arr[i] = samples[i].toFloat()
-                }
-                return@map noise.fft(arr, FloatArray(mSampleSize+2))
-            }.map {fft ->
-                return@map calcFFTMagnitudes(fft)
-            }.subscribe{ magnitudes ->
-                mNumRecordedFrames++
-                for(i in magnitudes.indices) {
-                    mRecordingBuffer!![i] += magnitudes[i]
-                }
-            })
     }
 
     private fun stopRecording() {
         setRecordBtnState(false)
-        mDisposable.clear()
 
-        // Calculate mean for each amplitude
+        // Stop recording
+        mSensorManager?.unregisterListener(this)
+        mAudioAmplitudesSource.setSamplingState(false)
+
+        // Calculate amplitudes mean
         if(mRecordingBuffer != null) {
             for(i in mRecordingBuffer!!.indices) {
                 mRecordingBuffer!![i] = mRecordingBuffer!![i] / mNumRecordedFrames
             }
         }
 
-        mAudioSpectrogram.update(mRecordingBuffer!!) { index -> fftFrequenzyBin(index, mSampleRate, mSampleSize)}
-
+        // Calculate acceleration mean
         mAccelMean = if(mRecordedAccelSamples > 0) mAccelBuffer/mRecordedAccelSamples else 0.0f
+
+        // Show amplitudes mean
+        mAudioSpectrogram.update(mRecordingBuffer!!) { index -> fftFrequenzyBin(index, mAudioSampleRate, mNumAudioSamples)}
+
+        // Show acceleration mean
         mAccelMeanView.text = mAccelMean.toString()
-        mSensorManager?.unregisterListener(this)
     }
 
     private fun setRecordBtnState(isSampling: Boolean) {
@@ -214,9 +212,18 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
         SaveRecordingAsDialogFragment { dialog ->
             if(mRecordingBuffer != null) {
                 val s: String = mRecordingBuffer!!.joinToString(separator = ";") { "$it" }
-                mMachineanalysisViewModel.insert(Recording(0, dialog.recordingName, mSampleRate, mSampleSize, mAccelMean, s))
+                mMachineanalysisViewModel.insert(Recording(0, dialog.recordingName, mAudioSampleRate, mNumAudioSamples, mAccelMean, s))
             }
         }.show(fragmentManager!!, "saveRecordingAs")
+    }
+
+    private fun requestAudioPermissions():Boolean {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && activity!!.checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 1234)
+            println("No Audio Permission granted")
+            return false
+        }
+        return true
     }
 }
 
