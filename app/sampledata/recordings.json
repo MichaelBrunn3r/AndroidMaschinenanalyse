@@ -1,0 +1,25 @@
+{
+    "comment": "",
+    "recordings":[
+        {
+            "name": "Anomaly1",
+            "sample_rate": 44100,
+            "sample_size": 4096
+        },
+        {
+            "name": "Normal Operation",
+            "sample_rate": 44100,
+            "sample_size": 4096
+        },
+        {
+            "name": "Samsung",
+            "sample_rate": 44100,
+            "sample_size": 512
+        },
+        {
+            "name": "High Frequency",
+            "sample_rate": 44100,
+            "sample_size": 512
+        }
+    ]
+}
