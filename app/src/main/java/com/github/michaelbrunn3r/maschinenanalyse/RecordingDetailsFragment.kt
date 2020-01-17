@@ -1,7 +1,9 @@
 package com.github.michaelbrunn3r.maschinenanalyse
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -12,13 +14,16 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
+import org.json.JSONArray
+import org.json.JSONObject
 
-class RecordingDetailsFragment : Fragment() {
+class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
     private lateinit var mNavController: NavController
     private val mNavArgs:RecordingDetailsFragmentArgs by navArgs()
     private lateinit var mToolbar: Toolbar
     private lateinit var mMachineanalysisViewModel: MachineanalysisViewModel
+    private var mRecording: Recording? = null
 
     private lateinit var mNameView: TextView
     private lateinit var mSampleRateView: TextView
@@ -40,6 +45,9 @@ class RecordingDetailsFragment : Fragment() {
         mToolbar.setNavigationOnClickListener {
             mNavController.navigateUp()
         }
+        mToolbar.inflateMenu(R.menu.menu_record_details)
+        mToolbar.setOnMenuItemClickListener(this)
+
 
         mNameView = view.findViewById(R.id.name)
         mSampleRateView = view.findViewById(R.id.sample_rate)
@@ -52,10 +60,23 @@ class RecordingDetailsFragment : Fragment() {
             println("There are ${recordings.size} recordings and I show index ${mNavArgs.recordingId}")
             for(r:Recording in recordings) {
                 if(r.uid == mNavArgs.recordingId) {
+                    mRecording = r
                     populate(r)
                 }
             }
         })
+    }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        when(item?.itemId) {
+            R.id.miShare -> {
+                if(mRecording != null) {
+                    shareRecording(mRecording!!)
+                }
+                return true
+            }
+        }
+        return false
     }
 
     fun populate(recording:Recording) {
@@ -67,5 +88,34 @@ class RecordingDetailsFragment : Fragment() {
 
         val chartData = recording.audioMeanFFT.split(';').map{it.toFloat()}.toFloatArray()
         mChart.update(chartData) { index -> fftFrequenzyBin(index, recording.audioSampleRate, recording.audioFFTSamples)}
+    }
+
+    fun convertRecordingToJSON(recording: Recording): JSONObject {
+        val r = JSONObject()
+        r.put("name", recording.name)
+        r.put("sampleRate", recording.audioSampleRate)
+        r.put("samples", recording.audioFFTSamples)
+        r.put("accelMean", recording.accelPeakMean)
+
+        val frequencies = JSONArray()
+        for(f:Float in recording.audioMeanFFT.split(';').map{it.toFloat()}) {
+            frequencies.put(f)
+        }
+
+        r.put("meanFFT", frequencies)
+        return r
+    }
+
+    fun shareRecording(recording: Recording) {
+        val json = convertRecordingToJSON(recording)
+
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, json.toString())
+            type = "text/json"
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
     }
 }
