@@ -29,9 +29,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.preference.PreferenceManager
-import com.paramsen.noise.Noise
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -62,6 +59,8 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
     private var mIsRecording:Boolean = false
 
     private lateinit var mMachineanalysisViewModel: MachineanalysisViewModel
+
+    private var mRecordingDurationMs = 5000L // Recording Duration in Milliseconds
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_record, container, false)
@@ -111,6 +110,7 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         mAudioSampleRate = preferences.getString("fftSampleRate", "44100")!!.toInt()
         mNumAudioSamples = preferences.getString("fftAudioSamples", "4096")!!.toInt()
+        mRecordingDurationMs = preferences.getString("recordingDuration", "4096")!!.toLong()
 
         mAudioSpectrogram.setFrequencyRange(0f, (mAudioSampleRate/2).toFloat())
         mAudioAmplitudesSource.setSamplesSource(AudioSamplesSource(mAudioSampleRate, mNumAudioSamples, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream())
@@ -170,10 +170,9 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
         mAudioAmplitudesSource.setSamplingState(true)
 
         // Start Timer
-        val recordingDuration = 10000L // in ms
         mRecordingHandler.postDelayed({
             stopRecording()
-        }, recordingDuration)
+        }, mRecordingDurationMs)
     }
 
     private fun stopRecording() {

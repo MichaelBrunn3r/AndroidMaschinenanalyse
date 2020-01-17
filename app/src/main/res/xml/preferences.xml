@@ -14,7 +14,7 @@
         android:key="recordingDuration"
         app:title="Recording Duration (Seconds)"
         app:summary="Length of recordings"
-        android:defaultValue="10" />
+        android:defaultValue="10000" />
 
     <EditTextPreference
         android:key="compTimeWindow"
