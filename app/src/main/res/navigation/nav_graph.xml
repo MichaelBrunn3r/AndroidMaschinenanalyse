@@ -63,5 +63,9 @@
     <fragment
         android:id="@+id/recordingDetailsFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.RecordingDetailsFragment"
-        android:label="RecordingDetailsFragment" />
+        android:label="RecordingDetailsFragment" >
+        <argument
+            android:name="recording_id"
+            app:argType="integer" />
+    </fragment>
 </navigation>

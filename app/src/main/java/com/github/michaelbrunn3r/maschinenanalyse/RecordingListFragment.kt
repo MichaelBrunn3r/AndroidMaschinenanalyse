@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.BundleCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
@@ -32,6 +34,7 @@ class RecordingsListFragment: Fragment() {
         mNavController = Navigation.findNavController(view)
 
         mToolbar = view.findViewById(R.id.toolbar)
+        mToolbar.setTitle(R.string.title_recording_list_fragment)
         mToolbar.setNavigationIcon(R.drawable.back)
         mToolbar.setNavigationOnClickListener {
             mNavController.navigateUp()
@@ -40,7 +43,9 @@ class RecordingsListFragment: Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerview)
         val adapter = RecordingListAdapter(context!!, mNavController, object : RecordingListAdapter.RecordingClickedListener {
             override fun onClicked(idx: Int) {
-                mNavController.navigate(R.id.action_recordingsListFragment_to_recordingDetailsFragment)
+                val recording_id = mMachineanalysisViewModel.recordings.value!![idx].uid
+                val action = RecordingsListFragmentDirections.actionRecordingsListFragmentToRecordingDetailsFragment(recording_id)
+                mNavController.navigate(action)
             }
         })
         recyclerView.adapter = adapter
