@@ -223,7 +223,7 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
                 val s: String = mRecordingBuffer!!.joinToString(separator = ";") { it -> "${it}" }
                 mMachineanalysisViewModel.insert(Recording(0, recordingName, mSampleRate, mSampleSize, mAccelMean, s))
             }
-            builder.setNegativeButton(R.string.popup_save_recording_negative) { dialog, which ->
+            builder.setNegativeButton(R.string.popup_default_negative) { dialog, which ->
 
             }
 

@@ -14,13 +14,13 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        android:paddingHorizontal="@dimen/paddingHorizontal" >
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:text="@string/recording_sample_rate"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/name" />
@@ -29,7 +29,6 @@
             android:id="@+id/sample_rate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
             android:text="@string/number_placeholder"
             app:layout_constraintStart_toEndOf="@+id/textView"
             app:layout_constraintTop_toBottomOf="@+id/name" />
@@ -46,7 +45,6 @@
             android:id="@+id/sample_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
             android:text="@string/number_placeholder"
             app:layout_constraintStart_toEndOf="@+id/textView2"
             app:layout_constraintTop_toTopOf="@+id/textView2" />
@@ -63,7 +61,6 @@
             android:id="@+id/mean_acceleration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
             android:text="@string/number_placeholder"
             app:layout_constraintStart_toEndOf="@+id/textView3"
             app:layout_constraintTop_toTopOf="@+id/textView3" />
@@ -85,7 +82,7 @@
         app:layout_constraintTop_toBottomOf="@+id/info_wrapper"
         app:showLegend="false"
         app:viewPortOffsetBottom="10"
-        app:viewPortOffsetLeft="80"
+        app:viewPortOffsetLeft="70"
         app:viewPortOffsetRight="0"
         app:viewPortOffsetTop="50" />
 

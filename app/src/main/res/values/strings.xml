@@ -10,7 +10,12 @@
     <string name="recording_sample_size">Abtastungen:</string>
     <string name="recording_mean_acceleration">Mean Accel:</string>
 
+    <string name="popup_default_positive">OK</string>
+    <string name="popup_default_negative">Cancel</string>
+
     <string name="popup_save_recording_title">Speichern als:</string>
-    <string name="popup_save_recording_positive">OK</string>
-    <string name="popup_save_recording_negative">Cancel</string>
+    <string name="popup_save_recording_positive">Speichern</string>
+
+    <string name="popup_delete_recording_title">Bist du dir sicher?</string>
+    <string name="popup_delete_recording_positive">Löschen</string>
 </resources>

@@ -76,4 +76,8 @@ class MachineanalysisViewModel(application: Application): AndroidViewModel(appli
     fun insert(recording: Recording) = viewModelScope.launch {
         mRecordingsDao.insert(recording)
     }
+
+    fun delete(recording: Recording) = viewModelScope.launch {
+        mRecordingsDao.delete(recording)
+    }
 }

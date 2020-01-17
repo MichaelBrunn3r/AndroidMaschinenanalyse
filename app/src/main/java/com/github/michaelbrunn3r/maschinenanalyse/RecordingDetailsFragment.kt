@@ -1,12 +1,16 @@
 package com.github.michaelbrunn3r.maschinenanalyse
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -72,6 +76,10 @@ class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 }
                 return true
             }
+            R.id.miDelete -> {
+                deleteRecording(mRecording!!)
+                mRecording = null
+            }
         }
         return false
     }
@@ -113,5 +121,20 @@ class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
         val shareIntent = Intent.createChooser(sendIntent, null)
         startActivity(shareIntent)
+    }
+
+    fun deleteRecording(recording: Recording) {
+        val builder = AlertDialog.Builder(context!!)
+        builder.setTitle(R.string.popup_delete_recording_title)
+
+        builder.setPositiveButton(R.string.popup_delete_recording_positive) { dialog, which ->
+            mMachineanalysisViewModel.delete(recording.copy())
+            mRecording = null
+
+            mNavController.navigateUp()
+        }
+        builder.setNegativeButton(R.string.popup_default_negative) { dialog, which ->  }
+
+        builder.show()
     }
 }
