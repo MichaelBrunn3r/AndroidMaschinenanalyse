@@ -111,12 +111,8 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
                 return true
             }
             R.id.miSaveRecording -> {
-                if(mRecordingBuffer != null) {
-                    val s:String = mRecordingBuffer!!.joinToString(separator = ";") { it -> "${it}" }
-                    mMachineanalysisViewModel.insert(Recording(0, "test", mSampleRate, mSampleSize, mAccelMean, s))
-                    println("Aufnahme gespeichert")
-                }
-
+                saveRecording()
+                return true
             }
         }
         return false
@@ -199,7 +195,7 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
 
         mAudioSpectrogram.update(mRecordingBuffer!!) { index -> fftFrequenzyBin(index, mSampleRate, mSampleSize)}
 
-        mAccelMean = mAccelBuffer/mRecordedAccelSamples
+        mAccelMean = if(mRecordedAccelSamples > 0) mAccelBuffer/mRecordedAccelSamples else 0.0f
         mAccelMeanView.text = mAccelMean.toString()
         mSensorManager?.unregisterListener(this)
     }
@@ -208,5 +204,12 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
         val startStopMenuItem: MenuItem? = mToolbar.menu?.findItem(R.id.miRecord)
         if(isSampling) startStopMenuItem?.icon = resources.getDrawable(R.drawable.stop_recording, activity!!.theme)
         else startStopMenuItem?.icon = resources.getDrawable(R.drawable.record, activity!!.theme)
+    }
+
+    private fun saveRecording() {
+        if(mRecordingBuffer != null) {
+            val s:String = mRecordingBuffer!!.joinToString(separator = ";") { it -> "${it}" }
+            mMachineanalysisViewModel.insert(Recording(0, "test", mSampleRate, mSampleSize, mAccelMean, s))
+        }
     }
 }
