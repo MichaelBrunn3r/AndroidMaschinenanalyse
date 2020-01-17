@@ -1,5 +1,6 @@
 package com.github.michaelbrunn3r.maschinenanalyse
 
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -74,7 +76,7 @@ class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
                 return true
             }
             R.id.miDelete -> {
-                deleteRecording(mRecording!!)
+                showDeleteDialog(mRecording!!)
                 mRecording = null
             }
         }
@@ -122,18 +124,26 @@ class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         startActivity(shareIntent)
     }
 
-    fun deleteRecording(recording: Recording) {
-        val builder = AlertDialog.Builder(context!!)
-        builder.setTitle(R.string.popup_delete_recording_title)
+    private fun showDeleteDialog(recording: Recording) {
+        if(fragmentManager == null) return
 
-        builder.setPositiveButton(R.string.popup_delete_recording_positive) { dialog, which ->
+        DeleteRecordingDialogFragment {
             mMachineanalysisViewModel.delete(recording.copy())
-            mRecording = null
+            mRecording = null // Make sure recording is invalidated
+            mNavController.navigateUp() // Leave Detail Fragment, as recording doesn't exist anymore
+        }.show(fragmentManager!!, "deleteRecording")
+    }
+}
 
-            mNavController.navigateUp()
-        }
-        builder.setNegativeButton(R.string.popup_default_negative) { dialog, which ->  }
-
-        builder.show()
+class DeleteRecordingDialogFragment(val onPositive:(DeleteRecordingDialogFragment) -> Unit) : DialogFragment() {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return activity?.let {
+            // Build the dialog and set up the button click handlers
+            AlertDialog.Builder(it)
+                    .setTitle(R.string.dialog_delete_recording)
+                    .setPositiveButton(R.string.delete) {_,_ -> onPositive(this)}
+                    .setNegativeButton(R.string.cancel) {_,_ -> }
+                    .create()
+        } ?: throw IllegalStateException("Activity cannot be null")
     }
 }

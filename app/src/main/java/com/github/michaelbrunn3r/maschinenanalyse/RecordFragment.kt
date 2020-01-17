@@ -1,7 +1,7 @@
 package com.github.michaelbrunn3r.maschinenanalyse
 
+import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -19,14 +19,12 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.preference.PreferenceManager
-import androidx.room.Room
 import com.paramsen.noise.Noise
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -211,23 +209,36 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
     }
 
     private fun saveRecording() {
-        if(mRecordingBuffer != null) {
-            val builder = AlertDialog.Builder(context!!)
-            builder.setTitle(R.string.popup_save_recording_title)
-            val input = EditText(context!!)
-            input.inputType = InputType.TYPE_CLASS_TEXT
-            builder.setView(input)
+        if(mRecordingBuffer == null || fragmentManager == null) return
 
-            builder.setPositiveButton(R.string.popup_save_recording_positive) { dialog, which ->
-                val recordingName = input.text.toString()
-                val s: String = mRecordingBuffer!!.joinToString(separator = ";") { it -> "${it}" }
-                mMachineanalysisViewModel.insert(Recording(0, recordingName, mSampleRate, mSampleSize, mAccelMean, s))
+        SaveRecordingAsDialogFragment { dialog ->
+            if(mRecordingBuffer != null) {
+                val s: String = mRecordingBuffer!!.joinToString(separator = ";") { "$it" }
+                mMachineanalysisViewModel.insert(Recording(0, dialog.recordingName, mSampleRate, mSampleSize, mAccelMean, s))
             }
-            builder.setNegativeButton(R.string.popup_default_negative) { dialog, which ->
+        }.show(fragmentManager!!, "saveRecordingAs")
+    }
+}
 
-            }
+class SaveRecordingAsDialogFragment(val onPositive:(SaveRecordingAsDialogFragment) -> Unit) : DialogFragment() {
+    private lateinit var mInput:EditText
+    var recordingName = ""
 
-            builder.show()
-        }
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return activity?.let {
+            mInput = EditText(it)
+            mInput.inputType = InputType.TYPE_CLASS_TEXT
+
+            // Build the dialog and set up the button click handlers
+            AlertDialog.Builder(it)
+                    .setTitle(R.string.dialog_save_recording_as)
+                    .setPositiveButton(R.string.save) {_,_ ->
+                        recordingName = mInput.text.toString()
+                        onPositive(this)
+                    }
+                    .setNegativeButton(R.string.cancel) {_,_ -> }
+                    .setView(mInput)
+                    .create()
+        } ?: throw IllegalStateException("Activity cannot be null")
     }
 }
