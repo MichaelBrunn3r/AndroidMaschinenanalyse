@@ -1,14 +1,11 @@
 package com.github.michaelbrunn3r.maschinenanalyse
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.text.InputType
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
@@ -62,7 +59,7 @@ class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
             for(r:Recording in recordings) {
                 if(r.uid == mNavArgs.recordingId) {
                     mRecording = r
-                    populate(r)
+                    showRecordingData(r)
                 }
             }
         })
@@ -84,11 +81,13 @@ class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         return false
     }
 
-    fun populate(recording:Recording) {
+    fun showRecordingData(recording:Recording) {
         mToolbar.title = recording.name
         mSampleRateView.text = recording.audioSampleRate.toString()
         mSampleSizeView.text = recording.audioFFTSamples.toString()
         mMeanAccelView.text = recording.accelPeakMean.toBigDecimal().toString()
+
+        mChart.setFrequencyRange(0f, (recording.audioSampleRate/2).toFloat())
 
         val chartData = recording.audioMeanFFT.split(';').map{it.toFloat()}.toFloatArray()
         mChart.update(chartData) { index -> fftFrequenzyBin(index, recording.audioSampleRate, recording.audioFFTSamples)}
