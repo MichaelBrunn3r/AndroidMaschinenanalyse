@@ -9,7 +9,6 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.LargeValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 
 class RealtimeLinearView(context: Context, attrs: AttributeSet): LineChart(context, attrs) {
@@ -27,11 +26,11 @@ class RealtimeLinearView(context: Context, attrs: AttributeSet): LineChart(conte
 
         isAutoScaleMinMaxEnabled = true
 
-        xAxis.textColor = ContextCompat.getColor(context, R.color.boulder)
+        xAxis.textColor = ContextCompat.getColor(context, R.color.nobel)
         xAxis.setDrawLabels(false)
 
         axisLeft.axisMinimum = 0f
-        axisLeft.textColor = ContextCompat.getColor(context, R.color.boulder)
+        axisLeft.textColor = ContextCompat.getColor(context, R.color.nobel)
 
         axisRight.isEnabled = false
 

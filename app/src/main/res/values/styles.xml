@@ -11,11 +11,13 @@
         <item name="android:colorButtonNormal">@color/mine_shaft</item>
 
         <item name="android:textColorPrimary">@color/white</item> <!--Text color on primary -->
-        <item name="android:textColor">@color/boulder</item> <!-- Standard text color -->
+        <item name="android:textColor">@color/nobel</item> <!-- Standard text color -->
 
         <!-- Styles -->
         <item name="buttonStyle">@style/Widget.App.Button</item>
         <item name="android:titleTextStyle">@style/TextAppearance.App.ActionBar.Title</item>
+
+        <item name="alertDialogTheme">@style/ThemeOverlay.App.AlertDialog</item>
     </style>
 
     <style name="TextAppearance.App.ActionBar.Title" parent="TextAppearance.AppCompat.Title">
@@ -23,4 +25,8 @@
     </style>
 
     <style name="Widget.App.Button" parent="Widget.AppCompat.Button.Borderless"/>
+
+    <style name="ThemeOverlay.App.AlertDialog" parent="ThemeOverlay.AppCompat.Dialog.Alert">
+        <item name="android:textColor">?android:attr/textColor</item>
+    </style>
 </resources>

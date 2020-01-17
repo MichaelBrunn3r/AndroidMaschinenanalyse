@@ -25,13 +25,13 @@ class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(context,
         isDragEnabled = false
         setPinchZoom(false)
 
-        xAxis.textColor = ContextCompat.getColor(context, R.color.boulder)
+        xAxis.textColor = ContextCompat.getColor(context, R.color.nobel)
         xAxis.valueFormatter = LargeValueFormatter("Hz")
         setFrequencyRange(0f, 4096.toFloat()/2) // Default Value
 
         axisLeft.axisMinimum = 0f
         axisLeft.axisMaximum = 300f
-        axisLeft.textColor = ContextCompat.getColor(context, R.color.boulder)
+        axisLeft.textColor = ContextCompat.getColor(context, R.color.nobel)
         axisLeft.valueFormatter = LargeValueFormatter()
 
         axisRight.isEnabled = false
