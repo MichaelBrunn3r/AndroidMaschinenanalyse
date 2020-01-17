@@ -7,9 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.BundleCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
@@ -78,7 +76,7 @@ class RecordingListAdapter internal constructor(context: Context, navController:
         fun bind(recording:Recording) {
             nameView.text = recording.name
             sampleRateView.text = recording.audioSampleRate.toString()
-            sampleSizeView.text = recording.audioFFTSamples.toString()
+            sampleSizeView.text = recording.numFFTAudioSamples.toString()
         }
     }
 

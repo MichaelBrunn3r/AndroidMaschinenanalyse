@@ -13,12 +13,12 @@ import kotlinx.coroutines.launch
 
 @Entity(tableName = "recordings")
 data class Recording(
-        @PrimaryKey(autoGenerate = true) val uid: Int,
-        @NonNull @ColumnInfo(name = "recording_name") val name: String?,
-        @NonNull @ColumnInfo(name = "audio_sample_rate_hz") val audioSampleRate: Int, // Sample rate in Hz
-        @NonNull @ColumnInfo(name = "audio_fft_num_samples") val audioFFTSamples: Int, // Number of Samples per FFT Frame
-        @NonNull @ColumnInfo(name = "accel_peak_mean") val accelPeakMean: Float, // Mean over acceleration intensity peaks
-        @NonNull @ColumnInfo(name = "audio_frequency_amplitude_means") val audioMeanFFT: String // Mean Amplitude per Frequency
+    @PrimaryKey(autoGenerate = true) val uid: Int,
+    @NonNull @ColumnInfo(name = "name") val name: String?,
+    @NonNull @ColumnInfo(name = "audio_sample_rate_hz") val audioSampleRate: Int, // Sample rate in Hz
+    @NonNull @ColumnInfo(name = "num_fft_audio_samples") val numFFTAudioSamples: Int, // Number of Samples per FFT Frame
+    @NonNull @ColumnInfo(name = "accel_mean") val accelerationMean: Float, // Mean over acceleration intensity peaks
+    @NonNull @ColumnInfo(name = "amplitude_means") val amplitudeMeans: String // Mean Amplitude per Frequency
 )
 
 @Dao
@@ -26,7 +26,7 @@ interface RecordingDao {
     @Query("SELECT * FROM recordings")
     fun getRecordings(): LiveData<List<Recording>>
 
-    @Query("SELECT * FROM recordings WHERE recording_name LIKE :name LIMIT 1")
+    @Query("SELECT * FROM recordings WHERE name LIKE :name LIMIT 1")
     suspend fun findByName(name: String): Recording
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)

@@ -86,24 +86,24 @@ class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
     fun showRecordingData(recording:Recording) {
         mToolbar.title = recording.name
         mSampleRateView.text = recording.audioSampleRate.toString()
-        mSampleSizeView.text = recording.audioFFTSamples.toString()
-        mMeanAccelView.text = recording.accelPeakMean.toBigDecimal().toString()
+        mSampleSizeView.text = recording.numFFTAudioSamples.toString()
+        mMeanAccelView.text = recording.accelerationMean.toBigDecimal().toString()
 
         mChart.setFrequencyRange(0f, (recording.audioSampleRate/2).toFloat())
 
-        val chartData = recording.audioMeanFFT.split(';').map{it.toFloat()}.toFloatArray()
-        mChart.update(chartData) { index -> fftFrequenzyBin(index, recording.audioSampleRate, recording.audioFFTSamples)}
+        val chartData = recording.amplitudeMeans.split(';').map{it.toFloat()}.toFloatArray()
+        mChart.update(chartData) { index -> fftFrequenzyBin(index, recording.audioSampleRate, recording.numFFTAudioSamples)}
     }
 
     fun convertRecordingToJSON(recording: Recording): JSONObject {
         val r = JSONObject()
         r.put("name", recording.name)
         r.put("sampleRate", recording.audioSampleRate)
-        r.put("samples", recording.audioFFTSamples)
-        r.put("accelMean", recording.accelPeakMean)
+        r.put("samples", recording.numFFTAudioSamples)
+        r.put("accelMean", recording.accelerationMean)
 
         val frequencies = JSONArray()
-        for(f:Float in recording.audioMeanFFT.split(';').map{it.toFloat()}) {
+        for(f:Float in recording.amplitudeMeans.split(';').map{it.toFloat()}) {
             frequencies.put(f)
         }
 
