@@ -1,6 +1,7 @@
 package com.github.michaelbrunn3r.maschinenanalyse
 
 import android.content.Context
+import android.content.DialogInterface
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -9,11 +10,14 @@ import android.media.AudioFormat
 import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.Handler
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -208,8 +212,22 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
 
     private fun saveRecording() {
         if(mRecordingBuffer != null) {
-            val s:String = mRecordingBuffer!!.joinToString(separator = ";") { it -> "${it}" }
-            mMachineanalysisViewModel.insert(Recording(0, "test", mSampleRate, mSampleSize, mAccelMean, s))
+            val builder = AlertDialog.Builder(context!!)
+            builder.setTitle(R.string.popup_save_recording_title)
+            val input = EditText(context!!)
+            input.inputType = InputType.TYPE_CLASS_TEXT
+            builder.setView(input)
+
+            builder.setPositiveButton(R.string.popup_save_recording_positive) { dialog, which ->
+                val recordingName = input.text.toString()
+                val s: String = mRecordingBuffer!!.joinToString(separator = ";") { it -> "${it}" }
+                mMachineanalysisViewModel.insert(Recording(0, recordingName, mSampleRate, mSampleSize, mAccelMean, s))
+            }
+            builder.setNegativeButton(R.string.popup_save_recording_negative) { dialog, which ->
+
+            }
+
+            builder.show()
         }
     }
 }
