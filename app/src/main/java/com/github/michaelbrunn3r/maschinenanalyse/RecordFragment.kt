@@ -210,8 +210,7 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
 
         SaveRecordingAsDialogFragment { dialog ->
             if(mRecordingBuffer != null) {
-                val s: String = mRecordingBuffer!!.joinToString(separator = ";") { "$it" }
-                mMachineanalysisViewModel.insert(Recording(0, dialog.recordingName, mAudioSampleRate, mNumAudioSamples, mAccelMean, s))
+                mMachineanalysisViewModel.insert(Recording(0, dialog.recordingName, mAudioSampleRate, mNumAudioSamples, mAccelMean, mRecordingBuffer!!.toList()))
             }
         }.show(fragmentManager!!, "saveRecordingAs")
     }

@@ -91,28 +91,23 @@ class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
         mChart.setFrequencyRange(0f, (recording.audioSampleRate/2).toFloat())
 
-        val chartData = recording.amplitudeMeans.split(';').map{it.toFloat()}.toFloatArray()
-        mChart.update(chartData) { index -> fftFrequenzyBin(index, recording.audioSampleRate, recording.numFFTAudioSamples)}
+        mChart.update(recording.amplitudeMeans.toFloatArray()) {
+            index -> fftFrequenzyBin(index, recording.audioSampleRate, recording.numFFTAudioSamples)
+        }
     }
 
-    fun convertRecordingToJSON(recording: Recording): JSONObject {
+    fun recordingToJSON(recording: Recording): JSONObject {
         val r = JSONObject()
         r.put("name", recording.name)
         r.put("sampleRate", recording.audioSampleRate)
         r.put("samples", recording.numFFTAudioSamples)
         r.put("accelMean", recording.accelerationMean)
-
-        val frequencies = JSONArray()
-        for(f:Float in recording.amplitudeMeans.split(';').map{it.toFloat()}) {
-            frequencies.put(f)
-        }
-
-        r.put("meanFFT", frequencies)
+        r.put("meanFFT", JSONArray(recording.amplitudeMeans))
         return r
     }
 
     fun shareRecording(recording: Recording) {
-        val json = convertRecordingToJSON(recording)
+        val json = recordingToJSON(recording)
 
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND

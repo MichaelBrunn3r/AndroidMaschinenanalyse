@@ -7,8 +7,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import androidx.room.*
-import androidx.sqlite.db.SupportSQLiteDatabase
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Entity(tableName = "recordings")
@@ -18,7 +16,7 @@ data class Recording(
     @NonNull @ColumnInfo(name = "audio_sample_rate_hz") val audioSampleRate: Int, // Sample rate in Hz
     @NonNull @ColumnInfo(name = "num_fft_audio_samples") val numFFTAudioSamples: Int, // Number of Samples per FFT Frame
     @NonNull @ColumnInfo(name = "accel_mean") val accelerationMean: Float, // Mean over acceleration intensity peaks
-    @NonNull @ColumnInfo(name = "amplitude_means") val amplitudeMeans: String // Mean Amplitude per Frequency
+    @NonNull @ColumnInfo(name = "amplitude_means") val amplitudeMeans: List<Float> // Mean Amplitude per Frequency
 )
 
 @Dao
@@ -40,6 +38,7 @@ interface RecordingDao {
 }
 
 @Database(entities = arrayOf(Recording::class), version = 1, exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class MachineanalysisDatabase : RoomDatabase() {
     abstract fun recordingDao(): RecordingDao
 
