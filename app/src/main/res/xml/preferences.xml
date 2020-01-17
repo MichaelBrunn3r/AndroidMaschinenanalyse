@@ -10,4 +10,16 @@
         android:entries="@array/fftAudioSampleEntries"
         android:entryValues="@array/fftAudioSamples" />
 
+    <EditTextPreference
+        android:key="recordingDuration"
+        app:title="Recording Duration (Seconds)"
+        app:summary="Length of recordings"
+        android:defaultValue="10" />
+
+    <EditTextPreference
+        android:key="compTimeWindow"
+        app:title="Length Realtime Mean (Seconds)"
+        app:summary="Length of the time to calculate realtime mean that is compared to the selected recording"
+        android:defaultValue="5" />
+
 </PreferenceScreen>
