@@ -25,7 +25,6 @@ class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
     private lateinit var mMachineanalysisViewModel: MachineanalysisViewModel
     private var mRecording: Recording? = null
 
-    private lateinit var mNameView: TextView
     private lateinit var mSampleRateView: TextView
     private lateinit var mSampleSizeView: TextView
     private lateinit var mMeanAccelView: TextView
@@ -48,8 +47,6 @@ class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         mToolbar.inflateMenu(R.menu.menu_record_details)
         mToolbar.setOnMenuItemClickListener(this)
 
-
-        mNameView = view.findViewById(R.id.name)
         mSampleRateView = view.findViewById(R.id.sample_rate)
         mSampleSizeView = view.findViewById(R.id.sample_size)
         mMeanAccelView = view.findViewById(R.id.mean_acceleration)
@@ -80,11 +77,10 @@ class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
     }
 
     fun populate(recording:Recording) {
-        mNameView.setText(recording.name)
+        mToolbar.title = recording.name
         mSampleRateView.text = recording.audioSampleRate.toString()
         mSampleSizeView.text = recording.audioFFTSamples.toString()
         mMeanAccelView.text = recording.accelPeakMean.toBigDecimal().toString()
-
 
         val chartData = recording.audioMeanFFT.split(';').map{it.toFloat()}.toFloatArray()
         mChart.update(chartData) { index -> fftFrequenzyBin(index, recording.audioSampleRate, recording.audioFFTSamples)}
