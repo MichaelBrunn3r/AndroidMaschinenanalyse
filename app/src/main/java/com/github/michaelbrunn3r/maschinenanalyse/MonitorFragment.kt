@@ -53,6 +53,7 @@ class MonitorFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEvent
         mNavController = Navigation.findNavController(view)
 
         mToolbar = view.findViewById(R.id.toolbar)
+        mToolbar.setTitle(R.string.title_monitor_fragment)
         mToolbar.setNavigationIcon(R.drawable.back)
         mToolbar.setNavigationOnClickListener {
             mNavController.navigateUp()

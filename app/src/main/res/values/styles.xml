@@ -13,8 +13,13 @@
         <item name="android:textColorPrimary">@color/white</item> <!--Text color on primary -->
         <item name="android:textColor">@color/boulder</item> <!-- Standard text color -->
 
-        <!-- Widgets -->
+        <!-- Styles -->
         <item name="buttonStyle">@style/Widget.App.Button</item>
+        <item name="android:titleTextStyle">@style/TextAppearance.App.ActionBar.Title</item>
+    </style>
+
+    <style name="TextAppearance.App.ActionBar.Title" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
     </style>
 
     <style name="Widget.App.Button" parent="Widget.AppCompat.Button.Borderless"/>

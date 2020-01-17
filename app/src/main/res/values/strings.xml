@@ -2,7 +2,7 @@
     <string name="app_name">Maschinentest</string>
     <string name="title_record_fragment">Aufnehmen</string>
     <string name="title_monitor_fragment">Monitor</string>
-    <string name="title_recording_list">Aufnahmen</string>
+    <string name="title_recording_list_fragment">Aufnahmen</string>
 
     <string name="number_placeholder">N/A</string>
 
