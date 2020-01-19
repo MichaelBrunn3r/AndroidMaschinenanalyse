@@ -55,7 +55,7 @@ class MonitorFragment : Fragment(), SensorEventListener {
 
         val overlay = view.findViewById<TouchOverlay>(R.id.touchOverlay)
         overlay.setOnShortClickListener {
-            toggleToolbar()
+            mToolbar?.toggle()
         }
     }
 
@@ -79,7 +79,7 @@ class MonitorFragment : Fragment(), SensorEventListener {
 
         if(savedInstanceState != null) {
             mAudioAmplitudesSource.setSamplingState(savedInstanceState.getBoolean("isSampling", false))
-            if(savedInstanceState.getBoolean("isToolbarHidden", false)) toggleToolbar()
+            if(savedInstanceState.getBoolean("isToolbarHidden", false)) mToolbar?.toggle()
         }
     }
 
@@ -140,13 +140,6 @@ class MonitorFragment : Fragment(), SensorEventListener {
                     mBinding.accelRealtimeGraph.update(sqrt(event.values[0].pow(2) + event.values[1].pow(2) + event.values[2].pow(2)) - 9.81f)
                 }
             }
-        }
-    }
-
-    private fun toggleToolbar() {
-        mToolbar?.visibility = when(mToolbar?.visibility) {
-            View.VISIBLE -> View.GONE
-            else -> View.VISIBLE
         }
     }
 

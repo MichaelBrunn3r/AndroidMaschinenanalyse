@@ -3,6 +3,7 @@ package com.github.michaelbrunn3r.maschinenanalyse
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -25,7 +26,8 @@ class MainActivity : AppCompatActivity() {
 
         mNavCtrl = findNavController(R.id.nav_host_fragment)
         mNavCtrl.addOnDestinationChangedListener { controller, destination, arguments ->
-            mBinding.toolbar.menu.clear()
+            mBinding.toolbar.menu.clear() // Allows for smoother Toolbar animations
+            mBinding.toolbar.visibility = View.VISIBLE // Reset Toolbar visibility if it was toggled
         }
 
         // Configure Toolbar
@@ -33,6 +35,13 @@ class MainActivity : AppCompatActivity() {
         val appBarCfg = AppBarConfiguration(mNavCtrl.graph)
         AppBarConfiguration.Builder()
         mBinding.toolbar.setupWithNavController(mNavCtrl, appBarCfg)
+    }
+}
+
+fun Toolbar.toggle() {
+    visibility = when(visibility) {
+        View.VISIBLE -> View.GONE
+        else -> View.VISIBLE
     }
 }
 
