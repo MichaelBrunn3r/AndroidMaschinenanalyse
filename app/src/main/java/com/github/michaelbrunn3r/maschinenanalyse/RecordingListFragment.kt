@@ -16,9 +16,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class RecordingsListFragment: Fragment() {
+class RecordingsListFragment : Fragment() {
 
-    private lateinit var mNavController:NavController
+    private lateinit var mNavController: NavController
     private lateinit var mToolbar: Toolbar
     private lateinit var mMachineanalysisViewModel: MachineanalysisViewModel
 
@@ -57,12 +57,12 @@ class RecordingsListFragment: Fragment() {
     }
 }
 
-class RecordingListAdapter internal constructor(context: Context, navController:NavController, val recordingListener:RecordingClickedListener) : RecyclerView.Adapter<RecordingListAdapter.RecordingViewHolder>() {
+class RecordingListAdapter internal constructor(context: Context, navController: NavController, val recordingListener: RecordingClickedListener) : RecyclerView.Adapter<RecordingListAdapter.RecordingViewHolder>() {
 
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
     private var mRecordings = emptyList<Recording>() // Cached Recordings
 
-    inner class RecordingViewHolder(itemView: View, l:RecordingClickedListener) : RecyclerView.ViewHolder(itemView) {
+    inner class RecordingViewHolder(itemView: View, l: RecordingClickedListener) : RecyclerView.ViewHolder(itemView) {
         val nameView: TextView = itemView.findViewById(R.id.name)
         val sampleRateView: TextView = itemView.findViewById(R.id.sample_rate)
         val sampleSizeView: TextView = itemView.findViewById(R.id.sample_size)
@@ -73,7 +73,7 @@ class RecordingListAdapter internal constructor(context: Context, navController:
             }
         }
 
-        fun bind(recording:Recording) {
+        fun bind(recording: Recording) {
             nameView.text = recording.name
             sampleRateView.text = recording.audioSampleRate.toString()
             sampleSizeView.text = recording.numFFTAudioSamples.toString()
@@ -81,7 +81,7 @@ class RecordingListAdapter internal constructor(context: Context, navController:
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecordingViewHolder {
-        val itemView:View = mInflater.inflate(R.layout.item_recording, parent, false)
+        val itemView: View = mInflater.inflate(R.layout.item_recording, parent, false)
         return RecordingViewHolder(itemView, recordingListener)
     }
 
@@ -97,6 +97,6 @@ class RecordingListAdapter internal constructor(context: Context, navController:
     }
 
     interface RecordingClickedListener {
-        fun onClicked(idx:Int)
+        fun onClicked(idx: Int)
     }
 }

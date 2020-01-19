@@ -22,6 +22,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -29,22 +30,20 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.preference.PreferenceManager
+import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentRecordBinding
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventListener {
 
+    private lateinit var mBinding: FragmentRecordBinding
     private lateinit var mNavController: NavController
-    private lateinit var mToolbar: Toolbar
 
     private var mRecordingHandler:Handler = Handler()
     private var mNumRecordedFrames = 0
     private var mRecordingBuffer:FloatArray? = null
 
-    private lateinit var mAudioSpectrogram: SpectrogramView
-
     private var mAccelMean:Float = 0f
-    private lateinit var mAccelMeanView: TextView
 
     private var mSensorManager: SensorManager? = null
     private var mAccelerometer: Sensor? = null
@@ -63,7 +62,8 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
     private var mRecordingDurationMs = 5000L // Recording Duration in Milliseconds
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_record, container, false)
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_record, container, false)
+        return mBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,17 +71,16 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
 
         mNavController = Navigation.findNavController(view)
 
-        mToolbar = view.findViewById(R.id.toolbar)
-        mToolbar.setTitle(R.string.title_record_fragment)
-        mToolbar.setNavigationIcon(R.drawable.back)
-        mToolbar.setNavigationOnClickListener {
-            mNavController.navigateUp()
+        mBinding.apply {
+            toolbar as Toolbar
+            toolbar.setTitle(R.string.title_record_fragment)
+            toolbar.setNavigationIcon(R.drawable.back)
+            toolbar.setNavigationOnClickListener {
+                mNavController.navigateUp()
+            }
+            toolbar.inflateMenu(R.menu.menu_record)
+            toolbar.setOnMenuItemClickListener(this@RecordFragment)
         }
-        mToolbar.inflateMenu(R.menu.menu_record)
-        mToolbar.setOnMenuItemClickListener(this)
-
-        mAudioSpectrogram = view.findViewById(R.id.chartRecordedFrequencies)
-        mAccelMeanView = view.findViewById(R.id.meanAccel)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -112,7 +111,7 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
         mNumAudioSamples = preferences.getString("fftAudioSamples", "4096")!!.toInt()
         mRecordingDurationMs = preferences.getString("recordingDuration", "4096")!!.toLong()
 
-        mAudioSpectrogram.setFrequencyRange(0f, (mAudioSampleRate/2).toFloat())
+        mBinding.spectrogram.setFrequencyRange(0f, (mAudioSampleRate/2).toFloat())
         mAudioAmplitudesSource.setSamplesSource(AudioSamplesSource(mAudioSampleRate, mNumAudioSamples, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream())
     }
 
@@ -193,14 +192,14 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
         mAccelMean = if(mRecordedAccelSamples > 0) mAccelBuffer/mRecordedAccelSamples else 0.0f
 
         // Show amplitudes mean
-        mAudioSpectrogram.update(mRecordingBuffer!!) { index -> fftFrequenzyBin(index, mAudioSampleRate, mNumAudioSamples)}
+        mBinding.spectrogram.update(mRecordingBuffer!!) { index -> fftFrequenzyBin(index, mAudioSampleRate, mNumAudioSamples)}
 
         // Show acceleration mean
-        mAccelMeanView.text = mAccelMean.toString()
+        mBinding.meanAccel.text = mAccelMean.toString()
     }
 
     private fun setRecordBtnState(isSampling: Boolean) {
-        val startStopMenuItem: MenuItem? = mToolbar.menu?.findItem(R.id.miRecord)
+        val startStopMenuItem: MenuItem? = (mBinding.toolbar as Toolbar).menu?.findItem(R.id.miRecord)
         if(isSampling) startStopMenuItem?.icon = resources.getDrawable(R.drawable.stop_recording, activity!!.theme)
         else startStopMenuItem?.icon = resources.getDrawable(R.drawable.record, activity!!.theme)
     }

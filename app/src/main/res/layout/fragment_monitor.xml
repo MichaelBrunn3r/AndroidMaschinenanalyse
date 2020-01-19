@@ -1,54 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/app_bar" />
-
-    <com.github.michaelbrunn3r.maschinenanalyse.TouchOverlay
-        android:id="@+id/touchOverlay"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:maxShortClickDurationMs="300">
+        android:orientation="vertical">
 
-        <com.github.michaelbrunn3r.maschinenanalyse.RealtimeLinearView
-            android:id="@+id/chartAccel"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"
-            app:bgColor="@color/mine_shaft"
-            app:drawGridLines="xAxis|yAxis"
-            app:enableDragging="yAxis|xAxis"
-            app:enableScaling="yAxis|xAxis"
-            app:graphColor="?attr/colorAccent"
-            app:graphWidth="0.8dp"
-            app:showLegend="false"
-            app:viewPortOffsetBottom="10"
-            app:viewPortOffsetLeft="80"
-            app:viewPortOffsetRight="0"
-            app:viewPortOffsetTop="10" />
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/app_bar" />
 
-        <com.github.michaelbrunn3r.maschinenanalyse.SpectrogramView
-            android:id="@+id/chartAudio"
+        <com.github.michaelbrunn3r.maschinenanalyse.TouchOverlay
+            android:id="@+id/touchOverlay"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"
-            app:bgColor="@color/mine_shaft"
-            app:drawGridLines="xAxis|yAxis"
-            app:enableDragging="yAxis|xAxis"
-            app:enableScaling="yAxis|xAxis"
-            app:graphColor="?attr/colorAccent"
-            app:graphWidth="0.8dp"
-            app:showLegend="false"
-            app:viewPortOffsetBottom="10"
-            app:viewPortOffsetLeft="80"
-            app:viewPortOffsetRight="0"
-            app:viewPortOffsetTop="50" />
-    </com.github.michaelbrunn3r.maschinenanalyse.TouchOverlay>
-</LinearLayout>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:maxShortClickDurationMs="300">
+
+            <com.github.michaelbrunn3r.maschinenanalyse.RealtimeLinearView
+                android:id="@+id/accel_realtime_graph"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                app:bgColor="@color/mine_shaft"
+                app:drawGridLines="xAxis|yAxis"
+                app:enableDragging="yAxis|xAxis"
+                app:enableScaling="yAxis|xAxis"
+                app:graphColor="?attr/colorAccent"
+                app:graphWidth="0.8dp"
+                app:showLegend="false"
+                app:viewPortOffsetBottom="10"
+                app:viewPortOffsetLeft="80"
+                app:viewPortOffsetRight="0"
+                app:viewPortOffsetTop="10" />
+
+            <com.github.michaelbrunn3r.maschinenanalyse.SpectrogramView
+                android:id="@+id/audio_spectrogram"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.5"
+                app:bgColor="@color/mine_shaft"
+                app:drawGridLines="xAxis|yAxis"
+                app:enableDragging="yAxis|xAxis"
+                app:enableScaling="yAxis|xAxis"
+                app:graphColor="?attr/colorAccent"
+                app:graphWidth="0.8dp"
+                app:showLegend="false"
+                app:viewPortOffsetBottom="10"
+                app:viewPortOffsetLeft="80"
+                app:viewPortOffsetRight="0"
+                app:viewPortOffsetTop="50" />
+        </com.github.michaelbrunn3r.maschinenanalyse.TouchOverlay>
+    </LinearLayout>
+</layout>
