@@ -14,14 +14,9 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.text.InputType
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.EditText
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -34,16 +29,16 @@ import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentRecordBind
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventListener {
+class RecordFragment : Fragment(), SensorEventListener {
 
     private lateinit var mBinding: FragmentRecordBinding
     private lateinit var mNavController: NavController
 
-    private var mRecordingHandler:Handler = Handler()
+    private var mRecordingHandler: Handler = Handler()
     private var mNumRecordedFrames = 0
-    private var mRecordingBuffer:FloatArray? = null
+    private var mRecordingBuffer: FloatArray? = null
 
-    private var mAccelMean:Float = 0f
+    private var mAccelMean: Float = 0f
 
     private var mSensorManager: SensorManager? = null
     private var mAccelerometer: Sensor? = null
@@ -55,32 +50,23 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
     private var mAudioSampleRate = 44100
     private var mNumAudioSamples = 4096
     private var mAudioAmplitudesSource = FrequencyAmplitudesLiveData()
-    private var mIsRecording:Boolean = false
+    private var mIsRecording: Boolean = false
 
     private lateinit var mMachineanalysisViewModel: MachineanalysisViewModel
 
     private var mRecordingDurationMs = 5000L // Recording Duration in Milliseconds
 
+    private lateinit var mMIRecord: MenuItem
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(true)
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_record, container, false)
         return mBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         mNavController = Navigation.findNavController(view)
-
-        mBinding.apply {
-            toolbar as Toolbar
-            toolbar.setTitle(R.string.title_record_fragment)
-            toolbar.setNavigationIcon(R.drawable.back)
-            toolbar.setNavigationOnClickListener {
-                mNavController.navigateUp()
-            }
-            toolbar.inflateMenu(R.menu.menu_record)
-            toolbar.setOnMenuItemClickListener(this@RecordFragment)
-        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -93,10 +79,10 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
             ViewModelProviders.of(this)[MachineanalysisViewModel::class.java]
         } ?: throw Exception("Invalid Activity")
 
-        if(requestAudioPermissions()) {
+        if (requestAudioPermissions()) {
             mAudioAmplitudesSource.observe(this, Observer { audioAmplitudes ->
                 mNumRecordedFrames++
-                for(i in audioAmplitudes.indices) {
+                for (i in audioAmplitudes.indices) {
                     mRecordingBuffer!![i] += audioAmplitudes[i]
                 }
             })
@@ -111,12 +97,19 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
         mNumAudioSamples = preferences.getString("fftAudioSamples", "4096")!!.toInt()
         mRecordingDurationMs = preferences.getString("recordingDuration", "4096")!!.toLong()
 
-        mBinding.spectrogram.setFrequencyRange(0f, (mAudioSampleRate/2).toFloat())
+        mBinding.spectrogram.setFrequencyRange(0f, (mAudioSampleRate / 2).toFloat())
         mAudioAmplitudesSource.setSamplesSource(AudioSamplesSource(mAudioSampleRate, mNumAudioSamples, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream())
     }
 
-    override fun onMenuItemClick(item: MenuItem?): Boolean {
-        when(item?.itemId) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_record, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+
+        mMIRecord = menu.findItem(R.id.miRecord)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.miSettings -> {
                 mNavController.navigate(R.id.action_recordingFragment_to_settingsFragment)
                 return true
@@ -138,16 +131,16 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
-        if(event != null) {
-            when(event.sensor.type) {
+        if (event != null) {
+            when (event.sensor.type) {
                 Sensor.TYPE_ACCELEROMETER -> {
                     val v = sqrt(event.values[0].pow(2) + event.values[1].pow(2) + event.values[2].pow(2)) - 9.81f
-                    if(v > 0 && v < mAccelLastVal && !mMaxCooldown) {
+                    if (v > 0 && v < mAccelLastVal && !mMaxCooldown) {
                         mRecordedAccelSamples++
                         mAccelBuffer += mAccelLastVal
                         mMaxCooldown = true
                     }
-                    if(v > mAccelLastVal) mMaxCooldown = false
+                    if (v > mAccelLastVal) mMaxCooldown = false
                     mAccelLastVal = v
                 }
             }
@@ -155,7 +148,7 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
     }
 
     private fun startRecording() {
-        if(mIsRecording) return
+        if (mIsRecording) return
         setRecordBtnState(true)
 
         // Start Accelerometer Recording
@@ -165,7 +158,7 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
 
         // Start Audio Recording
         mNumRecordedFrames = 0
-        mRecordingBuffer = FloatArray(mNumAudioSamples+2)
+        mRecordingBuffer = FloatArray(mNumAudioSamples + 2)
         mAudioAmplitudesSource.setSamplingState(true)
 
         // Start Timer
@@ -182,40 +175,39 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
         mAudioAmplitudesSource.setSamplingState(false)
 
         // Calculate amplitudes mean
-        if(mRecordingBuffer != null) {
-            for(i in mRecordingBuffer!!.indices) {
+        if (mRecordingBuffer != null) {
+            for (i in mRecordingBuffer!!.indices) {
                 mRecordingBuffer!![i] = mRecordingBuffer!![i] / mNumRecordedFrames
             }
         }
 
         // Calculate acceleration mean
-        mAccelMean = if(mRecordedAccelSamples > 0) mAccelBuffer/mRecordedAccelSamples else 0.0f
+        mAccelMean = if (mRecordedAccelSamples > 0) mAccelBuffer / mRecordedAccelSamples else 0.0f
 
         // Show amplitudes mean
-        mBinding.spectrogram.update(mRecordingBuffer!!) { index -> fftFrequenzyBin(index, mAudioSampleRate, mNumAudioSamples)}
+        mBinding.spectrogram.update(mRecordingBuffer!!) { index -> fftFrequenzyBin(index, mAudioSampleRate, mNumAudioSamples) }
 
         // Show acceleration mean
         mBinding.meanAccel.text = mAccelMean.toString()
     }
 
     private fun setRecordBtnState(isSampling: Boolean) {
-        val startStopMenuItem: MenuItem? = (mBinding.toolbar as Toolbar).menu?.findItem(R.id.miRecord)
-        if(isSampling) startStopMenuItem?.icon = resources.getDrawable(R.drawable.stop_recording, activity!!.theme)
-        else startStopMenuItem?.icon = resources.getDrawable(R.drawable.record, activity!!.theme)
+        if (isSampling) mMIRecord.icon = resources.getDrawable(R.drawable.stop_recording, activity!!.theme)
+        else mMIRecord.icon = resources.getDrawable(R.drawable.record, activity!!.theme)
     }
 
     private fun saveRecording() {
-        if(mRecordingBuffer == null || fragmentManager == null) return
+        if (mRecordingBuffer == null || fragmentManager == null) return
 
         SaveRecordingAsDialogFragment { dialog ->
-            if(mRecordingBuffer != null) {
+            if (mRecordingBuffer != null) {
                 mMachineanalysisViewModel.insert(Recording(0, dialog.recordingName, mAudioSampleRate, mNumAudioSamples, mAccelMean, mRecordingBuffer!!.toList()))
             }
         }.show(fragmentManager!!, "saveRecordingAs")
     }
 
-    private fun requestAudioPermissions():Boolean {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && activity!!.checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+    private fun requestAudioPermissions(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && activity!!.checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 1234)
             println("No Audio Permission granted")
             return false
@@ -224,8 +216,8 @@ class RecordFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventL
     }
 }
 
-class SaveRecordingAsDialogFragment(val onPositive:(SaveRecordingAsDialogFragment) -> Unit) : DialogFragment() {
-    private lateinit var mInput:EditText
+class SaveRecordingAsDialogFragment(val onPositive: (SaveRecordingAsDialogFragment) -> Unit) : DialogFragment() {
+    private lateinit var mInput: EditText
     var recordingName = ""
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -236,11 +228,11 @@ class SaveRecordingAsDialogFragment(val onPositive:(SaveRecordingAsDialogFragmen
             // Build the dialog and set up the button click handlers
             AlertDialog.Builder(it)
                     .setTitle(R.string.dialog_save_recording_as)
-                    .setPositiveButton(R.string.save) {_,_ ->
+                    .setPositiveButton(R.string.save) { _, _ ->
                         recordingName = mInput.text.toString()
                         onPositive(this)
                     }
-                    .setNegativeButton(R.string.cancel) {_,_ -> }
+                    .setNegativeButton(R.string.cancel) { _, _ -> }
                     .setView(mInput)
                     .create()
         } ?: throw IllegalStateException("Activity cannot be null")

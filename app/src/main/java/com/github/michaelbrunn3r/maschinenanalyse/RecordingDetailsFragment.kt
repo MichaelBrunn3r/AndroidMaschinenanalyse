@@ -3,10 +3,7 @@ package com.github.michaelbrunn3r.maschinenanalyse
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
@@ -21,16 +18,19 @@ import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentRecordingD
 import org.json.JSONArray
 import org.json.JSONObject
 
-class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
-
-    private lateinit var mBinding: FragmentRecordingDetailsBinding
+class RecordingDetailsFragment : Fragment() {
 
     private lateinit var mNavController: NavController
-    private val mNavArgs:RecordingDetailsFragmentArgs by navArgs()
+    private val mNavArgs: RecordingDetailsFragmentArgs by navArgs()
+
+    private lateinit var mBinding: FragmentRecordingDetailsBinding
+    private var mToolbar: Toolbar? = null
+
     private lateinit var mMachineanalysisViewModel: MachineanalysisViewModel
     private var mRecording: Recording? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(true)
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_recording_details, container, false)
         return mBinding.root
     }
@@ -40,22 +40,11 @@ class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
         mNavController = Navigation.findNavController(view)
 
-
-        mBinding.apply {
-            toolbar as Toolbar
-            toolbar.setNavigationIcon(R.drawable.back)
-            toolbar.setNavigationOnClickListener {
-                mNavController.navigateUp()
-            }
-            toolbar.inflateMenu(R.menu.menu_record_details)
-            toolbar.setOnMenuItemClickListener(this@RecordingDetailsFragment)
-        }
-
         mMachineanalysisViewModel = ViewModelProviders.of(this)[MachineanalysisViewModel::class.java]
-        mMachineanalysisViewModel.recordings.observe(this, Observer {recordings ->
+        mMachineanalysisViewModel.recordings.observe(this, Observer { recordings ->
             println("There are ${recordings.size} recordings and I show index ${mNavArgs.recordingId}")
-            for(r:Recording in recordings) {
-                if(r.uid == mNavArgs.recordingId) {
+            for (r: Recording in recordings) {
+                if (r.uid == mNavArgs.recordingId) {
                     mRecording = r
                     showRecordingData(r)
                 }
@@ -63,10 +52,21 @@ class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         })
     }
 
-    override fun onMenuItemClick(item: MenuItem?): Boolean {
-        when(item?.itemId) {
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        mToolbar = activity?.findViewById(R.id.toolbar)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_record_details, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.miShare -> {
-                if(mRecording != null) {
+                if (mRecording != null) {
                     shareRecording(mRecording!!)
                 }
                 return true
@@ -79,22 +79,20 @@ class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
         return false
     }
 
-    fun showRecordingData(recording:Recording) {
-        mBinding.apply {
-            toolbar as Toolbar
-            toolbar.title = recording.name
+    fun showRecordingData(recording: Recording) {
+        mToolbar?.title = recording.name
 
+        mBinding.apply {
             sampleRate.text = recording.audioSampleRate.toString()
             sampleSize.text = recording.numFFTAudioSamples.toString()
             meanAcceleration.text = recording.accelerationMean.toBigDecimal().toString()
 
             mBinding.apply {
-                audioSpectrogram.setFrequencyRange(0f, (recording.audioSampleRate/2).toFloat())
-                audioSpectrogram.update(recording.amplitudeMeans.toFloatArray()) {
-                    index -> fftFrequenzyBin(index, recording.audioSampleRate, recording.numFFTAudioSamples)
+                audioSpectrogram.setFrequencyRange(0f, (recording.audioSampleRate / 2).toFloat())
+                audioSpectrogram.update(recording.amplitudeMeans.toFloatArray()) { index ->
+                    fftFrequenzyBin(index, recording.audioSampleRate, recording.numFFTAudioSamples)
                 }
             }
-
         }
     }
 
@@ -122,7 +120,7 @@ class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
     }
 
     private fun showDeleteDialog(recording: Recording) {
-        if(fragmentManager == null) return
+        if (fragmentManager == null) return
 
         DeleteRecordingDialogFragment {
             mMachineanalysisViewModel.delete(recording.copy())
@@ -132,14 +130,14 @@ class RecordingDetailsFragment : Fragment(), Toolbar.OnMenuItemClickListener {
     }
 }
 
-class DeleteRecordingDialogFragment(val onPositive:(DeleteRecordingDialogFragment) -> Unit) : DialogFragment() {
+class DeleteRecordingDialogFragment(val onPositive: (DeleteRecordingDialogFragment) -> Unit) : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
             // Build the dialog and set up the button click handlers
             AlertDialog.Builder(it)
                     .setTitle(R.string.dialog_delete_recording)
-                    .setPositiveButton(R.string.delete) {_,_ -> onPositive(this)}
-                    .setNegativeButton(R.string.cancel) {_,_ -> }
+                    .setPositiveButton(R.string.delete) { _, _ -> onPositive(this) }
+                    .setNegativeButton(R.string.cancel) { _, _ -> }
                     .create()
         } ?: throw IllegalStateException("Activity cannot be null")
     }

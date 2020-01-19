@@ -7,10 +7,10 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.MainFragment"
-        android:label="MainFragment">
+        android:label="@string/app_name">
         <action
             android:id="@+id/action_mainFragment_to_recordingFragment"
-            app:destination="@id/recordingFragment"
+            app:destination="@id/recordFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -31,9 +31,9 @@
             app:destination="@id/recordingsListFragment" />
     </fragment>
     <fragment
-        android:id="@+id/recordingFragment"
+        android:id="@+id/recordFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.RecordFragment"
-        android:label="RecordingFragment">
+        android:label="@string/title_record_fragment">
         <action
             android:id="@+id/action_recordingFragment_to_settingsFragment"
             app:destination="@id/settingsFragment"
@@ -42,11 +42,11 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.SettingsFragment"
-        android:label="SettingsFragment" />
+        android:label="@string/title_settings_fragment" />
     <fragment
         android:id="@+id/monitorFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.MonitorFragment"
-        android:label="MonitorFragment">
+        android:label="@string/title_monitor_fragment">
         <action
             android:id="@+id/action_monitorFragment_to_settingsFragment"
             app:destination="@id/settingsFragment"
@@ -55,7 +55,7 @@
     <fragment
         android:id="@+id/recordingsListFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.RecordingsListFragment"
-        android:label="RecordingsListFragment" >
+        android:label="@string/title_recording_list_fragment" >
         <action
             android:id="@+id/action_recordingsListFragment_to_recordingDetailsFragment"
             app:destination="@id/recordingDetailsFragment" />
@@ -63,7 +63,7 @@
     <fragment
         android:id="@+id/recordingDetailsFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.RecordingDetailsFragment"
-        android:label="RecordingDetailsFragment" >
+        android:label=" " >
         <argument
             android:name="recording_id"
             app:argType="integer" />

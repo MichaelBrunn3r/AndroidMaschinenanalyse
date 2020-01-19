@@ -8,10 +8,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include
-            android:id="@+id/toolbar"
-            layout="@layout/app_bar" />
-
         <com.github.michaelbrunn3r.maschinenanalyse.TouchOverlay
             android:id="@+id/touchOverlay"
             android:layout_width="match_parent"

@@ -11,11 +11,7 @@ import android.media.AudioFormat
 import android.media.MediaRecorder
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
+import android.view.*
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -24,15 +20,15 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.preference.PreferenceManager
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentMonitorBinding
-import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentRecordBinding
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 
-class MonitorFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEventListener {
+class MonitorFragment : Fragment(), SensorEventListener {
 
     private lateinit var mNavController: NavController
     private lateinit var mBinding: FragmentMonitorBinding
+    private var mToolbar: Toolbar? = null
 
     private var mAudioSampleRate = 44100
     private var mAudioSampleSize = 4096
@@ -44,7 +40,10 @@ class MonitorFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEvent
 
     private var mIsAccelSampling = false
 
+    private lateinit var mMIStartStop: MenuItem
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(true)
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_monitor, container, false)
         return mBinding.root
     }
@@ -53,17 +52,6 @@ class MonitorFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEvent
         super.onViewCreated(view, savedInstanceState)
 
         mNavController = Navigation.findNavController(view)
-
-        mBinding.apply {
-            toolbar as Toolbar
-            toolbar.setTitle(R.string.title_monitor_fragment)
-            toolbar.setNavigationIcon(R.drawable.back)
-            toolbar.setNavigationOnClickListener {
-                mNavController.navigateUp()
-            }
-            toolbar.inflateMenu(R.menu.menu_monitor)
-            toolbar.setOnMenuItemClickListener(this@MonitorFragment)
-        }
 
         val overlay = view.findViewById<TouchOverlay>(R.id.touchOverlay)
         overlay.setOnShortClickListener {
@@ -74,6 +62,8 @@ class MonitorFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEvent
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        mToolbar = activity?.findViewById(R.id.toolbar)
+
         mSensorManager = activity?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         mAccelerometer = mSensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
@@ -82,9 +72,8 @@ class MonitorFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEvent
                 mBinding.audioSpectrogram.update(audioAmplitudes) { index -> fftFrequenzyBin(index, mAudioSampleRate, mAudioSampleSize)}
             })
             mAudioAmplitudesSource.setOnSamplingStateChangedListener { isSampling ->
-                val startStopMenuItem: MenuItem? = (mBinding.toolbar as Toolbar).menu?.findItem(R.id.miStartStop)
-                if(isSampling) startStopMenuItem?.icon = resources.getDrawable(R.drawable.pause_btn, activity!!.theme)
-                else startStopMenuItem?.icon = resources.getDrawable(R.drawable.play_btn, activity!!.theme)
+                if(isSampling) mMIStartStop.icon = resources.getDrawable(R.drawable.pause_btn, activity!!.theme)
+                else mMIStartStop.icon = resources.getDrawable(R.drawable.play_btn, activity!!.theme)
             }
         }
 
@@ -112,11 +101,18 @@ class MonitorFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEvent
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean("isSampling", mAudioAmplitudesSource.isSampling)
-        outState.putBoolean("isToolbarHidden", (mBinding.toolbar as Toolbar).visibility != View.VISIBLE)
+        outState.putBoolean("isToolbarHidden", mToolbar?.visibility != View.VISIBLE)
     }
 
-    override fun onMenuItemClick(item: MenuItem?): Boolean {
-        when(item?.itemId) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_monitor, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+
+        mMIStartStop = menu.findItem(R.id.miStartStop)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
             R.id.miSettings -> {
                 mNavController.navigate(R.id.action_monitorFragment_to_settingsFragment)
                 return true
@@ -148,11 +144,9 @@ class MonitorFragment : Fragment(), Toolbar.OnMenuItemClickListener, SensorEvent
     }
 
     private fun toggleToolbar() {
-        mBinding.apply {
-            toolbar.visibility = when(toolbar.visibility) {
-                View.VISIBLE -> View.GONE
-                else -> View.VISIBLE
-            }
+        mToolbar?.visibility = when(mToolbar?.visibility) {
+            View.VISIBLE -> View.GONE
+            else -> View.VISIBLE
         }
     }
 

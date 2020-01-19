@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout
+<layout xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -9,10 +9,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include
-            android:id="@+id/toolbar"
-            layout="@layout/app_bar" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/info_wrapper"
             android:layout_width="match_parent"
@@ -20,7 +16,7 @@
             android:paddingHorizontal="@dimen/paddingHorizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/textView"
@@ -28,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/recording_sample_rate"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/name" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/sample_rate"

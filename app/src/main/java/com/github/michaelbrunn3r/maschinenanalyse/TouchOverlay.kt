@@ -3,7 +3,6 @@ package com.github.michaelbrunn3r.maschinenanalyse
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 
 class TouchOverlay(context:Context, attrs:AttributeSet): LinearLayout(context, attrs) {

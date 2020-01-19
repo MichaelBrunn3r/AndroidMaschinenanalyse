@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -19,24 +18,16 @@ import androidx.recyclerview.widget.RecyclerView
 class RecordingsListFragment : Fragment() {
 
     private lateinit var mNavController: NavController
-    private lateinit var mToolbar: Toolbar
     private lateinit var mMachineanalysisViewModel: MachineanalysisViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_recordings, container, false)
+        return inflater.inflate(R.layout.fragment_recording_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         mNavController = Navigation.findNavController(view)
-
-        mToolbar = view.findViewById(R.id.toolbar)
-        mToolbar.setTitle(R.string.title_recording_list_fragment)
-        mToolbar.setNavigationIcon(R.drawable.back)
-        mToolbar.setNavigationOnClickListener {
-            mNavController.navigateUp()
-        }
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerview)
         val adapter = RecordingListAdapter(context!!, mNavController, object : RecordingListAdapter.RecordingClickedListener {
