@@ -52,7 +52,7 @@ class RecordFragment : Fragment(), SensorEventListener {
 
     private var mAudioSampleRate = 44100
     private var mNumAudioSamples = 4096
-    private var mAudioAmplitudesSource = FrequencyAmplitudesLiveData()
+    private var mAudioAmplitudesSource = FFTMagnitudesLiveData()
     private var mIsRecording: Boolean = false
 
     private lateinit var mMachineanalysisViewModel: MachineanalysisViewModel

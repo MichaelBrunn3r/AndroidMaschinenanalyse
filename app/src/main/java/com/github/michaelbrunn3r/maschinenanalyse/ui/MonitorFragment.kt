@@ -34,7 +34,7 @@ class MonitorFragment : Fragment(), SensorEventListener {
     private var mAudioSampleRate = 44100
     private var mAudioSampleSize = 4096
 
-    private var mAudioAmplitudesSource = FrequencyAmplitudesLiveData()
+    private var mAudioAmplitudesSource = FFTMagnitudesLiveData()
 
     private var mSensorManager: SensorManager? = null
     private var mAccelerometer: Sensor? = null
