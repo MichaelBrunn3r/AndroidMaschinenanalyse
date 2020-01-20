@@ -4,12 +4,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.ActivityMainBinding
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentMainBinding
@@ -32,9 +34,16 @@ class MainActivity : AppCompatActivity() {
 
         // Configure Toolbar
         setSupportActionBar(mBinding.toolbar)
-        val appBarCfg = AppBarConfiguration(mNavCtrl.graph)
+        val appBarCfg = AppBarConfiguration(mNavCtrl.graph, mBinding.drawerLayout)
         AppBarConfiguration.Builder()
         mBinding.toolbar.setupWithNavController(mNavCtrl, appBarCfg)
+
+        // Config nav drawer
+        mBinding.navView.setNavigationItemSelectedListener {
+            NavigationUI.onNavDestinationSelected(it, mNavCtrl)
+            mBinding.drawerLayout.closeDrawer(GravityCompat.START)
+            return@setNavigationItemSelectedListener true
+        }
     }
 }
 
