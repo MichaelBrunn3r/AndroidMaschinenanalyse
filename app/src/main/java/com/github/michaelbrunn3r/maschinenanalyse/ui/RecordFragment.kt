@@ -114,10 +114,6 @@ class RecordFragment : Fragment(), SensorEventListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.miSettings -> {
-                mNavController.navigate(R.id.action_recordingFragment_to_settingsFragment)
-                return true
-            }
             R.id.miRecord -> {
                 startRecording()
                 return true

@@ -2,47 +2,12 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@+id/mainFragment">
+    app:startDestination="@id/monitorFragment">
 
-    <fragment
-        android:id="@+id/mainFragment"
-        android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.MainFragment"
-        android:label="@string/app_name">
-        <action
-            android:id="@+id/action_mainFragment_to_recordingFragment"
-            app:destination="@id/recordFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_mainFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment"
-            app:enterAnim="@anim/settings_in_bottom" />
-        <action
-            android:id="@+id/action_mainFragment_to_monitorFragment"
-            app:destination="@id/monitorFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_mainFragment_to_recordingsListFragment"
-            app:destination="@id/recordingListFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-    </fragment>
     <fragment
         android:id="@+id/recordFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.RecordFragment"
-        android:label="@string/title_record_fragment">
-        <action
-            android:id="@+id/action_recordingFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment"
-            app:enterAnim="@anim/settings_in_bottom" />
-    </fragment>
+        android:label="@string/title_record_fragment"/>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.SettingsFragment"
@@ -50,12 +15,7 @@
     <fragment
         android:id="@+id/monitorFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.MonitorFragment"
-        android:label="@string/title_monitor_fragment">
-        <action
-            android:id="@+id/action_monitorFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment"
-            app:enterAnim="@anim/settings_in_bottom" />
-    </fragment>
+        android:label="@string/title_monitor_fragment"/>
     <fragment
         android:id="@+id/recordingListFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.RecordingsListFragment"

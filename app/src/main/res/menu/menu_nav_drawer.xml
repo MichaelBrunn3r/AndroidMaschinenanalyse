@@ -13,4 +13,10 @@
         android:id="@+id/recordingListFragment"
         android:icon="@drawable/list"
         android:title="@string/title_recording_list_fragment" />
+
+    <item
+        android:id="@+id/settingsFragment"
+        android:icon="@drawable/settings"
+        android:title="Settings"
+        />
 </menu>

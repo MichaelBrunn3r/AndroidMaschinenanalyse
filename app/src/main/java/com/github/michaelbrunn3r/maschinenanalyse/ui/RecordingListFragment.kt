@@ -35,7 +35,7 @@ class RecordingsListFragment : Fragment() {
         mNavController = Navigation.findNavController(view)
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerview)
-        val adapter = RecordingListAdapter(context!!, mNavController, object : RecordingListAdapter.RecordingClickedListener {
+        val adapter = RecordingListAdapter(context!!, object : RecordingListAdapter.RecordingClickedListener {
             override fun onClicked(idx: Int) {
                 val recording_id = mMachineanalysisViewModel.recordings.value!![idx].uid
                 val action = RecordingsListFragmentDirections.actionRecordingsListFragmentToRecordingDetailsFragment(recording_id)
@@ -53,7 +53,7 @@ class RecordingsListFragment : Fragment() {
     }
 }
 
-class RecordingListAdapter internal constructor(val context: Context, navController: NavController, val recordingListener: RecordingClickedListener) : RecyclerView.Adapter<RecordingListAdapter.RecordingViewHolder>() {
+class RecordingListAdapter internal constructor(val context: Context, val recordingListener: RecordingClickedListener) : RecyclerView.Adapter<RecordingListAdapter.RecordingViewHolder>() {
 
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
     private var mRecordings = emptyList<Recording>() // Cached Recordings

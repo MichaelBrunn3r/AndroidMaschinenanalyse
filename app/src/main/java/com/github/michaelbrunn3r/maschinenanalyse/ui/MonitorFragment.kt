@@ -42,7 +42,7 @@ class MonitorFragment : Fragment(), SensorEventListener {
 
     private var mIsAccelSampling = false
 
-    private lateinit var mMIStartStop: MenuItem
+    private var mMIStartStop: MenuItem? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -74,8 +74,10 @@ class MonitorFragment : Fragment(), SensorEventListener {
                 mBinding.audioSpectrogram.update(audioAmplitudes) { index -> fftFrequenzyBin(index, mAudioSampleRate, mAudioSampleSize) }
             })
             mAudioAmplitudesSource.setOnSamplingStateChangedListener { isSampling ->
-                if(isSampling) mMIStartStop.icon = resources.getDrawable(R.drawable.pause_btn, activity!!.theme)
-                else mMIStartStop.icon = resources.getDrawable(R.drawable.play_btn, activity!!.theme)
+                mMIStartStop?.apply {
+                    icon = if(isSampling) resources.getDrawable(R.drawable.pause_btn, activity!!.theme)
+                        else resources.getDrawable(R.drawable.play_btn, activity!!.theme)
+                }
             }
         }
 
@@ -115,10 +117,6 @@ class MonitorFragment : Fragment(), SensorEventListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.miSettings -> {
-                mNavController.navigate(R.id.action_monitorFragment_to_settingsFragment)
-                return true
-            }
             R.id.miStartStop -> {
                 mAudioAmplitudesSource.setSamplingState(!(mAudioAmplitudesSource.isSampling))
                 if(mAccelerometer != null) {

@@ -14,10 +14,4 @@
         app:showAsAction="always"
         android:icon="@drawable/record"
         android:title="Record" />
-
-    <item
-        android:id="@+id/miSettings"
-        app:showAsAction="always"
-        android:icon="@drawable/settings"
-        android:title="Settings" />
 </menu>
