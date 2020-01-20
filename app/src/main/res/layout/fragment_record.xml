@@ -12,7 +12,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/padding">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -38,7 +39,7 @@
             app:showLegend="false"
             app:viewPortOffsetBottom="10"
             app:viewPortOffsetLeft="80"
-            app:viewPortOffsetRight="0"
+            app:viewPortOffsetRight="50"
             app:viewPortOffsetTop="50" />
 
     </LinearLayout>

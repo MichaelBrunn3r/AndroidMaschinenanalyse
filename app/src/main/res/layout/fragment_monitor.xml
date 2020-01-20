@@ -29,8 +29,8 @@
                 app:showLegend="false"
                 app:viewPortOffsetBottom="10"
                 app:viewPortOffsetLeft="80"
-                app:viewPortOffsetRight="0"
-                app:viewPortOffsetTop="10" />
+                app:viewPortOffsetRight="50"
+                app:viewPortOffsetTop="50" />
 
             <com.github.michaelbrunn3r.maschinenanalyse.ui.SpectrogramView
                 android:id="@+id/audio_spectrogram"
@@ -46,7 +46,7 @@
                 app:showLegend="false"
                 app:viewPortOffsetBottom="10"
                 app:viewPortOffsetLeft="80"
-                app:viewPortOffsetRight="0"
+                app:viewPortOffsetRight="50"
                 app:viewPortOffsetTop="50" />
         </com.github.michaelbrunn3r.maschinenanalyse.ui.TouchOverlayLayout>
     </LinearLayout>

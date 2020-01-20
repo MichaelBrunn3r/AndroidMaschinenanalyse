@@ -103,7 +103,7 @@ class RecordingDetailsFragment : Fragment() {
 
             val cal = Calendar.getInstance()
             cal.timeInMillis = recording.captureDate
-            val f = DateFormat.getDateFormat(activity)
+            val f = DateFormat.getLongDateFormat(activity)
             captureDate.text = f.format(cal.time)
 
             recording_duration.text = String.format(
