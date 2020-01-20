@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/paddingHorizontal">
+    android:paddingHorizontal="@dimen/padding">
 
     <TextView
         android:id="@+id/name"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@android:style/TextAppearance.Large"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@sample/recordings.json/recordings/name" />
 
@@ -50,5 +51,13 @@
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toTopOf="@+id/textView2"
         tools:text="@sample/recordings.json/recordings/sample_size" />
+
+    <TextView
+        android:id="@+id/capture_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@sample/recordings.json/recordings/capture_date"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

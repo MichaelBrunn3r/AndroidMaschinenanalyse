@@ -3,6 +3,7 @@ package com.github.michaelbrunn3r.maschinenanalyse.ui
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
@@ -18,8 +19,11 @@ import com.github.michaelbrunn3r.maschinenanalyse.*
 import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentRecordingDetailsBinding
+import kotlinx.android.synthetic.main.fragment_recording_details.*
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 class RecordingDetailsFragment : Fragment() {
 
@@ -88,7 +92,7 @@ class RecordingDetailsFragment : Fragment() {
         mBinding.apply {
             sampleRate.text = recording.audioSampleRate.toString()
             sampleSize.text = recording.numFFTAudioSamples.toString()
-            meanAcceleration.text = recording.accelerationMean.toBigDecimal().toString()
+            meanAcceleration.text = recording.accelerationMean.toString()
 
             mBinding.apply {
                 audioSpectrogram.setFrequencyRange(0f, (recording.audioSampleRate / 2).toFloat())
@@ -96,16 +100,29 @@ class RecordingDetailsFragment : Fragment() {
                     fftFrequenzyBin(index, recording.audioSampleRate, recording.numFFTAudioSamples)
                 }
             }
+
+            val cal = Calendar.getInstance()
+            cal.timeInMillis = recording.captureDate
+            val f = DateFormat.getDateFormat(activity)
+            captureDate.text = f.format(cal.time)
+
+            recording_duration.text = String.format(
+                        "%02d s %02d ms",
+                        TimeUnit.MILLISECONDS.toSeconds(recording.duration),
+                        recording.duration - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(recording.duration))
+                    )
         }
     }
 
     fun recordingToJSON(recording: Recording): JSONObject {
         val r = JSONObject()
         r.put("name", recording.name)
-        r.put("sampleRate", recording.audioSampleRate)
-        r.put("samples", recording.numFFTAudioSamples)
-        r.put("accelMean", recording.accelerationMean)
-        r.put("meanFFT", JSONArray(recording.amplitudeMeans))
+        r.put("audio_sample_rate_hz", recording.audioSampleRate)
+        r.put("num_fft_audio_samples", recording.numFFTAudioSamples)
+        r.put("accel_mean", recording.accelerationMean)
+        r.put("duration_ms", recording.duration)
+        r.put("capture_date", recording.captureDate)
+        r.put("amplitude_means", JSONArray(recording.amplitudeMeans))
         return r
     }
 

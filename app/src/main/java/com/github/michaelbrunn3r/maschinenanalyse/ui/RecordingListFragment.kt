@@ -2,6 +2,7 @@ package com.github.michaelbrunn3r.maschinenanalyse.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.R
 import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
+import java.util.*
 
 class RecordingsListFragment : Fragment() {
 
@@ -51,7 +53,7 @@ class RecordingsListFragment : Fragment() {
     }
 }
 
-class RecordingListAdapter internal constructor(context: Context, navController: NavController, val recordingListener: RecordingClickedListener) : RecyclerView.Adapter<RecordingListAdapter.RecordingViewHolder>() {
+class RecordingListAdapter internal constructor(val context: Context, navController: NavController, val recordingListener: RecordingClickedListener) : RecyclerView.Adapter<RecordingListAdapter.RecordingViewHolder>() {
 
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
     private var mRecordings = emptyList<Recording>() // Cached Recordings
@@ -60,6 +62,7 @@ class RecordingListAdapter internal constructor(context: Context, navController:
         val nameView: TextView = itemView.findViewById(R.id.name)
         val sampleRateView: TextView = itemView.findViewById(R.id.sample_rate)
         val sampleSizeView: TextView = itemView.findViewById(R.id.sample_size)
+        val captureDateView: TextView = itemView.findViewById(R.id.capture_date)
 
         init {
             itemView.setOnClickListener {
@@ -71,6 +74,11 @@ class RecordingListAdapter internal constructor(context: Context, navController:
             nameView.text = recording.name
             sampleRateView.text = recording.audioSampleRate.toString()
             sampleSizeView.text = recording.numFFTAudioSamples.toString()
+
+            val cal = Calendar.getInstance()
+            cal.timeInMillis = recording.captureDate
+            val f = DateFormat.getDateFormat(context)
+            captureDateView.text = f.format(cal.time)
         }
     }
 

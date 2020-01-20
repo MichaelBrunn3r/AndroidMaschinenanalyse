@@ -12,7 +12,7 @@
 
     <EditTextPreference
         android:key="recordingDuration"
-        app:title="Recording Duration (Seconds)"
+        app:title="Recording Duration (Milliseconds)"
         app:summary="Length of recordings"
         android:defaultValue="10000" />
 

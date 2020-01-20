@@ -21,6 +21,7 @@ import androidx.navigation.Navigation
 import androidx.preference.PreferenceManager
 import com.github.michaelbrunn3r.maschinenanalyse.*
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentMonitorBinding
+import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -138,7 +139,8 @@ class MonitorFragment : Fragment(), SensorEventListener {
         if(event != null) {
             when(event.sensor.type) {
                 Sensor.TYPE_ACCELEROMETER -> {
-                    mBinding.accelRealtimeGraph.update(sqrt(event.values[0].pow(2) + event.values[1].pow(2) + event.values[2].pow(2)) - 9.81f)
+                    val value = max(sqrt(event.values[0].pow(2) + event.values[1].pow(2) + event.values[2].pow(2)) - 9.81f, 0.0f)
+                    mBinding.accelRealtimeGraph.update(value)
                 }
             }
         }

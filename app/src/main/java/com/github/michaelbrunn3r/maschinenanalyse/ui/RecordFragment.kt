@@ -29,6 +29,7 @@ import com.github.michaelbrunn3r.maschinenanalyse.*
 import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentRecordBinding
+import java.util.*
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -204,7 +205,18 @@ class RecordFragment : Fragment(), SensorEventListener {
 
         SaveRecordingAsDialogFragment { dialog ->
             if (mRecordingBuffer != null) {
-                mMachineanalysisViewModel.insert(Recording(0, dialog.recordingName, mAudioSampleRate, mNumAudioSamples, mAccelMean, mRecordingBuffer!!.toList()))
+                mMachineanalysisViewModel.insert(
+                        Recording(
+                                0,
+                                dialog.recordingName,
+                                mAudioSampleRate,
+                                mNumAudioSamples,
+                                mAccelMean,
+                                mRecordingBuffer!!.toList(),
+                                mRecordingDurationMs,
+                                System.currentTimeMillis()
+                        )
+                )
             }
         }.show(fragmentManager!!, "saveRecordingAs")
     }

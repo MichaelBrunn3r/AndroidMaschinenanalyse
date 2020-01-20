@@ -4,22 +4,51 @@
         {
             "name": "Anomaly1",
             "sample_rate": 44100,
-            "sample_size": 4096
+            "sample_size": 4096,
+            "duration": 5000,
+            "capture_date": 1579511773458
         },
         {
             "name": "Normal Operation",
             "sample_rate": 44100,
-            "sample_size": 4096
+            "sample_size": 4096,
+            "duration": 5000,
+            "capture_date": 1579511773458
         },
         {
             "name": "Samsung",
             "sample_rate": 44100,
-            "sample_size": 512
+            "sample_size": 512,
+            "duration": 5000,
+            "capture_date": 1579511773458
         },
         {
             "name": "High Frequency",
             "sample_rate": 44100,
-            "sample_size": 512
+            "sample_size": 512,
+            "duration": 5000,
+            "capture_date": 1579511773458
+        },
+        {
+            "name": "Loooooong",
+            "sample_rate": 44100,
+            "sample_size": 4096,
+            "duration": 50000,
+            "capture_date": 1579511773458
+        },
+        {
+            "name": "Shrt",
+            "sample_rate": 44100,
+            "sample_size": 512,
+            "duration": 100,
+            "capture_date": 1579511773458
+        },
+        {
+            "name": "Last Year",
+            "sample_rate": 44100,
+            "sample_size": 1024,
+            "duration": 5000,
+            "capture_date": 1547938800000
         }
     ]
 }

@@ -17,4 +17,6 @@
     <string name="cancel">Abbrechen</string>
     <string name="save">Speichern</string>
     <string name="delete">Löschen</string>
+    <string name="captured">Aufgenommen:</string>
+    <string name="recording_duration">Aufnahmedauer</string>
 </resources>
