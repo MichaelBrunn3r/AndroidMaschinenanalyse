@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <com.github.michaelbrunn3r.maschinenanalyse.SpectrogramView
+        <com.github.michaelbrunn3r.maschinenanalyse.ui.SpectrogramView
             android:id="@+id/spectrogram"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

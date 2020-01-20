@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.github.michaelbrunn3r.maschinenanalyse.MainFragment"
+        android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.MainFragment"
         android:label="@string/app_name">
         <action
             android:id="@+id/action_mainFragment_to_recordingFragment"
@@ -36,7 +36,7 @@
     </fragment>
     <fragment
         android:id="@+id/recordFragment"
-        android:name="com.github.michaelbrunn3r.maschinenanalyse.RecordFragment"
+        android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.RecordFragment"
         android:label="@string/title_record_fragment">
         <action
             android:id="@+id/action_recordingFragment_to_settingsFragment"
@@ -45,11 +45,11 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.github.michaelbrunn3r.maschinenanalyse.SettingsFragment"
+        android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.SettingsFragment"
         android:label="@string/title_settings_fragment" />
     <fragment
         android:id="@+id/monitorFragment"
-        android:name="com.github.michaelbrunn3r.maschinenanalyse.MonitorFragment"
+        android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.MonitorFragment"
         android:label="@string/title_monitor_fragment">
         <action
             android:id="@+id/action_monitorFragment_to_settingsFragment"
@@ -58,7 +58,7 @@
     </fragment>
     <fragment
         android:id="@+id/recordingListFragment"
-        android:name="com.github.michaelbrunn3r.maschinenanalyse.RecordingsListFragment"
+        android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.RecordingsListFragment"
         android:label="@string/title_recording_list_fragment" >
         <action
             android:id="@+id/action_recordingsListFragment_to_recordingDetailsFragment"
@@ -70,7 +70,7 @@
     </fragment>
     <fragment
         android:id="@+id/recordingDetailsFragment"
-        android:name="com.github.michaelbrunn3r.maschinenanalyse.RecordingDetailsFragment"
+        android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.RecordingDetailsFragment"
         android:label=" " >
         <argument
             android:name="recording_id"

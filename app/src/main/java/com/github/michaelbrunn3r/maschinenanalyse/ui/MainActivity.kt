@@ -1,4 +1,4 @@
-package com.github.michaelbrunn3r.maschinenanalyse
+package com.github.michaelbrunn3r.maschinenanalyse.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,6 +13,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
+import com.github.michaelbrunn3r.maschinenanalyse.R
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.ActivityMainBinding
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentMainBinding
 

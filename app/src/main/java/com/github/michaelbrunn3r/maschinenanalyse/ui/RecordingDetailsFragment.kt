@@ -1,4 +1,4 @@
-package com.github.michaelbrunn3r.maschinenanalyse
+package com.github.michaelbrunn3r.maschinenanalyse.ui
 
 import android.app.Dialog
 import android.content.Intent
@@ -14,6 +14,9 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
+import com.github.michaelbrunn3r.maschinenanalyse.*
+import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
+import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentRecordingDetailsBinding
 import org.json.JSONArray
 import org.json.JSONObject

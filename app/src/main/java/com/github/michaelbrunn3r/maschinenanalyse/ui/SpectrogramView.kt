@@ -1,17 +1,19 @@
-package com.github.michaelbrunn3r.maschinenanalyse
+package com.github.michaelbrunn3r.maschinenanalyse.ui
 
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import androidx.core.content.ContextCompat
+import com.github.michaelbrunn3r.maschinenanalyse.R
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.LargeValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 
-class RealtimeLinearView(context: Context, attrs: AttributeSet): LineChart(context, attrs) {
+public class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(context, attrs) {
 
     private var mGraphColor = Color.BLACK
     private var mGraphLineWidth:Float = 1f
@@ -24,13 +26,14 @@ class RealtimeLinearView(context: Context, attrs: AttributeSet): LineChart(conte
         isDragEnabled = false
         setPinchZoom(false)
 
-        isAutoScaleMinMaxEnabled = true
-
         xAxis.textColor = ContextCompat.getColor(context, R.color.nobel)
-        xAxis.setDrawLabels(false)
+        xAxis.valueFormatter = LargeValueFormatter("Hz")
+        setFrequencyRange(0f, 4096.toFloat()/2) // Default Value
 
         axisLeft.axisMinimum = 0f
+        axisLeft.axisMaximum = 300f
         axisLeft.textColor = ContextCompat.getColor(context, R.color.nobel)
+        axisLeft.valueFormatter = LargeValueFormatter()
 
         axisRight.isEnabled = false
 
@@ -68,29 +71,43 @@ class RealtimeLinearView(context: Context, attrs: AttributeSet): LineChart(conte
 
             // Axis
             xAxis.setDrawGridLines(isFlagSet(getInt(R.styleable.MPAndroidChart_drawGridLines, FLAG_DRAW_GRID_LINES_BOTH), FLAG_DRAW_GRID_LINES_X))
+            xAxis.setDrawLabels(isFlagSet(getInt(R.styleable.MPAndroidChart_drawLabels, FLAG_DRAW_LABELS_BOTH), FLAG_DRAW_LABELS_X))
+            xAxis.setAvoidFirstLastClipping(true)
 
             axisLeft.setDrawGridLines(isFlagSet(getInt(R.styleable.MPAndroidChart_drawGridLines, FLAG_DRAW_GRID_LINES_BOTH), FLAG_DRAW_GRID_LINES_Y))
             axisLeft.setDrawLabels(isFlagSet(getInt(R.styleable.MPAndroidChart_drawLabels, FLAG_DRAW_LABELS_BOTH), FLAG_DRAW_LABELS_Y))
         }
+    }
 
-        data.addDataSet(createSet())
-        for(i in 0 until 500) {
-            data.addEntry(Entry(i.toFloat(), 0f), 0)
-        }
+    fun setFrequencyRange(min:Float, max:Float) {
+        xAxis.axisMinimum = min
+        xAxis.axisMaximum = max
+        data.clearValues()
         invalidate()
     }
 
     @Synchronized
-    fun update(value:Float) {
+    fun update(magnitudes:FloatArray, frequenzyForIndex: (index:Int) -> Float) {
         if(data != null) {
-            val set: ILineDataSet = data.getDataSetByIndex(0)
-
-            for(i in 0 until set.entryCount-1) {
-                set.getEntryForIndex(i).y = set.getEntryForIndex(i+1).y
+            var set: ILineDataSet? = data.getDataSetByIndex(0)
+            if(set == null) {
+                set = createSet()
+                data.addDataSet(set)
             }
-            set.getEntryForIndex(set.entryCount -1).y = value
+
+            if(set.entryCount != magnitudes.size) {
+                set.clear()
+                for(i in magnitudes.indices) {
+                    data.addEntry(Entry(frequenzyForIndex(i), magnitudes[i]), 0)
+                }
+            } else {
+                for(i in magnitudes.indices) {
+                    set.getEntryForIndex(i).y = magnitudes[i]
+                }
+            }
 
             data.notifyDataChanged()
+
             notifyDataSetChanged()
             invalidate()
         }

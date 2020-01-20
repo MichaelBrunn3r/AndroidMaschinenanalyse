@@ -1,4 +1,4 @@
-package com.github.michaelbrunn3r.maschinenanalyse
+package com.github.michaelbrunn3r.maschinenanalyse.database
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson

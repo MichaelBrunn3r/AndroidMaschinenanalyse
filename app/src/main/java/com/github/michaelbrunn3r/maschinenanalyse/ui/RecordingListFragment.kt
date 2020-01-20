@@ -1,4 +1,4 @@
-package com.github.michaelbrunn3r.maschinenanalyse
+package com.github.michaelbrunn3r.maschinenanalyse.ui
 
 import android.content.Context
 import android.os.Bundle
@@ -14,6 +14,9 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
+import com.github.michaelbrunn3r.maschinenanalyse.R
+import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
 
 class RecordingsListFragment : Fragment() {
 

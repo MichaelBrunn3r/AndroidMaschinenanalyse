@@ -1,4 +1,4 @@
-package com.github.michaelbrunn3r.maschinenanalyse
+package com.github.michaelbrunn3r.maschinenanalyse.ui
 
 import android.Manifest
 import android.content.Context
@@ -19,6 +19,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.preference.PreferenceManager
+import com.github.michaelbrunn3r.maschinenanalyse.*
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentMonitorBinding
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -69,7 +70,7 @@ class MonitorFragment : Fragment(), SensorEventListener {
 
         if(requestAudioPermissions()) {
             mAudioAmplitudesSource.observe(this, Observer { audioAmplitudes ->
-                mBinding.audioSpectrogram.update(audioAmplitudes) { index -> fftFrequenzyBin(index, mAudioSampleRate, mAudioSampleSize)}
+                mBinding.audioSpectrogram.update(audioAmplitudes) { index -> fftFrequenzyBin(index, mAudioSampleRate, mAudioSampleSize) }
             })
             mAudioAmplitudesSource.setOnSamplingStateChangedListener { isSampling ->
                 if(isSampling) mMIStartStop.icon = resources.getDrawable(R.drawable.pause_btn, activity!!.theme)

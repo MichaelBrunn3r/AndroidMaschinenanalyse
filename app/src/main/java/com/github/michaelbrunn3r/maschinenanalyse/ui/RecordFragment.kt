@@ -1,4 +1,4 @@
-package com.github.michaelbrunn3r.maschinenanalyse
+package com.github.michaelbrunn3r.maschinenanalyse.ui
 
 import android.Manifest
 import android.app.Dialog
@@ -25,6 +25,9 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.preference.PreferenceManager
+import com.github.michaelbrunn3r.maschinenanalyse.*
+import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
+import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentRecordBinding
 import kotlin.math.pow
 import kotlin.math.sqrt

@@ -1,9 +1,10 @@
-package com.github.michaelbrunn3r.maschinenanalyse
+package com.github.michaelbrunn3r.maschinenanalyse.ui
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.LinearLayout
+import com.github.michaelbrunn3r.maschinenanalyse.R
 
 class TouchOverlay(context:Context, attrs:AttributeSet): LinearLayout(context, attrs) {
 
