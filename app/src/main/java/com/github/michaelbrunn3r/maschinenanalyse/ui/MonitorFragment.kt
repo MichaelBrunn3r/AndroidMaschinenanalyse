@@ -54,7 +54,7 @@ class MonitorFragment : Fragment(), SensorEventListener {
 
         mNavController = Navigation.findNavController(view)
 
-        val overlay = view.findViewById<TouchOverlay>(R.id.touchOverlay)
+        val overlay = view.findViewById<TouchOverlayLayout>(R.id.touchOverlay)
         overlay.setOnShortClickListener {
             mToolbar?.toggle()
         }

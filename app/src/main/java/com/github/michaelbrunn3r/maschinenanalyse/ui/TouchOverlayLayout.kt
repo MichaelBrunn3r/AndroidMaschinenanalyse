@@ -6,15 +6,15 @@ import android.view.MotionEvent
 import android.widget.LinearLayout
 import com.github.michaelbrunn3r.maschinenanalyse.R
 
-class TouchOverlay(context:Context, attrs:AttributeSet): LinearLayout(context, attrs) {
+class TouchOverlayLayout(context:Context, attrs:AttributeSet): LinearLayout(context, attrs) {
 
     private var mLastAction:Int? = -1
     private var mOnShortClickListener:(()->Unit)? = null
     private var mMaxShortClickDurationMs:Int = DEFAULT_MAX_SHORT_CLICK_DURATION
 
     init {
-        context.theme.obtainStyledAttributes(attrs, R.styleable.TouchOverlay, 0, 0).apply {
-            mMaxShortClickDurationMs = getInt(R.styleable.TouchOverlay_maxShortClickDurationMs, DEFAULT_MAX_SHORT_CLICK_DURATION)
+        context.theme.obtainStyledAttributes(attrs, R.styleable.TouchOverlayLayout, 0, 0).apply {
+            mMaxShortClickDurationMs = getInt(R.styleable.TouchOverlayLayout_maxShortClickDurationMs, DEFAULT_MAX_SHORT_CLICK_DURATION)
         }
     }
 
