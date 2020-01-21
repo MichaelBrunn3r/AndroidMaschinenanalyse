@@ -10,43 +10,43 @@ class FFTMagnitudesLiveData : LiveData<FloatArray>() {
 
     private var mSamplesSource:Flowable<ShortArray>? = null
     private val mDisposable: CompositeDisposable = CompositeDisposable()
-    private var mOnSamplingStateChangedListener : ((Boolean) -> Unit)? = null
-    var isSampling:Boolean = false
+    private var mOnSamplingStateChangedListener: ((Boolean) -> Unit)? = null
+    var isSampling: Boolean = false
         private set(value) {
             field = value
             mOnSamplingStateChangedListener?.invoke(value)
         }
 
     override fun onActive() {
-        if(isSampling) startSampling()
+        if (isSampling) startSampling()
     }
 
     override fun onInactive() {
-        if(isSampling) pauseSampling()
+        if (isSampling) pauseSampling()
     }
 
-    fun setOnSamplingStateChangedListener(l: (isSampling:Boolean) -> Unit) {
+    fun setOnSamplingStateChangedListener(l: (isSampling: Boolean) -> Unit) {
         mOnSamplingStateChangedListener = l
     }
 
-    fun setSamplingState(isSampling:Boolean) {
-        if(isSampling) startSampling()
+    fun setSamplingState(isSampling: Boolean) {
+        if (isSampling) startSampling()
         else stopSampling()
     }
 
     fun setSamplesSource(sampleSource:Flowable<ShortArray>) {
         mSamplesSource = sampleSource
         mDisposable.clear()
-        if(isSampling) {
+        if (isSampling) {
             startSampling()
         }
     }
 
     private fun startSampling() {
-        if(mDisposable.size() != 0 || mSamplesSource == null) return
+        if (mDisposable.size() != 0 || mSamplesSource == null) return
 
         mDisposable.add(FFTMagnitudesSource(mSamplesSource!!).stream().observeOn(Schedulers.newThread())
-                .subscribe {audioAmplitudes ->
+                .subscribe { audioAmplitudes ->
                     postValue(audioAmplitudes)
                 })
 
@@ -67,9 +67,9 @@ class FFTMagnitudesSource(val sampleSource:Flowable<ShortArray>) {
 
     private var mNoise: Noise? = null
 
-    fun stream() : Flowable<FloatArray> {
-        return sampleSource.map {samples ->
-            if(mNoise == null) mNoise = Noise.real(samples.size)
+    fun stream(): Flowable<FloatArray> {
+        return sampleSource.map { samples ->
+            if (mNoise == null) mNoise = Noise.real(samples.size)
 
             val fft = FloatArray(samples.size+2)
             fft.applyWindow(hannWindow)
@@ -79,9 +79,9 @@ class FFTMagnitudesSource(val sampleSource:Flowable<ShortArray>) {
         }
     }
 
-    private fun shortArrToFloatArr(shortArr:ShortArray): FloatArray {
+    private fun shortArrToFloatArr(shortArr: ShortArray): FloatArray {
         val floatArr = FloatArray(shortArr.size)
-        for(i in shortArr.indices) {
+        for (i in shortArr.indices) {
             floatArr[i] = shortArr[i].toFloat()
         }
         return floatArr

@@ -17,6 +17,7 @@ public class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(c
 
     private var mGraphColor = Color.BLACK
     private var mGraphLineWidth:Float = 1f
+
     init {
         data = LineData()
         setHardwareAccelerationEnabled(true)
