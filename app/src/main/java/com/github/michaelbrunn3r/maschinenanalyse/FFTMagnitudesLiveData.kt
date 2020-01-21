@@ -71,10 +71,12 @@ class FFTMagnitudesSource(val sampleSource:Flowable<ShortArray>) {
         return sampleSource.map { samples ->
             if (mNoise == null) mNoise = Noise.real(samples.size)
 
-            val fft = FloatArray(samples.size+2)
-            fft.applyWindow(hannWindow)
 
-            mNoise!!.fft(shortArrToFloatArr(samples), fft)
+            val samplesFloat = shortArrToFloatArr(samples)
+            samplesFloat.applyWindow(hannWindow)
+
+            val fft = FloatArray(samples.size+2)
+            mNoise!!.fft(samplesFloat, fft)
             return@map calcFFTMagnitudes(fft)
         }
     }
