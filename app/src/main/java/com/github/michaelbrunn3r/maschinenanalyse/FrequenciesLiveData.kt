@@ -6,7 +6,7 @@ import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class FFTMagnitudesLiveData : LiveData<FloatArray>() {
+class FrequenciesLiveData : LiveData<FloatArray>() {
 
     private var mSamplesSource:Flowable<ShortArray>? = null
     private val mDisposable: CompositeDisposable = CompositeDisposable()
@@ -45,7 +45,7 @@ class FFTMagnitudesLiveData : LiveData<FloatArray>() {
     private fun startSampling() {
         if (mDisposable.size() != 0 || mSamplesSource == null) return
 
-        mDisposable.add(FFTMagnitudesSource(mSamplesSource!!).stream().observeOn(Schedulers.newThread())
+        mDisposable.add(FrequenciesSource(mSamplesSource!!).stream().observeOn(Schedulers.newThread())
                 .subscribe { audioAmplitudes ->
                     postValue(audioAmplitudes)
                 })
@@ -63,7 +63,7 @@ class FFTMagnitudesLiveData : LiveData<FloatArray>() {
     }
 }
 
-class FFTMagnitudesSource(val sampleSource:Flowable<ShortArray>) {
+class FrequenciesSource(val sampleSource:Flowable<ShortArray>) {
 
     private var mNoise: Noise? = null
 

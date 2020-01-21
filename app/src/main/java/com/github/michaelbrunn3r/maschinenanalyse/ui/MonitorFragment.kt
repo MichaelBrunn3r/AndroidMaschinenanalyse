@@ -35,7 +35,7 @@ class MonitorFragment : Fragment(), SensorEventListener {
     private var mAudioSampleRate = 44100
     private var mAudioSampleSize = 4096
 
-    private var mAudioAmplitudesSource = FFTMagnitudesLiveData()
+    private var mAudioFrequenciesSource = FrequenciesLiveData()
 
     private var mSensorManager: SensorManager? = null
     private var mAccelerometer: Sensor? = null
@@ -70,10 +70,10 @@ class MonitorFragment : Fragment(), SensorEventListener {
         mAccelerometer = mSensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
         if(requestAudioPermissions()) {
-            mAudioAmplitudesSource.observe(this, Observer { audioAmplitudes ->
-                mBinding.audioSpectrogram.update(audioAmplitudes)
+            mAudioFrequenciesSource.observe(this, Observer { frequencies ->
+                mBinding.audioSpectrogram.update(frequencies)
             })
-            mAudioAmplitudesSource.setOnSamplingStateChangedListener { isSampling ->
+            mAudioFrequenciesSource.setOnSamplingStateChangedListener { isSampling ->
                 mMIStartStop?.apply {
                     icon = if(isSampling) resources.getDrawable(R.drawable.pause_btn, activity!!.theme)
                         else resources.getDrawable(R.drawable.play_btn, activity!!.theme)
@@ -82,7 +82,7 @@ class MonitorFragment : Fragment(), SensorEventListener {
         }
 
         if(savedInstanceState != null) {
-            mAudioAmplitudesSource.setSamplingState(savedInstanceState.getBoolean("isSampling", false))
+            mAudioFrequenciesSource.setSamplingState(savedInstanceState.getBoolean("isSampling", false))
             if(savedInstanceState.getBoolean("isToolbarHidden", false)) mToolbar?.toggle()
         }
     }
@@ -99,12 +99,12 @@ class MonitorFragment : Fragment(), SensorEventListener {
         mAudioSampleSize = preferences.getString("fftAudioSamples", "4096")!!.toInt()
         mBinding.audioSpectrogram.setFrequencyRange(0f, FFT.nyquist(mAudioSampleRate.toFloat()))
 
-        mAudioAmplitudesSource.setSamplesSource(AudioSamplesSource(mAudioSampleRate, mAudioSampleSize, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream())
+        mAudioFrequenciesSource.setSamplesSource(AudioSamplesSource(mAudioSampleRate, mAudioSampleSize, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream())
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean("isSampling", mAudioAmplitudesSource.isSampling)
+        outState.putBoolean("isSampling", mAudioFrequenciesSource.isSampling)
         outState.putBoolean("isToolbarHidden", mToolbar?.visibility != View.VISIBLE)
     }
 
@@ -118,7 +118,7 @@ class MonitorFragment : Fragment(), SensorEventListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.miStartStop -> {
-                mAudioAmplitudesSource.setSamplingState(!(mAudioAmplitudesSource.isSampling))
+                mAudioFrequenciesSource.setSamplingState(!(mAudioFrequenciesSource.isSampling))
                 if(mAccelerometer != null) {
                     if(mIsAccelSampling) mSensorManager?.unregisterListener(this)
                     else mSensorManager?.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME)

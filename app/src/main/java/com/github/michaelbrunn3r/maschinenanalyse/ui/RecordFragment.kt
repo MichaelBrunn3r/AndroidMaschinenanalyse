@@ -52,7 +52,7 @@ class RecordFragment : Fragment(), SensorEventListener {
 
     private var mAudioSampleRate = 44100
     private var mNumAudioSamples = 4096
-    private var mAudioAmplitudesSource = FFTMagnitudesLiveData()
+    private var mAudioFrequenciesSource = FrequenciesLiveData()
     private var mIsRecording: Boolean = false
 
     private lateinit var mMachineanalysisViewModel: MachineanalysisViewModel
@@ -83,10 +83,10 @@ class RecordFragment : Fragment(), SensorEventListener {
         } ?: throw Exception("Invalid Activity")
 
         if (requestAudioPermissions()) {
-            mAudioAmplitudesSource.observe(this, Observer { audioAmplitudes ->
+            mAudioFrequenciesSource.observe(this, Observer { frequencies ->
                 mNumRecordedFrames++
-                for (i in audioAmplitudes.indices) {
-                    mRecordingBuffer!![i] += audioAmplitudes[i]
+                for (i in frequencies.indices) {
+                    mRecordingBuffer!![i] += frequencies[i]
                 }
             })
         }
@@ -101,7 +101,7 @@ class RecordFragment : Fragment(), SensorEventListener {
         mRecordingDurationMs = preferences.getString("recordingDuration", "4096")!!.toLong()
 
         mBinding.spectrogram.setFrequencyRange(0f, FFT.nyquist(mAudioSampleRate.toFloat()))
-        mAudioAmplitudesSource.setSamplesSource(AudioSamplesSource(mAudioSampleRate, mNumAudioSamples, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream())
+        mAudioFrequenciesSource.setSamplesSource(AudioSamplesSource(mAudioSampleRate, mNumAudioSamples, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream())
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -158,7 +158,7 @@ class RecordFragment : Fragment(), SensorEventListener {
         // Start Audio Recording
         mNumRecordedFrames = 0
         mRecordingBuffer = FloatArray(FFT.numFrequenciesFor(mNumAudioSamples))
-        mAudioAmplitudesSource.setSamplingState(true)
+        mAudioFrequenciesSource.setSamplingState(true)
 
         // Start Timer
         mRecordingHandler.postDelayed({
@@ -171,7 +171,7 @@ class RecordFragment : Fragment(), SensorEventListener {
 
         // Stop recording
         mSensorManager?.unregisterListener(this)
-        mAudioAmplitudesSource.setSamplingState(false)
+        mAudioFrequenciesSource.setSamplingState(false)
 
         // Calculate amplitudes mean
         if (mRecordingBuffer != null) {
