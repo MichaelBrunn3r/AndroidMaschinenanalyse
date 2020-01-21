@@ -71,7 +71,7 @@ class MonitorFragment : Fragment(), SensorEventListener {
 
         if(requestAudioPermissions()) {
             mAudioAmplitudesSource.observe(this, Observer { audioAmplitudes ->
-                mBinding.audioSpectrogram.update(audioAmplitudes) { index -> fftFrequenzyBin(index, mAudioSampleRate, mAudioSampleSize) }
+                mBinding.audioSpectrogram.update(audioAmplitudes)
             })
             mAudioAmplitudesSource.setOnSamplingStateChangedListener { isSampling ->
                 mMIStartStop?.apply {

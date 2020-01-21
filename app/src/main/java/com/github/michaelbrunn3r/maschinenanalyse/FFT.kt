@@ -3,7 +3,7 @@ package com.github.michaelbrunn3r.maschinenanalyse
 import kotlin.math.*
 
 fun calcFFTMagnitudes(fft:FloatArray):FloatArray {
-    val magnitudes = FloatArray(fft.size)
+    val magnitudes = FloatArray(fft.size/2)
     for (i in 0 until fft.size/2) {
         magnitudes[i] = complexAbs(fft[i*2],fft[i*2+1])/magnitudes.size // Magnitudes scaled to sample size
     }

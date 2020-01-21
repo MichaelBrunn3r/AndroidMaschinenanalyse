@@ -96,9 +96,7 @@ class RecordingDetailsFragment : Fragment() {
 
             mBinding.apply {
                 audioSpectrogram.setFrequencyRange(0f, (recording.audioSampleRate / 2).toFloat())
-                audioSpectrogram.update(recording.amplitudeMeans.toFloatArray()) { index ->
-                    fftFrequenzyBin(index, recording.audioSampleRate, recording.numFFTAudioSamples)
-                }
+                audioSpectrogram.update(recording.amplitudeMeans.toFloatArray())
             }
 
             val cal = Calendar.getInstance()

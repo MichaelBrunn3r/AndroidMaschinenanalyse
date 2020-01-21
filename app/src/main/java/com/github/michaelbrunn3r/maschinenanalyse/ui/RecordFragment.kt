@@ -185,7 +185,7 @@ class RecordFragment : Fragment(), SensorEventListener {
         mAccelMean = if (mRecordedAccelSamples > 0) mAccelBuffer / mRecordedAccelSamples else 0.0f
 
         // Show amplitudes mean
-        mBinding.spectrogram.update(mRecordingBuffer!!) { index -> fftFrequenzyBin(index, mAudioSampleRate, mNumAudioSamples) }
+        mBinding.spectrogram.update(mRecordingBuffer!!)
 
         // Show acceleration mean
         mBinding.meanAccel.text = mAccelMean.toString()

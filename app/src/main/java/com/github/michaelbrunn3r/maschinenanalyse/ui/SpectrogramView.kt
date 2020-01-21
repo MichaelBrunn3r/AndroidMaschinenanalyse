@@ -3,6 +3,7 @@ package com.github.michaelbrunn3r.maschinenanalyse.ui
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
+import android.util.Range
 import androidx.core.content.ContextCompat
 import com.github.michaelbrunn3r.maschinenanalyse.R
 import com.github.mikephil.charting.charts.LineChart
@@ -17,6 +18,7 @@ public class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(c
 
     private var mGraphColor = Color.BLACK
     private var mGraphLineWidth:Float = 1f
+    private var mFrequencyRange = Range(0f,44100f) // Standard settings
 
     init {
         data = LineData()
@@ -81,14 +83,15 @@ public class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(c
     }
 
     fun setFrequencyRange(min:Float, max:Float) {
-        xAxis.axisMinimum = min
-        xAxis.axisMaximum = max
+        mFrequencyRange = Range(min, max)
+        xAxis.axisMinimum = mFrequencyRange.lower
+        xAxis.axisMaximum = mFrequencyRange.upper
         data.clearValues()
         invalidate()
     }
 
     @Synchronized
-    fun update(magnitudes:FloatArray, frequenzyForIndex: (index:Int) -> Float) {
+    fun update(magnitudes:FloatArray) {
         if(data != null) {
             var set: ILineDataSet? = data.getDataSetByIndex(0)
             if(set == null) {
@@ -98,8 +101,9 @@ public class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(c
 
             if(set.entryCount != magnitudes.size) {
                 set.clear()
+                val stepSize = (mFrequencyRange.upper-mFrequencyRange.lower)/magnitudes.size
                 for(i in magnitudes.indices) {
-                    data.addEntry(Entry(frequenzyForIndex(i), magnitudes[i]), 0)
+                    data.addEntry(Entry(i*stepSize, magnitudes[i]), 0)
                 }
             } else {
                 for(i in magnitudes.indices) {
