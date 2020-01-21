@@ -72,7 +72,7 @@ class FFTMagnitudesSource(val sampleSource:Flowable<ShortArray>) {
             if (mNoise == null) mNoise = Noise.real(samples.size)
 
             val samplesFloat = shortArrToFloatArr(samples)
-            return@map sequenceToFrequencies(samplesFloat, hannWindow, mNoise!!)
+            return@map FFT.sequenceToFrequencies(samplesFloat, FFT.hannWindow, mNoise!!)
         }
     }
 

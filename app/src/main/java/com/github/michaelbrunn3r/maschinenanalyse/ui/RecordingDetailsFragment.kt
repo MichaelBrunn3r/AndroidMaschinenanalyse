@@ -95,7 +95,7 @@ class RecordingDetailsFragment : Fragment() {
             meanAcceleration.text = recording.accelerationMean.toString()
 
             mBinding.apply {
-                audioSpectrogram.setFrequencyRange(0f, (recording.audioSampleRate / 2).toFloat())
+                audioSpectrogram.setFrequencyRange(0f, FFT.nyquist(recording.audioSampleRate.toFloat()))
                 audioSpectrogram.update(recording.amplitudeMeans.toFloatArray())
             }
 

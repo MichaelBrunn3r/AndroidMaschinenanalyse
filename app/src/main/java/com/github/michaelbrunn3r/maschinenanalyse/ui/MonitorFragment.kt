@@ -97,7 +97,7 @@ class MonitorFragment : Fragment(), SensorEventListener {
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         mAudioSampleSize = preferences.getString("fftAudioSamples", "4096")!!.toInt()
-        mBinding.audioSpectrogram.setFrequencyRange(0f, (mAudioSampleRate/2).toFloat())
+        mBinding.audioSpectrogram.setFrequencyRange(0f, FFT.nyquist(mAudioSampleRate.toFloat()))
 
         mAudioAmplitudesSource.setSamplesSource(AudioSamplesSource(mAudioSampleRate, mAudioSampleSize, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream())
     }

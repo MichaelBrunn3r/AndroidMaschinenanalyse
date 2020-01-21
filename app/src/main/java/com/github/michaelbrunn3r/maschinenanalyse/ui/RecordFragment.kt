@@ -29,7 +29,6 @@ import com.github.michaelbrunn3r.maschinenanalyse.*
 import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentRecordBinding
-import java.util.*
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -101,7 +100,7 @@ class RecordFragment : Fragment(), SensorEventListener {
         mNumAudioSamples = preferences.getString("fftAudioSamples", "4096")!!.toInt()
         mRecordingDurationMs = preferences.getString("recordingDuration", "4096")!!.toLong()
 
-        mBinding.spectrogram.setFrequencyRange(0f, (mAudioSampleRate / 2).toFloat())
+        mBinding.spectrogram.setFrequencyRange(0f, FFT.nyquist(mAudioSampleRate.toFloat()))
         mAudioAmplitudesSource.setSamplesSource(AudioSamplesSource(mAudioSampleRate, mNumAudioSamples, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream())
     }
 
@@ -158,7 +157,7 @@ class RecordFragment : Fragment(), SensorEventListener {
 
         // Start Audio Recording
         mNumRecordedFrames = 0
-        mRecordingBuffer = FloatArray(mNumAudioSamples + 2)
+        mRecordingBuffer = FloatArray(FFT.numFrequenciesFor(mNumAudioSamples))
         mAudioAmplitudesSource.setSamplingState(true)
 
         // Start Timer
