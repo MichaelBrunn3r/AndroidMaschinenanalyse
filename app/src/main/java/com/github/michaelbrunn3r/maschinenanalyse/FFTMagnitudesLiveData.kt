@@ -71,13 +71,8 @@ class FFTMagnitudesSource(val sampleSource:Flowable<ShortArray>) {
         return sampleSource.map { samples ->
             if (mNoise == null) mNoise = Noise.real(samples.size)
 
-
             val samplesFloat = shortArrToFloatArr(samples)
-            samplesFloat.applyWindow(hannWindow)
-
-            val fft = FloatArray(samples.size+2)
-            mNoise!!.fft(samplesFloat, fft)
-            return@map calcFFTMagnitudes(fft)
+            return@map sequenceToFrequencies(samplesFloat, hannWindow, mNoise!!)
         }
     }
 
