@@ -5,50 +5,57 @@
             "name": "Anomaly1",
             "sample_rate": 44100,
             "sample_size": 4096,
-            "duration": 5000,
-            "capture_date": "7.10.2012"
+            "duration": "1s 00ms",
+            "capture_date": "7.10.2012",
+            "meanAcceleration": "2.12019783"
         },
         {
             "name": "Normal Operation",
             "sample_rate": 44100,
             "sample_size": 4096,
-            "duration": 5000,
-            "capture_date": "13.09.2007"
+            "duration": "01s 00ms",
+            "capture_date": "13.09.2007",
+            "meanAcceleration": "2.12019783"
         },
         {
             "name": "Samsung",
             "sample_rate": 44100,
             "sample_size": 512,
-            "duration": 5000,
-            "capture_date": "20.01.20"
+            "duration": "03s 10ms",
+            "capture_date": "20.01.20",
+            "meanAcceleration": "2.12019783"
         },
         {
             "name": "High Frequency",
             "sample_rate": 44100,
             "sample_size": 512,
-            "duration": 5000,
-            "capture_date": "20.01.20"
+            "duration": "10s 00ms",
+            "capture_date": "20.01.20",
+            "meanAcceleration": "2.12019783"
         },
         {
             "name": "Loooooong",
             "sample_rate": 44100,
             "sample_size": 4096,
-            "duration": 50000,
-            "capture_date": "20.01.20"
+            "duration": "20s 00ms",
+            "capture_date": "20.01.20",
+            "meanAcceleration": "2.12019783"
         },
         {
             "name": "Shrt",
             "sample_rate": 44100,
             "sample_size": 512,
-            "duration": 100,
-            "capture_date": "20.01.20"
+            "duration": "0s 100ms",
+            "capture_date": "20.01.20",
+            "meanAcceleration": "2.12019783"
         },
         {
             "name": "Last Year",
             "sample_rate": 44100,
             "sample_size": 1024,
-            "duration": 5000,
-            "capture_date": "20.01.20"
+            "duration": "1s 00ms",
+            "capture_date": "20.01.20",
+            "meanAcceleration": "2.12019783"
         }
     ]
 }

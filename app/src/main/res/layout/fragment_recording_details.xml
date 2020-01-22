@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewmodel"
             type="com.github.michaelbrunn3r.maschinenanalyse.viewmodels.RecordingDetailsViewModel" />
@@ -13,13 +14,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingHorizontal="@dimen/padding">
+        android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/info_wrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingStart="@dimen/padding"
+            android:paddingEnd="@dimen/padding"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -28,6 +30,7 @@
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/layoutMargin"
                 android:text="@string/recording_sample_rate"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -38,7 +41,8 @@
                 android:layout_height="wrap_content"
                 android:text="@{viewmodel.sampleRate}"
                 app:layout_constraintStart_toEndOf="@+id/textView"
-                app:layout_constraintTop_toBottomOf="@+id/name" />
+                app:layout_constraintTop_toTopOf="@+id/textView"
+                tools:text="@sample/recordings.json/recordings/sample_rate" />
 
             <TextView
                 android:id="@+id/textView2"
@@ -54,7 +58,8 @@
                 android:layout_height="wrap_content"
                 android:text="@{viewmodel.numSamples}"
                 app:layout_constraintStart_toEndOf="@+id/textView2"
-                app:layout_constraintTop_toTopOf="@+id/textView2" />
+                app:layout_constraintTop_toTopOf="@+id/textView2"
+                tools:text="@sample/recordings.json/recordings/sample_size" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -70,15 +75,18 @@
                 android:layout_height="wrap_content"
                 android:text="@{viewmodel.meanAcceleration}"
                 app:layout_constraintStart_toEndOf="@+id/textView3"
-                app:layout_constraintTop_toTopOf="@+id/textView3" />
+                app:layout_constraintTop_toTopOf="@+id/textView3"
+                tools:text="@sample/recordings.json/recordings/meanAcceleration" />
 
             <TextView
                 android:id="@+id/capture_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/layoutMargin"
                 android:text="@{viewmodel.captureDate}"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@sample/recordings.json/recordings/capture_date" />
 
             <TextView
                 android:id="@+id/recording_duration"
@@ -86,7 +94,8 @@
                 android:layout_height="wrap_content"
                 android:text="@{viewmodel.recordingDuration}"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/capture_date" />
+                app:layout_constraintTop_toBottomOf="@+id/capture_date"
+                tools:text="@sample/recordings.json/recordings/duration" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -94,6 +103,7 @@
             android:id="@+id/audio_spectrogram"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginTop="@dimen/layoutMargin"
             app:bgColor="@color/mine_shaft"
             app:drawGridLines="xAxis|yAxis"
             app:enableDragging="yAxis|xAxis"
@@ -106,8 +116,8 @@
             app:layout_constraintTop_toBottomOf="@+id/info_wrapper"
             app:showLegend="false"
             app:viewPortOffsetBottom="10"
-            app:viewPortOffsetLeft="70"
-            app:viewPortOffsetRight="0"
+            app:viewPortOffsetLeft="80"
+            app:viewPortOffsetRight="50"
             app:viewPortOffsetTop="50" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.util.Range
+import android.view.MotionEvent
 import androidx.core.content.ContextCompat
 import com.github.michaelbrunn3r.maschinenanalyse.R
 import com.github.mikephil.charting.charts.LineChart
@@ -55,11 +56,8 @@ public class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(c
             // Background
             setBackgroundColor(getColor(R.styleable.MPAndroidChart_bgColor, Color.WHITE))
 
-            setViewPortOffsets(
-                    getFloat(R.styleable.MPAndroidChart_viewPortOffsetLeft,0f),
-                    getFloat(R.styleable.MPAndroidChart_viewPortOffsetTop,0f),
-                    getFloat(R.styleable.MPAndroidChart_viewPortOffsetRight,0f),
-                    getFloat(R.styleable.MPAndroidChart_viewPortOffsetBottom,0f))
+            setExtraOffsets(
+                    0f,0f,0f,0f)
 
             // Description
             description.isEnabled = hasValue(R.styleable.MPAndroidChart_descr)

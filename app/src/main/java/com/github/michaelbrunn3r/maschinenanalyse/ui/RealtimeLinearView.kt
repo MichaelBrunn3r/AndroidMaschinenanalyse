@@ -51,12 +51,6 @@ class RealtimeLinearView(context: Context, attrs: AttributeSet): LineChart(conte
             // Background
             setBackgroundColor(getColor(R.styleable.MPAndroidChart_bgColor, Color.WHITE))
 
-            setViewPortOffsets(
-                    getFloat(R.styleable.MPAndroidChart_viewPortOffsetLeft,0f),
-                    getFloat(R.styleable.MPAndroidChart_viewPortOffsetTop,0f),
-                    getFloat(R.styleable.MPAndroidChart_viewPortOffsetRight,0f),
-                    getFloat(R.styleable.MPAndroidChart_viewPortOffsetBottom,0f))
-
             // Description
             description.isEnabled = hasValue(R.styleable.MPAndroidChart_descr)
             if(description.isEnabled) {
