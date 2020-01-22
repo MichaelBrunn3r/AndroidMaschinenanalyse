@@ -7,13 +7,42 @@ import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewMo
 import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
 import org.json.JSONArray
 import org.json.JSONObject
+import java.text.DateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
 
-class RecordingDetailsViewModel: ViewModel() {
+class RecordingDetailsViewModel : ViewModel() {
+
 
     val recording = MutableLiveData<Recording>()
+    var dateFormat: DateFormat? = null
+
+    val sampleRate = MutableLiveData("?")
+    val numSamples = MutableLiveData("?")
+    val meanAcceleration = MutableLiveData("?")
+    val captureDate = MutableLiveData("?")
+    val recordingDuration = MutableLiveData("?")
+
+
+    init {
+        recording.observeForever {
+            sampleRate.value = it.audioSampleRate.toString()
+            numSamples.value = it.numFFTAudioSamples.toString()
+            meanAcceleration.value = it.accelerationMean.toString()
+
+            val cal = Calendar.getInstance()
+            cal.timeInMillis = it.captureDate
+            captureDate.value = dateFormat?.format(cal.time) ?: "?"
+
+            recordingDuration.value = String.format(
+                    "%02d s %02d ms",
+                    TimeUnit.MILLISECONDS.toSeconds(it.duration),
+                    it.duration - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(it.duration)))
+        }
+    }
 
     fun deleteRecording(dbViewModel: MachineanalysisViewModel) {
-        if(recording.value != null) {
+        if (recording.value != null) {
             dbViewModel.delete(recording.value!!.copy())
         }
     }

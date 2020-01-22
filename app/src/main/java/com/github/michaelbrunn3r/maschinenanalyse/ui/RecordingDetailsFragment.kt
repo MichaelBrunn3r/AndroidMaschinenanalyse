@@ -37,6 +37,7 @@ class RecordingDetailsFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_recording_details, container, false)
+        mBinding.lifecycleOwner = this
         return mBinding.root
     }
 
@@ -61,10 +62,15 @@ class RecordingDetailsFragment : Fragment() {
 
         mVM = ViewModelProviders.of(this).get(RecordingDetailsViewModel::class.java)
         mVM.apply {
+            dateFormat = DateFormat.getLongDateFormat(activity)
             recording.observe(this@RecordingDetailsFragment, Observer {
-                showRecording(it)
+                mToolbar?.title = it.name
+                mBinding.audioSpectrogram.setFrequencyRange(0f, FFT.nyquist(it.audioSampleRate.toFloat()))
+                mBinding.audioSpectrogram.update(it.amplitudeMeans.toFloatArray())
             })
         }
+
+        mBinding.viewmodel = mVM
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -88,32 +94,6 @@ class RecordingDetailsFragment : Fragment() {
             }
         }
         return false
-    }
-
-    private fun showRecording(recording: Recording) {
-        mToolbar?.title = recording.name
-
-        mBinding.apply {
-            sampleRate.text = recording.audioSampleRate.toString()
-            sampleSize.text = recording.numFFTAudioSamples.toString()
-            meanAcceleration.text = recording.accelerationMean.toString()
-
-            mBinding.apply {
-                audioSpectrogram.setFrequencyRange(0f, FFT.nyquist(recording.audioSampleRate.toFloat()))
-                audioSpectrogram.update(recording.amplitudeMeans.toFloatArray())
-            }
-
-            val cal = Calendar.getInstance()
-            cal.timeInMillis = recording.captureDate
-            val f = DateFormat.getLongDateFormat(activity)
-            captureDate.text = f.format(cal.time)
-
-            recording_duration.text = String.format(
-                        "%02d s %02d ms",
-                        TimeUnit.MILLISECONDS.toSeconds(recording.duration),
-                        recording.duration - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(recording.duration))
-                    )
-        }
     }
 
     private fun showDeleteDialog() {
