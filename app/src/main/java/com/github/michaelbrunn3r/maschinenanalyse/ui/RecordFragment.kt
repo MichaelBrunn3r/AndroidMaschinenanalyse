@@ -35,6 +35,7 @@ class RecordFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_record, container, false)
+        mBinding.lifecycleOwner = this
         return mBinding.root
     }
 
@@ -55,14 +56,13 @@ class RecordFragment : Fragment() {
             recordedFrequencies.observe(this@RecordFragment, Observer {
                 mBinding.spectrogram.update(it)
             })
-            recordedAccelMean.observe(this@RecordFragment, Observer {
-                mBinding.meanAccel.text = it.toString()
-            })
             isRecording.observe(this@RecordFragment, Observer {
                 if (it) setRecordBtnState(true)
                 else setRecordBtnState(false)
             })
         }
+
+        mBinding.viewmodel = mRecordViewModel
     }
 
     override fun onResume() {
