@@ -1,7 +1,6 @@
 package com.github.michaelbrunn3r.maschinenanalyse.ui
 
 import android.app.Dialog
-import android.content.Intent
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.*
@@ -19,9 +18,8 @@ import com.github.michaelbrunn3r.maschinenanalyse.*
 import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentRecordingDetailsBinding
+import com.github.michaelbrunn3r.maschinenanalyse.viewmodels.RecordingDetailsViewModel
 import kotlinx.android.synthetic.main.fragment_recording_details.*
-import org.json.JSONArray
-import org.json.JSONObject
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -31,10 +29,10 @@ class RecordingDetailsFragment : Fragment() {
     private val mNavArgs: RecordingDetailsFragmentArgs by navArgs()
 
     private lateinit var mBinding: FragmentRecordingDetailsBinding
-    private var mToolbar: Toolbar? = null
-
     private lateinit var mMachineanalysisViewModel: MachineanalysisViewModel
-    private var mRecording: Recording? = null
+    private lateinit var mVM: RecordingDetailsViewModel
+
+    private var mToolbar: Toolbar? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -44,25 +42,29 @@ class RecordingDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         mNavController = Navigation.findNavController(view)
-
-        mMachineanalysisViewModel = ViewModelProviders.of(this)[MachineanalysisViewModel::class.java]
-        mMachineanalysisViewModel.recordings.observe(this, Observer { recordings ->
-            println("There are ${recordings.size} recordings and I show index ${mNavArgs.recordingId}")
-            for (r: Recording in recordings) {
-                if (r.uid == mNavArgs.recordingId) {
-                    mRecording = r
-                    showRecordingData(r)
-                }
-            }
-        })
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         mToolbar = activity?.findViewById(R.id.toolbar)
+
+        mMachineanalysisViewModel = ViewModelProviders.of(this)[MachineanalysisViewModel::class.java]
+        mMachineanalysisViewModel.recordings.observe(this, Observer { recordings ->
+            for (r: Recording in recordings) {
+                if (r.uid == mNavArgs.recordingId) {
+                    mVM.recording.value = r
+                }
+            }
+        })
+
+        mVM = ViewModelProviders.of(this).get(RecordingDetailsViewModel::class.java)
+        mVM.apply {
+            recording.observe(this@RecordingDetailsFragment, Observer {
+                showRecording(it)
+            })
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -73,20 +75,22 @@ class RecordingDetailsFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.miShare -> {
-                if (mRecording != null) {
-                    shareRecording(mRecording!!)
+                if(mVM.recording.value != null) {
+                    startActivity(mVM.createShareRecordingIntent(mVM.recording.value!!))
                 }
                 return true
             }
             R.id.miDelete -> {
-                showDeleteDialog(mRecording!!)
-                mRecording = null
+                if(mVM.recording.value != null) {
+                    showDeleteDialog()
+                }
+                return true
             }
         }
         return false
     }
 
-    fun showRecordingData(recording: Recording) {
+    private fun showRecording(recording: Recording) {
         mToolbar?.title = recording.name
 
         mBinding.apply {
@@ -112,37 +116,11 @@ class RecordingDetailsFragment : Fragment() {
         }
     }
 
-    fun recordingToJSON(recording: Recording): JSONObject {
-        val r = JSONObject()
-        r.put("name", recording.name)
-        r.put("audio_sample_rate_hz", recording.audioSampleRate)
-        r.put("num_fft_audio_samples", recording.numFFTAudioSamples)
-        r.put("accel_mean", recording.accelerationMean)
-        r.put("duration_ms", recording.duration)
-        r.put("capture_date", recording.captureDate)
-        r.put("amplitude_means", JSONArray(recording.amplitudeMeans))
-        return r
-    }
-
-    fun shareRecording(recording: Recording) {
-        val json = recordingToJSON(recording)
-
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, json.toString())
-            type = "text/json"
-        }
-
-        val shareIntent = Intent.createChooser(sendIntent, null)
-        startActivity(shareIntent)
-    }
-
-    private fun showDeleteDialog(recording: Recording) {
+    private fun showDeleteDialog() {
         if (fragmentManager == null) return
 
         DeleteRecordingDialogFragment {
-            mMachineanalysisViewModel.delete(recording.copy())
-            mRecording = null // Make sure recording is invalidated
+            mVM.deleteRecording(mMachineanalysisViewModel)
             mNavController.navigateUp() // Leave Detail Fragment, as recording doesn't exist anymore
         }.show(fragmentManager!!, "deleteRecording")
     }

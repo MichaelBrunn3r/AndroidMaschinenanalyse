@@ -3,6 +3,7 @@ package com.github.michaelbrunn3r.maschinenanalyse.ui
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
 
         // Configure Toolbar
         setSupportActionBar(mBinding.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false) // Prevents ActionBar setting the Title. Instead, only NavigationUI or fragments themselves should set the title
         val appBarCfg = AppBarConfiguration.Builder(mToplevelDestinations)
                 .setDrawerLayout(mBinding.drawerLayout)
                 .build()
