@@ -10,6 +10,7 @@ import android.media.MediaRecorder
 import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.github.michaelbrunn3r.maschinenanalyse.AudioRecordingConfiguration
 import com.github.michaelbrunn3r.maschinenanalyse.AudioSamplesSource
 import com.github.michaelbrunn3r.maschinenanalyse.FFT
 import com.github.michaelbrunn3r.maschinenanalyse.FrequenciesLiveData
@@ -145,5 +146,3 @@ class RecordViewModel : ViewModel(), SensorEventListener {
         }
     }
 }
-
-data class AudioRecordingConfiguration(val sampleRate: Int, val numSamples: Int, val source: Int, val channelCfg: Int, val format: Int)

@@ -46,10 +46,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
-fun Toolbar.toggle() {
-    visibility = when(visibility) {
-        View.VISIBLE -> View.GONE
-        else -> View.VISIBLE
-    }
-}

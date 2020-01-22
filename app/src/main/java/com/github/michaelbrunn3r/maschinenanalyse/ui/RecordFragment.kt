@@ -59,7 +59,7 @@ class RecordFragment : Fragment() {
                 mBinding.meanAccel.text = it.toString()
             })
             isRecording.observe(this@RecordFragment, Observer {
-                if (it && requestAudioPermissions()) setRecordBtnState(true)
+                if (it) setRecordBtnState(true)
                 else setRecordBtnState(false)
             })
         }
@@ -83,7 +83,7 @@ class RecordFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.miRecord -> {
-                mRecordViewModel.isRecording.value = true
+                mRecordViewModel.isRecording.value = requestAudioPermissions()
                 return true
             }
             R.id.miSaveRecording -> {
