@@ -18,7 +18,7 @@ public class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(c
 
     private var mGraphColor = Color.BLACK
     private var mGraphLineWidth:Float = 1f
-    private var mFrequencyRange = Range(0f,44100f) // Standard settings
+    private var mFrequencyRange = Range(0f,0f)
 
     init {
         data = LineData()
@@ -31,7 +31,6 @@ public class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(c
 
         xAxis.textColor = ContextCompat.getColor(context, R.color.nobel)
         xAxis.valueFormatter = LargeValueFormatter("Hz")
-        setFrequencyRange(0f, 4096.toFloat()/2) // Default Value
 
         axisLeft.axisMinimum = 0f
         axisLeft.axisMaximum = 300f
@@ -83,11 +82,13 @@ public class SpectrogramView(context: Context, attrs: AttributeSet): LineChart(c
     }
 
     fun setFrequencyRange(min:Float, max:Float) {
-        mFrequencyRange = Range(min, max)
-        xAxis.axisMinimum = mFrequencyRange.lower
-        xAxis.axisMaximum = mFrequencyRange.upper
-        data.clearValues()
-        invalidate()
+        if(min != mFrequencyRange.lower || max != mFrequencyRange.upper) {
+            mFrequencyRange = Range(min, max)
+            xAxis.axisMinimum = mFrequencyRange.lower
+            xAxis.axisMaximum = mFrequencyRange.upper
+            data.clearValues()
+            invalidate()
+        }
     }
 
     @Synchronized
