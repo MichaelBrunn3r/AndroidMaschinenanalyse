@@ -77,6 +77,7 @@ class RecordFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
 
         mMIRecord = menu.findItem(R.id.miRecord)
+        setRecordBtnState(mRecordViewModel.isRecording.value ?: false)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
