@@ -5,14 +5,9 @@ import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.media.AudioFormat
-import android.media.MediaRecorder
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.text.InputType
 import android.view.*
 import android.widget.EditText
@@ -22,44 +17,20 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import androidx.preference.PreferenceManager
-import com.github.michaelbrunn3r.maschinenanalyse.*
+import com.github.michaelbrunn3r.maschinenanalyse.FFT
+import com.github.michaelbrunn3r.maschinenanalyse.R
 import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
-import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentRecordBinding
-import kotlin.math.pow
-import kotlin.math.sqrt
+import com.github.michaelbrunn3r.maschinenanalyse.viewmodels.RecordViewModel
 
-class RecordFragment : Fragment(), SensorEventListener {
+class RecordFragment : Fragment() {
 
     private lateinit var mBinding: FragmentRecordBinding
-    private lateinit var mNavController: NavController
-
-    private var mRecordingHandler: Handler = Handler()
-    private var mNumRecordedFrames = 0
-    private var mRecordingBuffer: FloatArray? = null
-
-    private var mAccelMean: Float = 0f
-
-    private var mSensorManager: SensorManager? = null
-    private var mAccelerometer: Sensor? = null
-    private var mRecordedAccelSamples = 0
-    private var mAccelBuffer = 0f
-    private var mAccelLastVal = 0f
-    private var mMaxCooldown = false
-
-    private var mAudioSampleRate = 44100
-    private var mNumAudioSamples = 4096
-    private var mAudioFrequenciesSource = FrequenciesLiveData()
-    private var mIsRecording: Boolean = false
-
     private lateinit var mMachineanalysisViewModel: MachineanalysisViewModel
+    private lateinit var mRecordViewModel: RecordViewModel
 
-    private var mRecordingDurationMs = 5000L // Recording Duration in Milliseconds
-
-    private lateinit var mMIRecord: MenuItem
+    private var mMIRecord: MenuItem? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
@@ -67,27 +38,29 @@ class RecordFragment : Fragment(), SensorEventListener {
         return mBinding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        mNavController = Navigation.findNavController(view)
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        mSensorManager = activity?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        mAccelerometer = mSensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
         mMachineanalysisViewModel = activity?.run {
             ViewModelProviders.of(this)[MachineanalysisViewModel::class.java]
         } ?: throw Exception("Invalid Activity")
 
-        if (requestAudioPermissions()) {
-            mAudioFrequenciesSource.observe(this, Observer { frequencies ->
-                mNumRecordedFrames++
-                for (i in frequencies.indices) {
-                    mRecordingBuffer!![i] += frequencies[i]
-                }
+        mRecordViewModel = ViewModelProviders.of(this).get(RecordViewModel::class.java)
+        mRecordViewModel.apply {
+            sensorManager = activity?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+            accelerometer = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+            audioCfg.observe(this@RecordFragment, Observer { cfg ->
+                mBinding.spectrogram.setFrequencyRange(0f, FFT.nyquist(cfg.sampleRate.toFloat()))
+            })
+            recordedFrequencies.observe(this@RecordFragment, Observer {
+                mBinding.spectrogram.update(it)
+            })
+            recordedAccelMean.observe(this@RecordFragment, Observer {
+                mBinding.meanAccel.text = it.toString()
+            })
+            isRecording.observe(this@RecordFragment, Observer {
+                if (it && requestAudioPermissions()) setRecordBtnState(true)
+                else setRecordBtnState(false)
             })
         }
     }
@@ -96,12 +69,7 @@ class RecordFragment : Fragment(), SensorEventListener {
         super.onResume()
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-        mAudioSampleRate = preferences.getString("fftSampleRate", "44100")!!.toInt()
-        mNumAudioSamples = preferences.getString("fftAudioSamples", "4096")!!.toInt()
-        mRecordingDurationMs = preferences.getString("recordingDuration", "4096")!!.toLong()
-
-        mBinding.spectrogram.setFrequencyRange(0f, FFT.nyquist(mAudioSampleRate.toFloat()))
-        mAudioFrequenciesSource.setSamplesSource(AudioSamplesSource(mAudioSampleRate, mNumAudioSamples, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream())
+        mRecordViewModel.onPreferences(preferences)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -114,7 +82,7 @@ class RecordFragment : Fragment(), SensorEventListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.miRecord -> {
-                startRecording()
+                mRecordViewModel.isRecording.value = true
                 return true
             }
             R.id.miSaveRecording -> {
@@ -125,94 +93,16 @@ class RecordFragment : Fragment(), SensorEventListener {
         return false
     }
 
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-
-    }
-
-    override fun onSensorChanged(event: SensorEvent?) {
-        if (event != null) {
-            when (event.sensor.type) {
-                Sensor.TYPE_ACCELEROMETER -> {
-                    val v = sqrt(event.values[0].pow(2) + event.values[1].pow(2) + event.values[2].pow(2)) - 9.81f
-                    if (v > 0 && v < mAccelLastVal && !mMaxCooldown) {
-                        mRecordedAccelSamples++
-                        mAccelBuffer += mAccelLastVal
-                        mMaxCooldown = true
-                    }
-                    if (v > mAccelLastVal) mMaxCooldown = false
-                    mAccelLastVal = v
-                }
-            }
-        }
-    }
-
-    private fun startRecording() {
-        if (mIsRecording) return
-        setRecordBtnState(true)
-
-        // Start Accelerometer Recording
-        mAccelBuffer = 0f
-        mRecordedAccelSamples = 0
-        mSensorManager?.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME)
-
-        // Start Audio Recording
-        mNumRecordedFrames = 0
-        mRecordingBuffer = FloatArray(FFT.numFrequenciesFor(mNumAudioSamples))
-        mAudioFrequenciesSource.setSamplingState(true)
-
-        // Start Timer
-        mRecordingHandler.postDelayed({
-            stopRecording()
-        }, mRecordingDurationMs)
-    }
-
-    private fun stopRecording() {
-        setRecordBtnState(false)
-
-        // Stop recording
-        mSensorManager?.unregisterListener(this)
-        mAudioFrequenciesSource.setSamplingState(false)
-
-        // Calculate amplitudes mean
-        if (mRecordingBuffer != null) {
-            for (i in mRecordingBuffer!!.indices) {
-                mRecordingBuffer!![i] = mRecordingBuffer!![i] / mNumRecordedFrames
-            }
-        }
-
-        // Calculate acceleration mean
-        mAccelMean = if (mRecordedAccelSamples > 0) mAccelBuffer / mRecordedAccelSamples else 0.0f
-
-        // Show amplitudes mean
-        mBinding.spectrogram.update(mRecordingBuffer!!)
-
-        // Show acceleration mean
-        mBinding.meanAccel.text = mAccelMean.toString()
-    }
-
     private fun setRecordBtnState(isSampling: Boolean) {
-        if (isSampling) mMIRecord.icon = resources.getDrawable(R.drawable.stop_recording, activity!!.theme)
-        else mMIRecord.icon = resources.getDrawable(R.drawable.record, activity!!.theme)
+        if (isSampling) mMIRecord?.icon = resources.getDrawable(R.drawable.stop_recording, activity!!.theme)
+        else mMIRecord?.icon = resources.getDrawable(R.drawable.record, activity!!.theme)
     }
 
     private fun saveRecording() {
-        if (mRecordingBuffer == null || fragmentManager == null) return
+        if (mRecordViewModel.recordedFrequencies.value == null || fragmentManager == null) return
 
         SaveRecordingAsDialogFragment { dialog ->
-            if (mRecordingBuffer != null) {
-                mMachineanalysisViewModel.insert(
-                        Recording(
-                                0,
-                                dialog.recordingName,
-                                mAudioSampleRate,
-                                mNumAudioSamples,
-                                mAccelMean,
-                                mRecordingBuffer!!.toList(),
-                                mRecordingDurationMs,
-                                System.currentTimeMillis()
-                        )
-                )
-            }
+            mRecordViewModel.saveRecording(dialog.recordingName, mMachineanalysisViewModel)
         }.show(fragmentManager!!, "saveRecordingAs")
     }
 
