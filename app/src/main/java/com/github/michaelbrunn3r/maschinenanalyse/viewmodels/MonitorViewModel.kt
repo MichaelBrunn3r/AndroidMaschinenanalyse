@@ -7,10 +7,7 @@ import android.media.AudioFormat
 import android.media.MediaRecorder
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.github.michaelbrunn3r.maschinenanalyse.NormalizedAccelerationLiveData
-import com.github.michaelbrunn3r.maschinenanalyse.AudioRecordingConfiguration
-import com.github.michaelbrunn3r.maschinenanalyse.AudioSamplesSource
-import com.github.michaelbrunn3r.maschinenanalyse.FrequenciesLiveData
+import com.github.michaelbrunn3r.maschinenanalyse.*
 
 class MonitorViewModel : ViewModel() {
     val isMonitoring = MutableLiveData(false)
@@ -25,7 +22,8 @@ class MonitorViewModel : ViewModel() {
 
     init {
         audioCfg.observeForever { cfg ->
-            audioFrequenciesSource.setSamplesSource(AudioSamplesSource(cfg.sampleRate, cfg.numSamples, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream())
+            val audioSamplesSource = AudioSamplesSource(cfg.sampleRate, cfg.numSamples, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream()
+            audioFrequenciesSource.setSamplesSource(ShortArr2FloatArrSource(audioSamplesSource).stream())
         }
         isMonitoring.observeForever {
             audioFrequenciesSource.setSamplingState(it)

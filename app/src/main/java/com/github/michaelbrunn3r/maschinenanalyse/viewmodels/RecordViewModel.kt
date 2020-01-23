@@ -10,10 +10,7 @@ import android.media.MediaRecorder
 import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.github.michaelbrunn3r.maschinenanalyse.AudioRecordingConfiguration
-import com.github.michaelbrunn3r.maschinenanalyse.AudioSamplesSource
-import com.github.michaelbrunn3r.maschinenanalyse.FFT
-import com.github.michaelbrunn3r.maschinenanalyse.FrequenciesLiveData
+import com.github.michaelbrunn3r.maschinenanalyse.*
 import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
 import kotlin.math.pow
@@ -42,7 +39,8 @@ class RecordViewModel : ViewModel(), SensorEventListener {
 
     init {
         audioCfg.observeForever { cfg ->
-            audioFrequenciesSource.setSamplesSource(AudioSamplesSource(cfg.sampleRate, cfg.numSamples, cfg.source, cfg.channelCfg, cfg.format).stream())
+            val audioSamplesSource = AudioSamplesSource(cfg.sampleRate, cfg.numSamples, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream()
+            audioFrequenciesSource.setSamplesSource(ShortArr2FloatArrSource(audioSamplesSource).stream())
         }
         isRecording.observeForever {
             if (it) startRecording()
