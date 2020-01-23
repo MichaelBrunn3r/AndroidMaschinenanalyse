@@ -1,15 +1,11 @@
 package com.github.michaelbrunn3r.maschinenanalyse.viewmodels
 
 import android.content.SharedPreferences
-import android.hardware.Sensor
-import android.hardware.SensorManager
 import android.media.AudioFormat
 import android.media.MediaRecorder
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.github.michaelbrunn3r.maschinenanalyse.*
-import com.github.michaelbrunn3r.maschinenanalyse.sensors.AccelerationRecordingConfiguration
-import com.github.michaelbrunn3r.maschinenanalyse.sensors.NormalizedAccelerationMagnitudeSamplesSource
+import com.github.michaelbrunn3r.maschinenanalyse.sensors.*
 
 class MonitorViewModel : ViewModel() {
     val isMonitoring = MutableLiveData(false)

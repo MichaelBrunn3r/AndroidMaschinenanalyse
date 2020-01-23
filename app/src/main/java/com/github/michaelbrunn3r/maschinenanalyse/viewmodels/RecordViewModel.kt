@@ -10,9 +10,9 @@ import android.media.MediaRecorder
 import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.github.michaelbrunn3r.maschinenanalyse.*
 import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
+import com.github.michaelbrunn3r.maschinenanalyse.sensors.*
 import kotlin.math.pow
 import kotlin.math.sqrt
 

@@ -18,10 +18,8 @@ import com.github.michaelbrunn3r.maschinenanalyse.*
 import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentRecordingDetailsBinding
+import com.github.michaelbrunn3r.maschinenanalyse.sensors.FFT
 import com.github.michaelbrunn3r.maschinenanalyse.viewmodels.RecordingDetailsViewModel
-import kotlinx.android.synthetic.main.fragment_recording_details.*
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 class RecordingDetailsFragment : Fragment() {
 

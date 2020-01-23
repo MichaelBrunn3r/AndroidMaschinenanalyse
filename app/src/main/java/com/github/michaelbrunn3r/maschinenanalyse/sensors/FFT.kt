@@ -1,4 +1,4 @@
-package com.github.michaelbrunn3r.maschinenanalyse
+package com.github.michaelbrunn3r.maschinenanalyse.sensors
 
 import com.paramsen.noise.Noise
 import kotlin.math.*
@@ -26,7 +26,7 @@ class FFT {
         fun calcFFTMagnitudes(fft_imaginary:FloatArray):FloatArray {
             val magnitudes = FloatArray(fft_imaginary.size/2)
             for (i in 0 until fft_imaginary.size/2) {
-                magnitudes[i] = vec2DLength(fft_imaginary[i*2],fft_imaginary[i*2+1])/magnitudes.size // Magnitudes scaled to sample size
+                magnitudes[i] = vec2DLength(fft_imaginary[i * 2], fft_imaginary[i * 2 + 1]) /magnitudes.size // Magnitudes scaled to sample size
             }
             return magnitudes
         }

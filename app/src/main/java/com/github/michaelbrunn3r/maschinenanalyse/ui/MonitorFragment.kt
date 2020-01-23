@@ -3,7 +3,6 @@ package com.github.michaelbrunn3r.maschinenanalyse.ui
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
@@ -17,6 +16,7 @@ import androidx.preference.PreferenceManager
 import com.github.michaelbrunn3r.maschinenanalyse.*
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentMonitorBinding
 import com.github.michaelbrunn3r.maschinenanalyse.sensors.AccelerationRecordingConfiguration
+import com.github.michaelbrunn3r.maschinenanalyse.sensors.FFT
 import com.github.michaelbrunn3r.maschinenanalyse.viewmodels.MonitorViewModel
 
 
