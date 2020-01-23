@@ -37,7 +37,7 @@
                 tools:text="@sample/recordings.json/recordings/meanAcceleration" />
         </LinearLayout>
 
-        <com.github.michaelbrunn3r.maschinenanalyse.ui.SpectrogramView
+        <com.github.michaelbrunn3r.maschinenanalyse.views.SpectrogramView
             android:id="@+id/spectrogram"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -99,7 +99,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.github.michaelbrunn3r.maschinenanalyse.ui.SpectrogramView
+        <com.github.michaelbrunn3r.maschinenanalyse.views.SpectrogramView
             android:id="@+id/audio_spectrogram"
             android:layout_width="match_parent"
             android:layout_height="0dp"

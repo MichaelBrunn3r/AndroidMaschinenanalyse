@@ -1,10 +1,9 @@
-package com.github.michaelbrunn3r.maschinenanalyse.ui
+package com.github.michaelbrunn3r.maschinenanalyse.views
 
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.util.Range
-import android.view.MotionEvent
 import androidx.core.content.ContextCompat
 import com.github.michaelbrunn3r.maschinenanalyse.R
 import com.github.mikephil.charting.charts.LineChart
