@@ -2,5 +2,6 @@
 <resources>
     <dimen name="paddingHorizontal">8dp</dimen>
     <dimen name="padding">16dp</dimen>
-    <dimen name="layoutMargin">8dp</dimen>
+    <dimen name="margin">16dp</dimen>
+    <dimen name="margin_half">8dp</dimen>
 </resources>

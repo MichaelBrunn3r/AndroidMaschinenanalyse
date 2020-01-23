@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -11,48 +10,53 @@
             type="com.github.michaelbrunn3r.maschinenanalyse.viewmodels.RecordViewModel" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/layoutMargin"
-            android:orientation="horizontal"
-            android:paddingStart="@dimen/padding"
-            android:paddingEnd="@dimen/padding">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Mean Acceleration: " />
-
-            <TextView
-                android:id="@+id/meanAccel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{viewmodel.recordedAccelMean.toString()}"
-                tools:text="@sample/recordings.json/recordings/meanAcceleration" />
-        </LinearLayout>
+        android:layout_height="match_parent">
 
         <com.github.michaelbrunn3r.maschinenanalyse.views.SpectrogramView
-            android:id="@+id/spectrogram"
+            android:id="@+id/accel_spectrogram"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/layoutMargin"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/margin_half"
             app:bgColor="@color/mine_shaft"
             app:drawGridLines="xAxis|yAxis"
             app:enableDragging="yAxis|xAxis"
             app:enableScaling="yAxis|xAxis"
             app:graphColor="?attr/colorAccent"
             app:graphWidth="0.8dp"
+            app:layout_constraintBottom_toTopOf="@+id/audio_spectrogram"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:showLegend="false"
             app:viewPortOffsetBottom="10"
             app:viewPortOffsetLeft="80"
             app:viewPortOffsetRight="50"
             app:viewPortOffsetTop="50" />
 
-    </LinearLayout>
+        <com.github.michaelbrunn3r.maschinenanalyse.views.SpectrogramView
+            android:id="@+id/audio_spectrogram"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            app:bgColor="@color/mine_shaft"
+            app:drawGridLines="xAxis|yAxis"
+            app:enableDragging="yAxis|xAxis"
+            app:enableScaling="yAxis|xAxis"
+            app:graphColor="?attr/colorAccent"
+            app:graphWidth="0.8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/accel_spectrogram"
+            app:showLegend="false"
+            app:viewPortOffsetBottom="10"
+            app:viewPortOffsetLeft="80"
+            app:viewPortOffsetRight="50"
+            app:viewPortOffsetTop="50" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
