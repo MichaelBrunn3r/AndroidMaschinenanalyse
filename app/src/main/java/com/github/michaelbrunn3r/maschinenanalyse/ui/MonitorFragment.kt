@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.preference.PreferenceManager
 import com.github.michaelbrunn3r.maschinenanalyse.*
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentMonitorBinding
+import com.github.michaelbrunn3r.maschinenanalyse.sensors.AccelerationRecordingConfiguration
 import com.github.michaelbrunn3r.maschinenanalyse.viewmodels.MonitorViewModel
 
 
@@ -37,19 +38,21 @@ class MonitorFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         mToolbar = activity?.findViewById(R.id.toolbar)
+        mBinding.accelSpectrogram.axisLeft.axisMaximum = 50f
 
         mVM = ViewModelProviders.of(this).get(MonitorViewModel::class.java)
         mVM.apply {
-            accelSource.sensorManager = activity?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-            accelSource.accelerometer = accelSource.sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
             audioCfg.observe(this@MonitorFragment, Observer {cfg ->
                 mBinding.audioSpectrogram.setFrequencyRange(0f, FFT.nyquist(cfg.sampleRate.toFloat()))
             })
+            accelFrequency.observeForever {
+                mBinding.accelSpectrogram.setFrequencyRange(0f, FFT.nyquist(it))
+            }
             audioFrequenciesSource.observe(this@MonitorFragment, Observer {frequencies ->
                 mBinding.audioSpectrogram.update(frequencies)
             })
             accelSource.observe(this@MonitorFragment, Observer {
-                mBinding.accelRealtimeGraph.update(it)
+                mBinding.accelSpectrogram.update(it)
             })
             isMonitoring.observe(this@MonitorFragment, Observer {
                 setMonitoringBtnState(it)
@@ -71,6 +74,9 @@ class MonitorFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+
+        val sensorManager = activity?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        mVM.accelCfg.value = AccelerationRecordingConfiguration(sensorManager, 512, 9.81f)
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         mVM.onPreferences(preferences)

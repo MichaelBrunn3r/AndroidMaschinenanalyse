@@ -8,6 +8,8 @@ import android.media.MediaRecorder
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.*
+import com.github.michaelbrunn3r.maschinenanalyse.sensors.AccelerationRecordingConfiguration
+import com.github.michaelbrunn3r.maschinenanalyse.sensors.NormalizedAccelerationMagnitudeSamplesSource
 
 class MonitorViewModel : ViewModel() {
     val isMonitoring = MutableLiveData(false)
@@ -18,12 +20,22 @@ class MonitorViewModel : ViewModel() {
     val audioFrequenciesSource = FrequenciesLiveData()
 
     // Accelerometer
-    val accelSource = NormalizedAccelerationLiveData()
+    val accelCfg = MutableLiveData<AccelerationRecordingConfiguration>()
+    val accelSource = FrequenciesLiveData()
+    val accelFrequency = MutableLiveData<Float>(200f)
+    private var mAccelerationSource: NormalizedAccelerationMagnitudeSamplesSource? = null
 
     init {
         audioCfg.observeForever { cfg ->
             val audioSamplesSource = AudioSamplesSource(cfg.sampleRate, cfg.numSamples, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream()
             audioFrequenciesSource.setSamplesSource(ShortArr2FloatArrSource(audioSamplesSource).stream())
+        }
+        accelCfg.observeForever {cfg ->
+            mAccelerationSource = NormalizedAccelerationMagnitudeSamplesSource(cfg.sensorManager, cfg.numSamples, cfg.constantForce)
+            accelSource.setSamplesSource(mAccelerationSource!!.stream())
+        }
+        accelSource.observeForever {
+            accelFrequency.value = mAccelerationSource!!.updateFrequency
         }
         isMonitoring.observeForever {
             audioFrequenciesSource.setSamplingState(it)

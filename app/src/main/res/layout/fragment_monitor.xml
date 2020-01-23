@@ -15,8 +15,8 @@
             android:orientation="vertical"
             app:maxShortClickDurationMs="300">
 
-            <com.github.michaelbrunn3r.maschinenanalyse.ui.RealtimeLinearView
-                android:id="@+id/accel_realtime_graph"
+            <com.github.michaelbrunn3r.maschinenanalyse.ui.SpectrogramView
+                android:id="@+id/accel_spectrogram"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.5"
