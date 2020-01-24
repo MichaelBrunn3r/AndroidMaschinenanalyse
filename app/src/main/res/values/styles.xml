@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/limed_spruce</item>
         <item name="colorPrimaryDark">@color/limed_spruce_dark</item> <!-- also used by status bar-->
         <item name="colorAccent">@color/sunshade</item>
+        <item name="colorError">@color/monza</item>
 
         <item name="android:colorBackground">@color/mine_shaft</item>
         <item name="android:colorButtonNormal">@color/mine_shaft</item>
