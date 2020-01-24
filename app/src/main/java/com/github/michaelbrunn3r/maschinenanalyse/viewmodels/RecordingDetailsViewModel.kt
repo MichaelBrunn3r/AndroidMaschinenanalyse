@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
+import com.github.michaelbrunn3r.maschinenanalyse.util.formatTime
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.DateFormat
@@ -34,10 +35,7 @@ class RecordingDetailsViewModel : ViewModel() {
             cal.timeInMillis = it.captureDate
             captureDate.value = dateFormat?.format(cal.time) ?: "?"
 
-            recordingDuration.value = String.format(
-                    "%02d s %02d ms",
-                    TimeUnit.MILLISECONDS.toSeconds(it.duration),
-                    it.duration - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(it.duration)))
+            recordingDuration.value = formatTime(it.duration, TimeUnit.MILLISECONDS)
         }
     }
 
