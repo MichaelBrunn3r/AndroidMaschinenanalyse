@@ -6,6 +6,7 @@ import android.media.MediaRecorder
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.sensors.*
+import com.github.michaelbrunn3r.maschinenanalyse.ui.Settings
 
 class MonitorViewModel : ViewModel() {
     val isMonitoring = MutableLiveData(false)
@@ -41,8 +42,8 @@ class MonitorViewModel : ViewModel() {
 
     fun onPreferences(preferences: SharedPreferences) {
         // Update audio recording configurations
-        val audioSampleRate = preferences.getString("fftSampleRate", "44100")!!.toInt()
-        val numAudioSamples = preferences.getString("fftAudioSamples", "4096")!!.toInt()
+        val audioSampleRate = preferences.getString("audioSampleRate", Settings.DEFAULT_AUDIO_SAMPLE_RATE.toString())!!.toInt()
+        val numAudioSamples = preferences.getString("numAudioSamples", Settings.DEFAULT_NUM_AUDIO_SAMPLES.toString())!!.toInt()
 
         val audioConfigChanged = audioCfg.value?.run { sampleRate != audioSampleRate || numSamples != numAudioSamples }
                 ?: true

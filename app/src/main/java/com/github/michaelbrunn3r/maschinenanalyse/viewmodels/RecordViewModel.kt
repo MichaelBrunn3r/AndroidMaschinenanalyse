@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
 import com.github.michaelbrunn3r.maschinenanalyse.sensors.*
+import com.github.michaelbrunn3r.maschinenanalyse.ui.Settings
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.round
@@ -125,11 +126,11 @@ class RecordViewModel : ViewModel() {
     }
 
     fun onPreferences(preferences: SharedPreferences) {
-        recordingDurationMs = preferences.getString("recordingDuration", "4096")!!.toLong()
+        recordingDurationMs = preferences.getString("recordingDuration", Settings.DEFAULT_RECORDING_DURATION.toString())!!.toLong()
 
         // Update audio recording configurations
-        val audioSampleRate = preferences.getString("fftSampleRate", "44100")!!.toInt()
-        val numAudioSamples = preferences.getString("fftAudioSamples", "4096")!!.toInt()
+        val audioSampleRate = preferences.getString("audioSampleRate", Settings.DEFAULT_AUDIO_SAMPLE_RATE.toString())!!.toInt()
+        val numAudioSamples = preferences.getString("numAudioSamples", Settings.DEFAULT_NUM_AUDIO_SAMPLES.toString())!!.toInt()
 
         val audioConfigChanged = audioCfg.value?.run { sampleRate != audioSampleRate || numSamples != numAudioSamples }
                 ?: true

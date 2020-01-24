@@ -2,24 +2,39 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ListPreference
-        android:key="fftAudioSamples"
-        android:title="FFT Audio Samples"
-        app:useSimpleSummaryProvider="true"
-        android:defaultValue="4096"
-        android:entries="@array/fftAudioSampleEntries"
-        android:entryValues="@array/fftAudioSamples" />
+    <PreferenceCategory
+        android:title="Sampling"
+        android:icon="@drawable/sampling">
+        <EditTextPreference
+            android:key="audioSampleRate"
+            android:title="Audio sample Rate"
+            app:defaultValue="44100"
+            app:useSimpleSummaryProvider="true"
+            app:enabled="false" />
+        <ListPreference
+            android:key="numAudioSamples"
+            android:title="Number of audio samples"
+            app:useSimpleSummaryProvider="true"
+            android:defaultValue="4096"
+            android:entries="@array/fftAudioSampleEntries"
+            android:entryValues="@array/fftAudioSamples" />
+    </PreferenceCategory>
 
-    <EditTextPreference
-        android:key="recordingDuration"
-        app:title="Recording Duration (Milliseconds)"
-        app:summary="Length of recordings"
-        android:defaultValue="10000" />
-
-    <EditTextPreference
-        android:key="compTimeWindow"
-        app:title="Length Realtime Mean (Seconds)"
-        app:summary="Length of the time to calculate realtime mean that is compared to the selected recording"
-        android:defaultValue="5" />
+    <PreferenceCategory
+        android:title="Recording"
+        android:icon="@drawable/microphone">
+        <EditTextPreference
+            android:key="recordingDuration"
+            app:title="Duration"
+            android:defaultValue="10000" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Monitoring"
+        android:icon="@drawable/eye">
+        <EditTextPreference
+            android:key="compTimeWindow"
+            app:title="Length Realtime Mean"
+            android:defaultValue="500" />
+    </PreferenceCategory>
 
 </PreferenceScreen>
