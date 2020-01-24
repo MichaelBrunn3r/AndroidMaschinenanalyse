@@ -6,7 +6,7 @@ import com.google.gson.reflect.TypeToken
 import java.util.Collections.emptyList
 
 
-class Converters {
+class RoomTypeConverters {
     val gson = Gson()
 
     @TypeConverter

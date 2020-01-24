@@ -42,7 +42,7 @@ interface RecordingDao {
 }
 
 @Database(entities = arrayOf(Recording::class), version = 1, exportSchema = false)
-@TypeConverters(Converters::class)
+@TypeConverters(RoomTypeConverters::class)
 abstract class MachineanalysisDatabase : RoomDatabase() {
     abstract fun recordingDao(): RecordingDao
 
