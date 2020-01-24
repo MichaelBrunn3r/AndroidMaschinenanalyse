@@ -73,7 +73,7 @@ class RecordingListAdapter internal constructor(val context: Context, val record
         fun bind(recording: Recording) {
             nameView.text = recording.name
             sampleRateView.text = recording.audioSampleRate.toString()
-            sampleSizeView.text = recording.numFFTAudioSamples.toString()
+            sampleSizeView.text = recording.numAudioSamples.toString()
 
             val cal = Calendar.getInstance()
             cal.timeInMillis = recording.captureDate

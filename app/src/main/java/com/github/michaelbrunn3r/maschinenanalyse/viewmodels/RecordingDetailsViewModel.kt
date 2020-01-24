@@ -28,7 +28,7 @@ class RecordingDetailsViewModel : ViewModel() {
     init {
         recording.observeForever {
             sampleRate.value = it.audioSampleRate.toString()
-            numSamples.value = it.numFFTAudioSamples.toString()
+            numSamples.value = it.numAudioSamples.toString()
             meanAcceleration.value = it.accelerationMean.toString()
 
             val cal = Calendar.getInstance()
@@ -61,7 +61,7 @@ class RecordingDetailsViewModel : ViewModel() {
         val r = JSONObject()
         r.put("name", recording.name)
         r.put("audio_sample_rate_hz", recording.audioSampleRate)
-        r.put("num_fft_audio_samples", recording.numFFTAudioSamples)
+        r.put("num_fft_audio_samples", recording.numAudioSamples)
         r.put("accel_mean", recording.accelerationMean)
         r.put("duration_ms", recording.duration)
         r.put("capture_date", recording.captureDate)
