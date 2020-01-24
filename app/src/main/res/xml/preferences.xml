@@ -16,8 +16,15 @@
             android:title="Number of audio samples"
             app:useSimpleSummaryProvider="true"
             android:defaultValue="4096"
-            android:entries="@array/fftAudioSampleEntries"
-            android:entryValues="@array/fftAudioSamples" />
+            android:entries="@array/numAudioSamplesEntries"
+            android:entryValues="@array/numAudioSamples" />
+        <ListPreference
+            android:key="numAccelSamples"
+            android:title="Number of accelerometer samples"
+            app:useSimpleSummaryProvider="true"
+            android:defaultValue="4096"
+            android:entries="@array/numAccelSamplesEntries"
+            android:entryValues="@array/numAccelsamples" />
     </PreferenceCategory>
 
     <PreferenceCategory

@@ -41,7 +41,7 @@ class MonitorViewModel : ViewModel() {
     }
 
     fun onPreferences(preferences: SharedPreferences) {
-        // Update audio recording configurations
+        // Update audio configurations
         val audioSampleRate = preferences.getString("audioSampleRate", Settings.DEFAULT_AUDIO_SAMPLE_RATE.toString())!!.toInt()
         val numAudioSamples = preferences.getString("numAudioSamples", Settings.DEFAULT_NUM_AUDIO_SAMPLES.toString())!!.toInt()
 
