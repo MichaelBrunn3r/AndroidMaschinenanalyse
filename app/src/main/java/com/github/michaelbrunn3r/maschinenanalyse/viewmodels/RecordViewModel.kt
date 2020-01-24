@@ -151,8 +151,10 @@ class RecordViewModel : ViewModel() {
                             name,
                             audioCfg.value!!.sampleRate,
                             audioCfg.value!!.numSamples,
-                            0f, //TODO save acceleration
                             mAudioFrequenciesBuffer!!.toList(),
+                            mMaxAccelFrequency,
+                            accelCfg.value!!.numSamples,
+                            mAccelFrequenciesBuffer!!,
                             recordingDurationMs,
                             System.currentTimeMillis()
                     )

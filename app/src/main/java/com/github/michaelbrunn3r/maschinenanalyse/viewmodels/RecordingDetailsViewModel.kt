@@ -18,18 +18,16 @@ class RecordingDetailsViewModel : ViewModel() {
     val recording = MutableLiveData<Recording>()
     var dateFormat: DateFormat? = null
 
-    val sampleRate = MutableLiveData("?")
-    val numSamples = MutableLiveData("?")
-    val meanAcceleration = MutableLiveData("?")
+    val audioCfg = MutableLiveData("?")
+    val accelCfg = MutableLiveData("?")
     val captureDate = MutableLiveData("?")
     val recordingDuration = MutableLiveData("?")
 
 
     init {
         recording.observeForever {
-            sampleRate.value = it.audioSampleRate.toString()
-            numSamples.value = it.numAudioSamples.toString()
-            meanAcceleration.value = it.accelerationMean.toString()
+            audioCfg.value = "${it.numAudioSamples} @ ${it.audioSampleRate}Hz"
+            accelCfg.value = "${it.numAccelSamples} @ ${it.accelSampleRate.toInt()}Hz"
 
             val cal = Calendar.getInstance()
             cal.timeInMillis = it.captureDate
@@ -60,12 +58,14 @@ class RecordingDetailsViewModel : ViewModel() {
     private fun recordingToJSON(recording: Recording): JSONObject {
         val r = JSONObject()
         r.put("name", recording.name)
-        r.put("audio_sample_rate_hz", recording.audioSampleRate)
-        r.put("num_fft_audio_samples", recording.numAudioSamples)
-        r.put("accel_mean", recording.accelerationMean)
-        r.put("duration_ms", recording.duration)
-        r.put("capture_date", recording.captureDate)
-        r.put("amplitude_means", JSONArray(recording.amplitudeMeans))
+        r.put("captureDate", recording.captureDate)
+        r.put("duration", recording.duration)
+        r.put("audioSampleRate", recording.audioSampleRate)
+        r.put("numAudioSamples", recording.numAudioSamples)
+        r.put("accelSampleRate", recording.accelSampleRate)
+        r.put("numAccelSamples", recording.numAccelSamples)
+        r.put("audioAmplitudesMean", JSONArray(recording.audioAmplitudesMean))
+        r.put("accelAmplitudesMean", JSONArray(recording.accelAmplitudesMean))
         return r
     }
 }

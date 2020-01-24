@@ -63,8 +63,12 @@ class RecordingDetailsFragment : Fragment() {
             dateFormat = DateFormat.getLongDateFormat(activity)
             recording.observe(this@RecordingDetailsFragment, Observer {
                 mToolbar?.title = it.name
+
                 mBinding.audioSpectrogram.setFrequencyRange(0f, FFT.nyquist(it.audioSampleRate.toFloat()))
-                mBinding.audioSpectrogram.update(it.amplitudeMeans.toFloatArray())
+                mBinding.audioSpectrogram.update(it.audioAmplitudesMean.toFloatArray())
+
+                mBinding.accelSpectrogram.setFrequencyRange(0f, FFT.nyquist(it.accelSampleRate))
+                mBinding.accelSpectrogram.update(it.accelAmplitudesMean.toFloatArray())
             })
         }
 

@@ -14,9 +14,11 @@ data class Recording(
         @PrimaryKey(autoGenerate = true) val uid: Int,
         @NonNull @ColumnInfo(name = "name") val name: String?,
         @NonNull @ColumnInfo(name = "audio_sample_rate") val audioSampleRate: Int, // Sample rate in Hz
-        @NonNull @ColumnInfo(name = "num_audio_samples") val numAudioSamples: Int, // Number of Samples per FFT Frame
-        @NonNull @ColumnInfo(name = "accel_mean") val accelerationMean: Float, // Mean over acceleration intensity peaks
-        @NonNull @ColumnInfo(name = "amplitude_means") val amplitudeMeans: List<Float>, // Mean Amplitude per Frequency
+        @NonNull @ColumnInfo(name = "num_audio_samples") val numAudioSamples: Int, // Number of audio samples per FFT
+        @NonNull @ColumnInfo(name = "mean_audio_spectrogram") val audioAmplitudesMean: List<Float>, // Audio spectrogram
+        @NonNull @ColumnInfo(name = "accel_sample_rate") val accelSampleRate: Float,
+        @NonNull @ColumnInfo(name = "num_accel_samples") val numAccelSamples: Int, // Number of accelerometer samples per FFT
+        @NonNull @ColumnInfo(name = "mean_accel_spectrogram") val accelAmplitudesMean: List<Float>, // Accelerometer Spectrogram
         @NonNull @ColumnInfo(name = "duration") val duration: Long, // Recording duration
         @NonNull @ColumnInfo(name = "capture_date") val captureDate: Long // When was the recording captured
 )
