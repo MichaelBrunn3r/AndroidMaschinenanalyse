@@ -79,7 +79,7 @@ class RecordFragment : Fragment() {
 
         val sensorManager = activity?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val numAccelSamples = preferences.getString("numAccelSamples", Settings.DEFAULT_NUM_ACCEL_SAMPLES.toString())!!.toInt()
-        mVM.accelCfg.value = AccelerationRecordingConfiguration(sensorManager, 512, 9.81f)
+        mVM.accelCfg.value = AccelerationRecordingConfiguration(sensorManager, numAccelSamples, 9.81f)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
