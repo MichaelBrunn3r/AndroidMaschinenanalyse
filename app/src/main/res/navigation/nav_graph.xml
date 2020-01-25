@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/monitorFragment">
 
     <fragment
         android:id="@+id/recordFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.RecordFragment"
-        android:label="@string/title_record_fragment"/>
+        android:label="@string/title_record_fragment"
+        tools:layout="@layout/fragment_record" />
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.SettingsFragment"
@@ -15,11 +17,13 @@
     <fragment
         android:id="@+id/monitorFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.MonitorFragment"
-        android:label="@string/title_monitor_fragment"/>
+        android:label="@string/title_monitor_fragment"
+        tools:layout="@layout/fragment_monitor" />
     <fragment
         android:id="@+id/recordingListFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.RecordingsListFragment"
-        android:label="@string/title_recording_list_fragment" >
+        android:label="@string/title_recording_list_fragment"
+        tools:layout="@layout/fragment_recording_list">
         <action
             android:id="@+id/action_recordingsListFragment_to_recordingDetailsFragment"
             app:destination="@id/recordingDetailsFragment"
@@ -31,7 +35,8 @@
     <fragment
         android:id="@+id/recordingDetailsFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.RecordingDetailsFragment"
-        android:label=" " >
+        android:label=" "
+        tools:layout="@layout/fragment_recording_details">
         <argument
             android:name="recording_id"
             app:argType="integer" />
