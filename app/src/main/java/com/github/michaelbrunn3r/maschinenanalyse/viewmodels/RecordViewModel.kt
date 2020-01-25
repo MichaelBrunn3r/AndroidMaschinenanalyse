@@ -1,57 +1,78 @@
 package com.github.michaelbrunn3r.maschinenanalyse.viewmodels
 
 import android.content.SharedPreferences
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
 import android.media.AudioFormat
 import android.media.MediaRecorder
 import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.github.michaelbrunn3r.maschinenanalyse.AudioRecordingConfiguration
-import com.github.michaelbrunn3r.maschinenanalyse.AudioSamplesSource
-import com.github.michaelbrunn3r.maschinenanalyse.FFT
-import com.github.michaelbrunn3r.maschinenanalyse.FrequenciesLiveData
 import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
-import kotlin.math.pow
-import kotlin.math.sqrt
+import com.github.michaelbrunn3r.maschinenanalyse.sensors.*
+import com.github.michaelbrunn3r.maschinenanalyse.ui.Settings
+import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.round
 
-class RecordViewModel : ViewModel(), SensorEventListener {
+class RecordViewModel : ViewModel() {
+
     val isRecording = MutableLiveData<Boolean>()
     private var recordingDurationMs = 5000L // Recording Duration in Milliseconds
     private var mRecordingHandler: Handler = Handler()
 
     // Audio
-    val recordedFrequencies = MutableLiveData<FloatArray>()
+    val recordedAudioFrequencies = MutableLiveData<FloatArray>()
     val audioCfg = MutableLiveData<AudioRecordingConfiguration>()
-    private val audioFrequenciesSource = FrequenciesLiveData()
-    private var numRecordedFrames = 0
-    private var recordingBuffer: FloatArray? = null
+    private val mAudioFrequenciesSource = FrequenciesLiveData()
+    private var mNumRecordedAudioFrames = 0
+    private var mAudioFrequenciesBuffer: FloatArray? = null
 
     // Accelerometer
-    var sensorManager: SensorManager? = null
-    var accelerometer: Sensor? = null
-    val recordedAccelMean = MutableLiveData<Float>()
-    private var accelBuffer = 0f
-    private var recordedAccelSamples = 0
-    private var maxCooldown = false
-    private var accelLastVal = 0f
+    val recordedAccelFrequencies = MutableLiveData<FloatArray>()
+    val accelCfg = MutableLiveData<AccelerationRecordingConfiguration>()
+    val accelFrequency = MutableLiveData<Float>(200f)
+    private val mAccelFrequenciesSource = FrequenciesLiveData()
+    private var mAccelerationSource: NormalizedAccelerationMagnitudeSamplesSource? = null
+    private var mNumRecordedAccelFrames = 0
+    private var mAccelFrequenciesBuffer: ArrayList<Float>? = null
+    private var mMaxAccelFrequency = 0f
 
     init {
         audioCfg.observeForever { cfg ->
-            audioFrequenciesSource.setSamplesSource(AudioSamplesSource(cfg.sampleRate, cfg.numSamples, cfg.source, cfg.channelCfg, cfg.format).stream())
+            val audioSamplesSource = AudioSamplesSource(cfg.sampleRate, cfg.numSamples, MediaRecorder.AudioSource.MIC, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT).stream()
+            mAudioFrequenciesSource.setSamplesSource(ShortArr2FloatArrSource(audioSamplesSource).stream())
+        }
+        accelCfg.observeForever { cfg ->
+            mAccelerationSource = NormalizedAccelerationMagnitudeSamplesSource(cfg.sensorManager, cfg.numSamples, cfg.constantForce)
+            mAccelFrequenciesSource.setSamplesSource(mAccelerationSource!!.stream())
         }
         isRecording.observeForever {
             if (it) startRecording()
             else stopRecording()
         }
-        audioFrequenciesSource.observeForever { frequencies ->
-            numRecordedFrames++
+        mAudioFrequenciesSource.observeForever { frequencies ->
+            mNumRecordedAudioFrames++
             for (i in frequencies.indices) {
-                recordingBuffer!![i] += frequencies[i]
+                mAudioFrequenciesBuffer!![i] += frequencies[i]
+            }
+        }
+        mAccelFrequenciesSource.observeForever { samples ->
+            mNumRecordedAccelFrames++
+            val currentFrequency = mAccelerationSource!!.updateFrequency
+            mMaxAccelFrequency = max(mMaxAccelFrequency, currentFrequency)
+
+            // Make sure buffer can hold all frequencies
+            if (mAccelFrequenciesBuffer!!.size < FFT.nyquist(mMaxAccelFrequency)) {
+                val difference = ceil(FFT.nyquist(mMaxAccelFrequency) - mAccelFrequenciesBuffer!!.size).toInt()
+                for (i in 0..difference) {
+                    mAccelFrequenciesBuffer!!.add(0f)
+                }
+            }
+
+            val step = FFT.nyquist(currentFrequency / samples.size)
+            for (i in samples.indices) {
+                val frequency = round(i * step).toInt()
+                mAccelFrequenciesBuffer!![frequency] += samples[i]
             }
         }
     }
@@ -60,14 +81,16 @@ class RecordViewModel : ViewModel(), SensorEventListener {
         if (audioCfg.value == null) return
 
         // Start recording accelerometer
-        accelBuffer = 0f
-        recordedAccelSamples = 0
-        sensorManager?.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME)
+        mNumRecordedAccelFrames = 0
+        mMaxAccelFrequency = 0f
+        mAccelFrequenciesBuffer = ArrayList(100)
+        mAccelFrequenciesBuffer!!.fill(0f)
+        mAccelFrequenciesSource.setSamplingState(true)
 
         // Start recording audio
-        numRecordedFrames = 0
-        recordingBuffer = FloatArray(FFT.numFrequenciesFor(audioCfg.value!!.numSamples))
-        audioFrequenciesSource.setSamplingState(true)
+        mNumRecordedAudioFrames = 0
+        mAudioFrequenciesBuffer = FloatArray(FFT.numFrequenciesFor(audioCfg.value!!.numSamples))
+        mAudioFrequenciesSource.setSamplingState(true)
 
         // Start timer
         mRecordingHandler.postDelayed({
@@ -77,46 +100,37 @@ class RecordViewModel : ViewModel(), SensorEventListener {
 
     private fun stopRecording() {
         // Stop recording
-        sensorManager?.unregisterListener(this)
-        audioFrequenciesSource.setSamplingState(false)
+        mAccelFrequenciesSource.setSamplingState(false)
+        mAudioFrequenciesSource.setSamplingState(false)
 
-        // Calculate amplitudes mean
-        if (recordingBuffer != null) {
-            for (i in recordingBuffer!!.indices) {
-                recordingBuffer!![i] = recordingBuffer!![i] / numRecordedFrames
+        // Accelerometer
+        accelFrequency.value = mMaxAccelFrequency // Has to be updated FIRST
+        mAccelFrequenciesBuffer?.let { buf ->
+            val floatBuffer = FloatArray(buf.size)
+            for (i in buf.indices) {
+                val x = buf[i]
+                floatBuffer[i] = buf[i] / mNumRecordedAccelFrames
             }
+
+            recordedAccelFrequencies.value = floatBuffer
         }
 
-        if (recordingBuffer != null) recordedFrequencies.value = recordingBuffer
-
-        recordedAccelMean.value = if (recordedAccelSamples > 0) accelBuffer / recordedAccelSamples else 0.0f
-    }
-
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
-
-    override fun onSensorChanged(event: SensorEvent?) {
-        if (event != null) {
-            when (event.sensor.type) {
-                Sensor.TYPE_ACCELEROMETER -> {
-                    val v = sqrt(event.values[0].pow(2) + event.values[1].pow(2) + event.values[2].pow(2)) - 9.81f
-                    if (v > 0 && v < accelLastVal && !maxCooldown) {
-                        recordedAccelSamples++
-                        accelBuffer += accelLastVal
-                        maxCooldown = true
-                    }
-                    if (v > accelLastVal) maxCooldown = false
-                    accelLastVal = v
-                }
+        // Calculate audio mean
+        mAudioFrequenciesBuffer?.let { buf ->
+            for (i in buf.indices) {
+                buf[i] = buf[i] / mNumRecordedAudioFrames
             }
+
+            recordedAudioFrequencies.value = buf
         }
     }
 
     fun onPreferences(preferences: SharedPreferences) {
-        recordingDurationMs = preferences.getString("recordingDuration", "4096")!!.toLong()
+        recordingDurationMs = preferences.getString("recordingDuration", Settings.DEFAULT_RECORDING_DURATION.toString())!!.toLong()
 
         // Update audio recording configurations
-        val audioSampleRate = preferences.getString("fftSampleRate", "44100")!!.toInt()
-        val numAudioSamples = preferences.getString("fftAudioSamples", "4096")!!.toInt()
+        val audioSampleRate = preferences.getString("audioSampleRate", Settings.DEFAULT_AUDIO_SAMPLE_RATE.toString())!!.toInt()
+        val numAudioSamples = preferences.getString("numAudioSamples", Settings.DEFAULT_NUM_AUDIO_SAMPLES.toString())!!.toInt()
 
         val audioConfigChanged = audioCfg.value?.run { sampleRate != audioSampleRate || numSamples != numAudioSamples }
                 ?: true
@@ -130,15 +144,17 @@ class RecordViewModel : ViewModel(), SensorEventListener {
     }
 
     fun saveRecording(name: String, dbViewModel: MachineanalysisViewModel) {
-        if (recordingBuffer != null) {
+        if (mAudioFrequenciesBuffer != null) {
             dbViewModel.insert(
                     Recording(
                             0,
                             name,
                             audioCfg.value!!.sampleRate,
                             audioCfg.value!!.numSamples,
-                            recordedAccelMean.value ?: 0f,
-                            recordingBuffer!!.toList(),
+                            mAudioFrequenciesBuffer!!.toList(),
+                            mMaxAccelFrequency,
+                            accelCfg.value!!.numSamples,
+                            mAccelFrequenciesBuffer!!,
                             recordingDurationMs,
                             System.currentTimeMillis()
                     )

@@ -1,4 +1,4 @@
-package com.github.michaelbrunn3r.maschinenanalyse
+package com.github.michaelbrunn3r.maschinenanalyse.sensors
 
 import android.hardware.Sensor
 import android.hardware.SensorEvent

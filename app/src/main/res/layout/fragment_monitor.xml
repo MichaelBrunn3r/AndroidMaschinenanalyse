@@ -8,15 +8,15 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.github.michaelbrunn3r.maschinenanalyse.ui.TouchOverlayLayout
+        <com.github.michaelbrunn3r.maschinenanalyse.views.TouchOverlayLayout
             android:id="@+id/touchOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             app:maxShortClickDurationMs="300">
 
-            <com.github.michaelbrunn3r.maschinenanalyse.ui.RealtimeLinearView
-                android:id="@+id/accel_realtime_graph"
+            <com.github.michaelbrunn3r.maschinenanalyse.views.SpectrogramView
+                android:id="@+id/accel_spectrogram"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.5"
@@ -32,7 +32,7 @@
                 app:viewPortOffsetRight="50"
                 app:viewPortOffsetTop="50" />
 
-            <com.github.michaelbrunn3r.maschinenanalyse.ui.SpectrogramView
+            <com.github.michaelbrunn3r.maschinenanalyse.views.SpectrogramView
                 android:id="@+id/audio_spectrogram"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -48,6 +48,6 @@
                 app:viewPortOffsetLeft="80"
                 app:viewPortOffsetRight="50"
                 app:viewPortOffsetTop="50" />
-        </com.github.michaelbrunn3r.maschinenanalyse.ui.TouchOverlayLayout>
+        </com.github.michaelbrunn3r.maschinenanalyse.views.TouchOverlayLayout>
     </LinearLayout>
 </layout>

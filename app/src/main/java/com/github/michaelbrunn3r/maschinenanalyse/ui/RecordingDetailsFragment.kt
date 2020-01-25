@@ -18,10 +18,8 @@ import com.github.michaelbrunn3r.maschinenanalyse.*
 import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentRecordingDetailsBinding
+import com.github.michaelbrunn3r.maschinenanalyse.sensors.FFT
 import com.github.michaelbrunn3r.maschinenanalyse.viewmodels.RecordingDetailsViewModel
-import kotlinx.android.synthetic.main.fragment_recording_details.*
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 class RecordingDetailsFragment : Fragment() {
 
@@ -65,8 +63,12 @@ class RecordingDetailsFragment : Fragment() {
             dateFormat = DateFormat.getLongDateFormat(activity)
             recording.observe(this@RecordingDetailsFragment, Observer {
                 mToolbar?.title = it.name
+
                 mBinding.audioSpectrogram.setFrequencyRange(0f, FFT.nyquist(it.audioSampleRate.toFloat()))
-                mBinding.audioSpectrogram.update(it.amplitudeMeans.toFloatArray())
+                mBinding.audioSpectrogram.update(it.audioAmplitudesMean.toFloatArray())
+
+                mBinding.accelSpectrogram.setFrequencyRange(0f, FFT.nyquist(it.accelSampleRate))
+                mBinding.accelSpectrogram.update(it.accelAmplitudesMean.toFloatArray())
             })
         }
 

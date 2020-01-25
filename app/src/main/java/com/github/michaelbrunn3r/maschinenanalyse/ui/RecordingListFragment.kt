@@ -19,6 +19,7 @@ import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewMo
 import com.github.michaelbrunn3r.maschinenanalyse.R
 import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
 import java.util.*
+import kotlin.math.ceil
 
 class RecordingsListFragment : Fragment() {
 
@@ -60,8 +61,8 @@ class RecordingListAdapter internal constructor(val context: Context, val record
 
     inner class RecordingViewHolder(itemView: View, l: RecordingClickedListener) : RecyclerView.ViewHolder(itemView) {
         val nameView: TextView = itemView.findViewById(R.id.name)
-        val sampleRateView: TextView = itemView.findViewById(R.id.sample_rate)
-        val sampleSizeView: TextView = itemView.findViewById(R.id.sample_size)
+        val accelCfgView: TextView = itemView.findViewById(R.id.accelCfg)
+        val audioCfgView: TextView = itemView.findViewById(R.id.audioCfg)
         val captureDateView: TextView = itemView.findViewById(R.id.capture_date)
 
         init {
@@ -72,8 +73,8 @@ class RecordingListAdapter internal constructor(val context: Context, val record
 
         fun bind(recording: Recording) {
             nameView.text = recording.name
-            sampleRateView.text = recording.audioSampleRate.toString()
-            sampleSizeView.text = recording.numFFTAudioSamples.toString()
+            accelCfgView.text = "${recording.numAccelSamples} @ ${recording.accelSampleRate.toInt()}Hz"
+            audioCfgView.text = "${recording.numAudioSamples} @ ${recording.audioSampleRate}Hz"
 
             val cal = Calendar.getInstance()
             cal.timeInMillis = recording.captureDate

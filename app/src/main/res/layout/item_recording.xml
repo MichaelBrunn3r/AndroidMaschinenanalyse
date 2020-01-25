@@ -17,40 +17,39 @@
         tools:text="@sample/recordings.json/recordings/name" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/accelCfgLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/recording_sample_rate"
+        android:text="Accelerometer: "
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/name" />
 
     <TextView
-        android:id="@+id/sample_rate"
+        android:id="@+id/accelCfg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:text="@string/number_placeholder"
-        app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toBottomOf="@+id/name"
+        app:layout_constraintStart_toEndOf="@+id/accelCfgLabel"
+        app:layout_constraintTop_toTopOf="@+id/accelCfgLabel"
         tools:text="@sample/recordings.json/recordings/sample_rate" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/audioCfgLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:text="@string/recording_sample_size"
-        app:layout_constraintStart_toEndOf="@+id/sample_rate"
-        app:layout_constraintTop_toTopOf="@+id/textView"/>
+        android:text="Audio: "
+        app:layout_constraintStart_toStartOf="@+id/accelCfgLabel"
+        app:layout_constraintTop_toBottomOf="@+id/accelCfgLabel" />
 
     <TextView
-        android:id="@+id/sample_size"
+        android:id="@+id/audioCfg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:text="@string/number_placeholder"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
-        app:layout_constraintTop_toTopOf="@+id/textView2"
+        app:layout_constraintStart_toEndOf="@+id/audioCfgLabel"
+        app:layout_constraintTop_toTopOf="@+id/audioCfgLabel"
         tools:text="@sample/recordings.json/recordings/sample_size" />
 
     <TextView

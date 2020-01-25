@@ -1,4 +1,4 @@
-package com.github.michaelbrunn3r.maschinenanalyse.ui
+package com.github.michaelbrunn3r.maschinenanalyse.views
 
 import android.content.Context
 import android.util.AttributeSet

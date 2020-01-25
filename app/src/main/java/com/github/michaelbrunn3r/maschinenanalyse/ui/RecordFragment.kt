@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
-import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
@@ -18,17 +17,18 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.preference.PreferenceManager
-import com.github.michaelbrunn3r.maschinenanalyse.FFT
 import com.github.michaelbrunn3r.maschinenanalyse.R
 import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentRecordBinding
+import com.github.michaelbrunn3r.maschinenanalyse.sensors.AccelerationRecordingConfiguration
+import com.github.michaelbrunn3r.maschinenanalyse.sensors.FFT
 import com.github.michaelbrunn3r.maschinenanalyse.viewmodels.RecordViewModel
 
 class RecordFragment : Fragment() {
 
     private lateinit var mBinding: FragmentRecordBinding
     private lateinit var mMachineanalysisViewModel: MachineanalysisViewModel
-    private lateinit var mRecordViewModel: RecordViewModel
+    private lateinit var mVM: RecordViewModel
 
     private var mMIRecord: MenuItem? = null
 
@@ -42,19 +42,25 @@ class RecordFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        mBinding.accelSpectrogram.axisLeft.axisMaximum = 50f
+
         mMachineanalysisViewModel = activity?.run {
             ViewModelProviders.of(this)[MachineanalysisViewModel::class.java]
         } ?: throw Exception("Invalid Activity")
 
-        mRecordViewModel = ViewModelProviders.of(this).get(RecordViewModel::class.java)
-        mRecordViewModel.apply {
-            sensorManager = activity?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-            accelerometer = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        mVM = ViewModelProviders.of(this).get(RecordViewModel::class.java)
+        mVM.apply {
             audioCfg.observe(this@RecordFragment, Observer { cfg ->
-                mBinding.spectrogram.setFrequencyRange(0f, FFT.nyquist(cfg.sampleRate.toFloat()))
+                mBinding.audioSpectrogram.setFrequencyRange(0f, FFT.nyquist(cfg.sampleRate.toFloat()))
             })
-            recordedFrequencies.observe(this@RecordFragment, Observer {
-                mBinding.spectrogram.update(it)
+            accelFrequency.observeForever {
+                mBinding.accelSpectrogram.setFrequencyRange(0f, FFT.nyquist(it))
+            }
+            recordedAudioFrequencies.observe(this@RecordFragment, Observer {
+                mBinding.audioSpectrogram.update(it)
+            })
+            recordedAccelFrequencies.observe(this@RecordFragment, Observer {
+                mBinding.accelSpectrogram.update(it)
             })
             isRecording.observe(this@RecordFragment, Observer {
                 if (it) setRecordBtnState(true)
@@ -62,14 +68,18 @@ class RecordFragment : Fragment() {
             })
         }
 
-        mBinding.viewmodel = mRecordViewModel
+        mBinding.viewmodel = mVM
     }
 
     override fun onResume() {
         super.onResume()
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-        mRecordViewModel.onPreferences(preferences)
+        mVM.onPreferences(preferences)
+
+        val sensorManager = activity?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val numAccelSamples = preferences.getString("numAccelSamples", Settings.DEFAULT_NUM_ACCEL_SAMPLES.toString())!!.toInt()
+        mVM.accelCfg.value = AccelerationRecordingConfiguration(sensorManager, numAccelSamples, 9.81f)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -77,13 +87,13 @@ class RecordFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
 
         mMIRecord = menu.findItem(R.id.miRecord)
-        setRecordBtnState(mRecordViewModel.isRecording.value ?: false)
+        setRecordBtnState(mVM.isRecording.value ?: false)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.miRecord -> {
-                mRecordViewModel.isRecording.value = requestAudioPermissions()
+                mVM.isRecording.value = requestAudioPermissions()
                 return true
             }
             R.id.miSaveRecording -> {
@@ -100,10 +110,10 @@ class RecordFragment : Fragment() {
     }
 
     private fun saveRecording() {
-        if (mRecordViewModel.recordedFrequencies.value == null || fragmentManager == null) return
+        if (mVM.recordedAudioFrequencies.value == null || fragmentManager == null) return
 
         SaveRecordingAsDialogFragment { dialog ->
-            mRecordViewModel.saveRecording(dialog.recordingName, mMachineanalysisViewModel)
+            mVM.saveRecording(dialog.recordingName, mMachineanalysisViewModel)
         }.show(fragmentManager!!, "saveRecordingAs")
     }
 

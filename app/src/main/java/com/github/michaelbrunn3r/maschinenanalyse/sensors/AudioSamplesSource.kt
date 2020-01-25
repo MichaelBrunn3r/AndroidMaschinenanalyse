@@ -1,4 +1,4 @@
-package com.github.michaelbrunn3r.maschinenanalyse
+package com.github.michaelbrunn3r.maschinenanalyse.sensors
 
 import android.media.AudioRecord
 import io.reactivex.BackpressureStrategy
@@ -49,5 +49,23 @@ class AudioSamplesSource(var sampleRate:Int, var samples:Int, var audioSrc:Int, 
 
     fun stream(): Flowable<ShortArray> {
         return mFlowable
+    }
+}
+
+class ShortArr2FloatArrSource(val shortSource:Flowable<ShortArray>) {
+    fun stream(): Flowable<FloatArray> {
+        return shortSource.map {
+            return@map shortArrToFloatArr(it)
+        }
+    }
+
+    companion object {
+        private fun shortArrToFloatArr(shortArr: ShortArray): FloatArray {
+            val floatArr = FloatArray(shortArr.size)
+            for (i in shortArr.indices) {
+            floatArr[i] = shortArr[i].toFloat()
+            }
+            return floatArr
+        }
     }
 }

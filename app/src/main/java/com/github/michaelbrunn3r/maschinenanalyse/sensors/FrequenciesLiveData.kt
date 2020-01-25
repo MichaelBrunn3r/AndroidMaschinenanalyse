@@ -1,4 +1,4 @@
-package com.github.michaelbrunn3r.maschinenanalyse
+package com.github.michaelbrunn3r.maschinenanalyse.sensors
 
 import androidx.lifecycle.LiveData
 import com.paramsen.noise.Noise
@@ -8,7 +8,7 @@ import io.reactivex.schedulers.Schedulers
 
 class FrequenciesLiveData : LiveData<FloatArray>() {
 
-    private var mSamplesSource:Flowable<ShortArray>? = null
+    private var mSamplesSource:Flowable<FloatArray>? = null
     private val mDisposable: CompositeDisposable = CompositeDisposable()
     private var mOnSamplingStateChangedListener: ((Boolean) -> Unit)? = null
     var isSampling: Boolean = false
@@ -34,7 +34,7 @@ class FrequenciesLiveData : LiveData<FloatArray>() {
         else stopSampling()
     }
 
-    fun setSamplesSource(sampleSource:Flowable<ShortArray>) {
+    fun setSamplesSource(sampleSource:Flowable<FloatArray>) {
         mSamplesSource = sampleSource
         mDisposable.clear()
         if (isSampling) {
@@ -63,24 +63,14 @@ class FrequenciesLiveData : LiveData<FloatArray>() {
     }
 }
 
-class FrequenciesSource(val sampleSource:Flowable<ShortArray>) {
+class FrequenciesSource(val sampleSource:Flowable<FloatArray>) {
 
     private var mNoise: Noise? = null
 
     fun stream(): Flowable<FloatArray> {
         return sampleSource.map { samples ->
             if (mNoise == null) mNoise = Noise.real(samples.size)
-
-            val samplesFloat = shortArrToFloatArr(samples)
-            return@map FFT.sequenceToFrequencies(samplesFloat, FFT.hannWindow, mNoise!!)
+            return@map FFT.sequenceToFrequencies(samples, FFT.hannWindow, mNoise!!)
         }
-    }
-
-    private fun shortArrToFloatArr(shortArr: ShortArray): FloatArray {
-        val floatArr = FloatArray(shortArr.size)
-        for (i in shortArr.indices) {
-            floatArr[i] = shortArr[i].toFloat()
-        }
-        return floatArr
     }
 }

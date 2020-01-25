@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
+import com.github.michaelbrunn3r.maschinenanalyse.database.toJson
+import com.github.michaelbrunn3r.maschinenanalyse.util.formatTime
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.DateFormat
@@ -17,27 +19,22 @@ class RecordingDetailsViewModel : ViewModel() {
     val recording = MutableLiveData<Recording>()
     var dateFormat: DateFormat? = null
 
-    val sampleRate = MutableLiveData("?")
-    val numSamples = MutableLiveData("?")
-    val meanAcceleration = MutableLiveData("?")
+    val audioCfg = MutableLiveData("?")
+    val accelCfg = MutableLiveData("?")
     val captureDate = MutableLiveData("?")
     val recordingDuration = MutableLiveData("?")
 
 
     init {
         recording.observeForever {
-            sampleRate.value = it.audioSampleRate.toString()
-            numSamples.value = it.numFFTAudioSamples.toString()
-            meanAcceleration.value = it.accelerationMean.toString()
+            audioCfg.value = "${it.numAudioSamples} @ ${it.audioSampleRate}Hz"
+            accelCfg.value = "${it.numAccelSamples} @ ${it.accelSampleRate.toInt()}Hz"
 
             val cal = Calendar.getInstance()
             cal.timeInMillis = it.captureDate
             captureDate.value = dateFormat?.format(cal.time) ?: "?"
 
-            recordingDuration.value = String.format(
-                    "%02d s %02d ms",
-                    TimeUnit.MILLISECONDS.toSeconds(it.duration),
-                    it.duration - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(it.duration)))
+            recordingDuration.value = formatTime(it.duration, TimeUnit.MILLISECONDS)
         }
     }
 
@@ -48,26 +45,12 @@ class RecordingDetailsViewModel : ViewModel() {
     }
 
     fun createShareRecordingIntent(recording: Recording): Intent {
-        val json = recordingToJSON(recording)
-
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, json.toString())
+            putExtra(Intent.EXTRA_TEXT, recording.toJson())
             type = "text/json"
         }
 
         return Intent.createChooser(sendIntent, null)
-    }
-
-    private fun recordingToJSON(recording: Recording): JSONObject {
-        val r = JSONObject()
-        r.put("name", recording.name)
-        r.put("audio_sample_rate_hz", recording.audioSampleRate)
-        r.put("num_fft_audio_samples", recording.numFFTAudioSamples)
-        r.put("accel_mean", recording.accelerationMean)
-        r.put("duration_ms", recording.duration)
-        r.put("capture_date", recording.captureDate)
-        r.put("amplitude_means", JSONArray(recording.amplitudeMeans))
-        return r
     }
 }
