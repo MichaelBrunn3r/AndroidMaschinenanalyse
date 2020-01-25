@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mBinding: ActivityMainBinding
     private lateinit var mNavCtrl: NavController
-    private val mToplevelDestinations = setOf(R.id.recordingListFragment, R.id.recordFragment, R.id.monitorFragment)
+    private val mToplevelDestinations = setOf(R.id.recordingListFragment, R.id.monitorFragment)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

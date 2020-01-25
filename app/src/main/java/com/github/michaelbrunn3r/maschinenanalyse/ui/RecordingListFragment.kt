@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -18,16 +19,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
 import com.github.michaelbrunn3r.maschinenanalyse.R
 import com.github.michaelbrunn3r.maschinenanalyse.database.Recording
+import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentRecordingListBinding
 import java.util.*
-import kotlin.math.ceil
 
 class RecordingsListFragment : Fragment() {
 
     private lateinit var mNavController: NavController
     private lateinit var mMachineanalysisViewModel: MachineanalysisViewModel
+    private lateinit var mBinding: FragmentRecordingListBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_recording_list, container, false)
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_recording_list, container,false)
+        return mBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -35,22 +38,30 @@ class RecordingsListFragment : Fragment() {
 
         mNavController = Navigation.findNavController(view)
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerview)
         val adapter = RecordingListAdapter(context!!, object : RecordingListAdapter.RecordingClickedListener {
             override fun onClicked(idx: Int) {
-                val recording_id = mMachineanalysisViewModel.recordings.value!![idx].uid
-                val action = RecordingsListFragmentDirections.actionRecordingsListFragmentToRecordingDetailsFragment(recording_id)
+                val recordingId = mMachineanalysisViewModel.recordings.value!![idx].uid
+                val action = RecordingsListFragmentDirections.actionRecordingsListFragmentToRecordingDetailsFragment(recordingId)
                 mNavController.navigate(action)
             }
         })
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(context!!)
-        recyclerView.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+        mBinding.recyclerview.apply {
+            this.adapter = adapter
+            layoutManager = LinearLayoutManager(context!!)
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+        }
 
         mMachineanalysisViewModel = ViewModelProviders.of(this)[MachineanalysisViewModel::class.java]
         mMachineanalysisViewModel.recordings.observe(this, Observer { recordings ->
             recordings?.let { adapter.setRecordings(recordings) }
         })
+
+        mBinding.fab.apply {
+            setOnClickListener {
+                mNavController.navigate(R.id.action_recordingListFragment_to_recordFragment)
+                hide()
+            }
+        }
     }
 }
 
