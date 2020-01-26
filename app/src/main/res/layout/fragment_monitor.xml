@@ -15,6 +15,14 @@
             android:orientation="vertical"
             app:maxShortClickDurationMs="300">
 
+            <TextView
+                android:id="@+id/accel_spectrogram_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin"
+                android:layout_marginTop="@dimen/margin_half"
+                android:text="@string/accelerometer_spectrogram" />
+
             <com.github.michaelbrunn3r.maschinenanalyse.views.SpectrogramView
                 android:id="@+id/accel_spectrogram"
                 android:layout_width="match_parent"
@@ -28,12 +36,23 @@
                 app:graphWidth="0.8dp"
                 app:showLegend="false"
                 tools:leftRange="0..10"
-                tools:xRange="0..100" />
+                tools:xRange="0..100" >
+
+            </com.github.michaelbrunn3r.maschinenanalyse.views.SpectrogramView>
+
+            <TextView
+                android:id="@+id/audio_spectrogram_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin"
+                android:layout_marginTop="@dimen/margin_half"
+                android:text="@string/audio_spectrogram" />
 
             <com.github.michaelbrunn3r.maschinenanalyse.views.SpectrogramView
                 android:id="@+id/audio_spectrogram"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginBottom="@dimen/margin_half"
                 android:layout_weight="0.5"
                 app:drawGridLines="x|left"
                 app:enableDragging="x|y"
@@ -42,7 +61,9 @@
                 app:graphWidth="0.8dp"
                 app:leftRange="0..300"
                 app:showLegend="false"
-                tools:xRange="0..22050" />
+                tools:xRange="0..22050">
+
+            </com.github.michaelbrunn3r.maschinenanalyse.views.SpectrogramView>
         </com.github.michaelbrunn3r.maschinenanalyse.views.TouchOverlayLayout>
     </LinearLayout>
 </layout>
