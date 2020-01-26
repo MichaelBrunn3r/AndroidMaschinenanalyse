@@ -24,6 +24,8 @@ class RecordingDetailsViewModel : ViewModel() {
     val captureDate = MutableLiveData("?")
     val recordingDuration = MutableLiveData("?")
 
+    val accelSpectrogramUnfolded = MutableLiveData(false)
+    val audioSpectrogramUnfolded = MutableLiveData(false)
 
     init {
         recording.observeForever {

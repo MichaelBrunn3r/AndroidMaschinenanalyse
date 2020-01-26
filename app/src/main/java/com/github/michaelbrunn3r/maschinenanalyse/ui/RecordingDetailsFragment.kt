@@ -70,9 +70,39 @@ class RecordingDetailsFragment : Fragment() {
                 mBinding.accelSpectrogram.setFrequencyRange(0f, FFT.nyquist(it.accelSampleRate))
                 mBinding.accelSpectrogram.update(it.accelAmplitudesMean.toFloatArray())
             })
+            accelSpectrogramUnfolded.observe(this@RecordingDetailsFragment, Observer {
+                if(it) {
+                    mBinding.infoWrapper.visibility = View.GONE
+                    mBinding.audioWrapper.visibility = View.GONE
+                    mBinding.unfoldAccelButton.setImageDrawable(resources.getDrawable(R.drawable.unfold_less, context!!.theme))
+                } else {
+                    mBinding.infoWrapper.visibility = View.VISIBLE
+                    mBinding.audioWrapper.visibility = View.VISIBLE
+                    mBinding.unfoldAccelButton.setImageDrawable(resources.getDrawable(R.drawable.unfold_more, context!!.theme))
+                }
+            })
+            audioSpectrogramUnfolded.observe(this@RecordingDetailsFragment, Observer {
+                if(it) {
+                    mBinding.infoWrapper.visibility = View.GONE
+                    mBinding.accelWrapper.visibility = View.GONE
+                    mBinding.unfoldAudioButton.setImageDrawable(resources.getDrawable(R.drawable.unfold_less, context!!.theme))
+                } else {
+                    mBinding.infoWrapper.visibility = View.VISIBLE
+                    mBinding.accelWrapper.visibility = View.VISIBLE
+                    mBinding.unfoldAudioButton.setImageDrawable(resources.getDrawable(R.drawable.unfold_more, context!!.theme))
+                }
+            })
         }
 
         mBinding.viewmodel = mVM
+        mBinding.unfoldAccelButton.setOnClickListener {
+            mVM.audioSpectrogramUnfolded.value = false
+            mVM.accelSpectrogramUnfolded.value = !mVM.accelSpectrogramUnfolded.value!!
+        }
+        mBinding.unfoldAudioButton.setOnClickListener {
+            mVM.accelSpectrogramUnfolded.value = false
+            mVM.audioSpectrogramUnfolded.value = !mVM.audioSpectrogramUnfolded.value!!
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
