@@ -42,8 +42,6 @@ class RecordFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        mBinding.accelSpectrogram.axisLeft.axisMaximum = 50f
-
         mMachineanalysisViewModel = activity?.run {
             ViewModelProviders.of(this)[MachineanalysisViewModel::class.java]
         } ?: throw Exception("Invalid Activity")

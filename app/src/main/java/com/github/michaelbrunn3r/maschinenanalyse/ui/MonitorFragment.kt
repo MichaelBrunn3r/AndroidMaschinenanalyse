@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.preference.PreferenceManager
-import com.github.michaelbrunn3r.maschinenanalyse.*
+import com.github.michaelbrunn3r.maschinenanalyse.R
 import com.github.michaelbrunn3r.maschinenanalyse.databinding.FragmentMonitorBinding
 import com.github.michaelbrunn3r.maschinenanalyse.sensors.AccelerationRecordingConfiguration
 import com.github.michaelbrunn3r.maschinenanalyse.sensors.FFT
@@ -38,17 +38,16 @@ class MonitorFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         mToolbar = activity?.findViewById(R.id.toolbar)
-        mBinding.accelSpectrogram.axisLeft.axisMaximum = 50f
 
         mVM = ViewModelProviders.of(this).get(MonitorViewModel::class.java)
         mVM.apply {
-            audioCfg.observe(this@MonitorFragment, Observer {cfg ->
+            audioCfg.observe(this@MonitorFragment, Observer { cfg ->
                 mBinding.audioSpectrogram.setFrequencyRange(0f, FFT.nyquist(cfg.sampleRate.toFloat()))
             })
             accelFrequency.observeForever {
                 mBinding.accelSpectrogram.setFrequencyRange(0f, FFT.nyquist(it))
             }
-            audioFrequenciesSource.observe(this@MonitorFragment, Observer {frequencies ->
+            audioFrequenciesSource.observe(this@MonitorFragment, Observer { frequencies ->
                 mBinding.audioSpectrogram.update(frequencies)
             })
             accelSource.observe(this@MonitorFragment, Observer {
@@ -59,7 +58,7 @@ class MonitorFragment : Fragment() {
             })
             isToolbarHidden.observe(this@MonitorFragment, Observer {
                 mToolbar?.apply {
-                    visibility = if(it) View.GONE
+                    visibility = if (it) View.GONE
                     else View.VISIBLE
                 }
             })
@@ -92,7 +91,7 @@ class MonitorFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.miStartStop -> {
                 mVM.isMonitoring.apply {
                     value = !(!requestAudioPermissions() || value == null || value == true)
@@ -104,13 +103,13 @@ class MonitorFragment : Fragment() {
 
     private fun setMonitoringBtnState(isSampling: Boolean) {
         mMIStartStop?.apply {
-            icon = if(isSampling) resources.getDrawable(R.drawable.pause_btn, activity!!.theme)
+            icon = if (isSampling) resources.getDrawable(R.drawable.pause_btn, activity!!.theme)
             else resources.getDrawable(R.drawable.play_btn, activity!!.theme)
         }
     }
 
-    private fun requestAudioPermissions():Boolean {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && activity!!.checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+    private fun requestAudioPermissions(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && activity!!.checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 1234)
             println("No Audio Permission granted")
             return false

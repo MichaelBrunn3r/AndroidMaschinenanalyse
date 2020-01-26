@@ -9,7 +9,7 @@
         <item name="colorError">@color/monza</item>
         <item name="android:colorBackground">@color/mine_shaft</item>
         <item name="android:textColorPrimary">@color/white</item> <!--Text color on primary -->
-        <item name="android:textColor">@color/nobel</item> <!-- Standard text color -->
+        <item name="textColor">@color/nobel</item> <!-- Standard text color -->
         <item name="android:colorButtonNormal">@color/mine_shaft</item>
 
         <!-- Styles -->

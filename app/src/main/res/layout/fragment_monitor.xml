@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,34 +20,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.5"
-                app:bgColor="@color/mine_shaft"
-                app:drawGridLines="xAxis|yAxis"
-                app:enableDragging="yAxis|xAxis"
-                app:enableScaling="yAxis|xAxis"
+                app:autoScaleYAxis="true"
+                app:drawGridLines="x|left"
+                app:enableDragging="x|y"
+                app:enableScaling="x|y"
                 app:graphColor="?attr/colorAccent"
                 app:graphWidth="0.8dp"
                 app:showLegend="false"
-                app:viewPortOffsetBottom="10"
-                app:viewPortOffsetLeft="80"
-                app:viewPortOffsetRight="50"
-                app:viewPortOffsetTop="50" />
+                tools:leftRange="0..10"
+                tools:xRange="0..100" />
 
             <com.github.michaelbrunn3r.maschinenanalyse.views.SpectrogramView
                 android:id="@+id/audio_spectrogram"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.5"
-                app:bgColor="@color/mine_shaft"
-                app:drawGridLines="xAxis|yAxis"
-                app:enableDragging="yAxis|xAxis"
-                app:enableScaling="yAxis|xAxis"
+                app:drawGridLines="x|left"
+                app:enableDragging="x|y"
+                app:enableScaling="x|y"
                 app:graphColor="?attr/colorAccent"
                 app:graphWidth="0.8dp"
+                app:leftRange="0..300"
                 app:showLegend="false"
-                app:viewPortOffsetBottom="10"
-                app:viewPortOffsetLeft="80"
-                app:viewPortOffsetRight="50"
-                app:viewPortOffsetTop="50" />
+                tools:xRange="0..22050" />
         </com.github.michaelbrunn3r.maschinenanalyse.views.TouchOverlayLayout>
     </LinearLayout>
 </layout>

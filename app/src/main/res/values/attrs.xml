@@ -1,51 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="MPAndroidChart">
-        <!-- Interaction -->
-        <attr name="enableScaling">
-            <flag name="none" value="0"/>
-            <flag name="xAxis" value="0x01"/>
-            <flag name="yAxis" value="0x02"/>
-            <flag name="both" value="0x03"/>
-        </attr>
-        <attr name="enableDragging">
-            <flag name="none" value="0"/>
-            <flag name="xAxis" value="0x01"/>
-            <flag name="yAxis" value="0x02"/>
-            <flag name="both" value="0x03"/>
-        </attr>
-
-        <!-- General Appearance -->
-        <attr name="bgColor" format="color" />
-        <attr name="viewPortOffsetLeft" format="float" />
-        <attr name="viewPortOffsetRight" format="float" />
-        <attr name="viewPortOffsetTop" format="float" />
-        <attr name="viewPortOffsetBottom" format="float" />
-        <attr name="descr" format="string" />
-        <attr name="descrTextColor" format="color" />
-
+    <declare-styleable name="Graph">
         <!-- Graph -->
         <attr name="graphColor" format="color" />
         <attr name="graphWidth" format="dimension" />
-
-        <attr name="showLegend" format="boolean" />
-
-        <!-- Axis -->
-        <attr name="drawGridLines" format="boolean">
-            <flag name="none" value="0" />
-            <flag name="xAxis" value="0x01" />
-            <flag name="yAxis" value="0x02" />
-            <flag name="both" value="0x03" />
-        </attr>
-        <attr name="drawLabels">
-            <flag name="none" value="0"/>
-            <flag name="xAxis" value="0x01"/>
-            <flag name="yAxis" value="0x02"/>
-            <flag name="both" value="0x03"/>
-        </attr>
     </declare-styleable>
 
     <declare-styleable name="TouchOverlayLayout">
         <attr name="maxShortClickDurationMs" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="StyleableLineChart">
+        <!-- Behaviour -->
+        <attr name="autoScaleYAxis" format="boolean"/>
+        <attr name="enabledAxes">
+            <flag name="none" value="0"/>
+            <flag name="x" value="0x01"/>
+            <flag name="left" value="0x02"/>
+            <flag name="right" value="0x04"/>
+            <flag name="all" value="0x07"/>
+        </attr>
+        <attr name="enableScaling">
+            <flag name="none" value="0"/>
+            <flag name="x" value="0x01"/>
+            <flag name="y" value="0x02"/>
+            <flag name="both" value="0x03"/>
+        </attr>
+        <attr name="enableDragging">
+            <flag name="none" value="0"/>
+            <flag name="x" value="0x01"/>
+            <flag name="y" value="0x02"/>
+            <flag name="both" value="0x03"/>
+        </attr>
+
+        <!-- Appearance -->
+        <attr name="textColor" format="color" />
+
+        <!-- Axis Style -->
+        <attr name="xRange" format="string"/>
+        <attr name="leftRange" format="string"/>
+        <attr name="rightRange" format="string"/>
+
+        <attr name="xAxisPosition">
+            <enum name="top" value="0"/>
+            <enum name="bottom" value="1"/>
+            <enum name="both_sided" value="2"/>
+            <enum name="top_inside" value="3"/>
+            <enum name="bottom_inside" value="4"/>
+        </attr>
+        <attr name="drawGridLines" format="boolean">
+            <flag name="none" value="0" />
+            <flag name="x" value="0x01" />
+            <flag name="left" value="0x02" />
+            <flag name="right" value="0x04" />
+            <flag name="all" value="0x07" />
+        </attr>
+        <attr name="showLabels">
+            <flag name="none" value="0"/>
+            <flag name="x" value="0x01"/>
+            <flag name="left" value="0x02"/>
+            <flag name="right" value="0x04"/>
+            <flag name="both" value="0x07"/>
+        </attr>
+
+        <!-- Legend -->
+        <attr name="showLegend" format="boolean"/>
+
+        <!-- Description -->
+        <attr name="descr" format="string" />
     </declare-styleable>
 </resources>
