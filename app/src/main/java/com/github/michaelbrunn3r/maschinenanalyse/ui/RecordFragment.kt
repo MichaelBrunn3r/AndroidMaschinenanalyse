@@ -7,15 +7,19 @@ import android.content.pm.PackageManager
 import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.text.InputType
 import android.view.*
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import com.github.michaelbrunn3r.maschinenanalyse.R
 import com.github.michaelbrunn3r.maschinenanalyse.database.MachineanalysisViewModel
@@ -29,6 +33,7 @@ class RecordFragment : Fragment() {
     private lateinit var mBinding: FragmentRecordBinding
     private lateinit var mMachineanalysisViewModel: MachineanalysisViewModel
     private lateinit var mVM: RecordViewModel
+    private lateinit var mNavController: NavController
 
     private var mMIRecord: MenuItem? = null
 
@@ -37,6 +42,11 @@ class RecordFragment : Fragment() {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_record, container, false)
         mBinding.lifecycleOwner = this
         return mBinding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mNavController = findNavController()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -138,6 +148,10 @@ class RecordFragment : Fragment() {
 
         SaveRecordingAsDialogFragment { dialog ->
             mVM.saveRecording(dialog.recordingName, mMachineanalysisViewModel)
+            Toast.makeText(context, "Saving recording '${dialog.recordingName}'", Toast.LENGTH_SHORT).show()
+            Handler().postDelayed( {
+                mNavController.navigateUp()
+            }, 200)
         }.show(fragmentManager!!, "saveRecordingAs")
     }
 
