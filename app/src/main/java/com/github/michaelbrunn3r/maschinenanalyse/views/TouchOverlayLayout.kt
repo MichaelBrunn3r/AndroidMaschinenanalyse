@@ -3,10 +3,10 @@ package com.github.michaelbrunn3r.maschinenanalyse.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
-import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.github.michaelbrunn3r.maschinenanalyse.R
 
-class TouchOverlayLayout(context:Context, attrs:AttributeSet): LinearLayout(context, attrs) {
+class TouchOverlayLayout(context:Context, attrs:AttributeSet): ConstraintLayout(context, attrs) {
 
     private var mLastAction:Int? = -1
     private var mOnShortClickListener:(()->Unit)? = null
