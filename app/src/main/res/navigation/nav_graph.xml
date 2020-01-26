@@ -18,7 +18,15 @@
         android:id="@+id/monitorFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.MonitorFragment"
         android:label="@string/title_monitor_fragment"
-        tools:layout="@layout/fragment_monitor" />
+        tools:layout="@layout/fragment_monitor" >
+        <action
+            android:id="@+id/action_monitorFragment_to_recordingListFragment"
+            app:destination="@id/recordingListFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
     <fragment
         android:id="@+id/recordingListFragment"
         android:name="com.github.michaelbrunn3r.maschinenanalyse.ui.RecordingsListFragment"

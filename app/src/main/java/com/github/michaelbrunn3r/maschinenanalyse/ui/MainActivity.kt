@@ -19,7 +19,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mBinding: ActivityMainBinding
     private lateinit var mNavCtrl: NavController
-    private val mToplevelDestinations = setOf(R.id.recordingListFragment, R.id.monitorFragment)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         // Configure Toolbar
         setSupportActionBar(mBinding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false) // Prevents ActionBar setting the Title. Instead, only NavigationUI or fragments themselves should set the title
-        val appBarCfg = AppBarConfiguration.Builder(mToplevelDestinations)
+        val appBarCfg = AppBarConfiguration.Builder(mNavCtrl.graph)
                 .setDrawerLayout(mBinding.drawerLayout)
                 .build()
         mBinding.toolbar.setupWithNavController(mNavCtrl, appBarCfg)
