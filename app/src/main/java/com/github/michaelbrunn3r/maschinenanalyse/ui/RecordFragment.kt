@@ -64,9 +64,35 @@ class RecordFragment : Fragment() {
                 if (it) setRecordBtnState(true)
                 else setRecordBtnState(false)
             })
+            accelSpectrogramUnfolded.observe(this@RecordFragment, Observer {
+                if(it) {
+                    mBinding.audioWrapper.visibility = View.GONE
+                    mBinding.unfoldAccelButton.setImageDrawable(resources.getDrawable(R.drawable.unfold_less, context!!.theme))
+                } else {
+                    mBinding.audioWrapper.visibility = View.VISIBLE
+                    mBinding.unfoldAccelButton.setImageDrawable(resources.getDrawable(R.drawable.unfold_more, context!!.theme))
+                }
+            })
+            audioSpectrogramUnfolded.observe(this@RecordFragment, Observer {
+                if(it) {
+                    mBinding.accelWrapper.visibility = View.GONE
+                    mBinding.unfoldAudioButton.setImageDrawable(resources.getDrawable(R.drawable.unfold_less, context!!.theme))
+                } else {
+                    mBinding.accelWrapper.visibility = View.VISIBLE
+                    mBinding.unfoldAudioButton.setImageDrawable(resources.getDrawable(R.drawable.unfold_more, context!!.theme))
+                }
+            })
         }
 
         mBinding.viewmodel = mVM
+        mBinding.unfoldAccelButton.setOnClickListener {
+            mVM.audioSpectrogramUnfolded.value = false
+            mVM.accelSpectrogramUnfolded.value = !mVM.accelSpectrogramUnfolded.value!!
+        }
+        mBinding.unfoldAudioButton.setOnClickListener {
+            mVM.accelSpectrogramUnfolded.value = false
+            mVM.audioSpectrogramUnfolded.value = !mVM.audioSpectrogramUnfolded.value!!
+        }
     }
 
     override fun onResume() {

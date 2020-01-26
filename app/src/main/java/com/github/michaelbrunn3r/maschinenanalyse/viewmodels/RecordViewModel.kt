@@ -16,6 +16,9 @@ import kotlin.math.round
 
 class RecordViewModel : ViewModel() {
 
+    val accelSpectrogramUnfolded = MutableLiveData(false)
+    val audioSpectrogramUnfolded = MutableLiveData(false)
+
     val isRecording = MutableLiveData<Boolean>()
     private var recordingDurationMs = 5000L // Recording Duration in Milliseconds
     private var mRecordingHandler: Handler = Handler()

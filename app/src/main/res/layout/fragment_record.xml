@@ -15,44 +15,105 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.github.michaelbrunn3r.maschinenanalyse.views.SpectrogramView
-            android:id="@+id/accel_spectrogram"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="@dimen/margin_half"
-            app:layout_constraintBottom_toTopOf="@+id/audio_spectrogram"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:autoScaleYAxis="true"
-            app:drawGridLines="x|left"
-            app:enableDragging="x|y"
-            app:enableScaling="x|y"
-            app:graphColor="?attr/colorAccent"
-            app:graphWidth="0.8dp"
-            app:showLegend="false"
-            tools:leftRange="0..10"
-            tools:xRange="0..100" />
-
-        <com.github.michaelbrunn3r.maschinenanalyse.views.SpectrogramView
-            android:id="@+id/audio_spectrogram"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/accel_wrapper"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/audio_wrapper"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/unfold_accel_button"
+                android:layout_width="25dp"
+                android:layout_height="22dp"
+                android:scaleType="center"
+                android:src="@drawable/unfold_more"
+                android:tint="?attr/textColor"
+                app:layout_constraintStart_toStartOf="@+id/accel_spectrogram"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/accel_spectrogram_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Acceleration Spectrogram"
+                app:layout_constraintBottom_toBottomOf="@+id/unfold_accel_button"
+                app:layout_constraintStart_toEndOf="@+id/unfold_accel_button"
+                app:layout_constraintTop_toTopOf="@+id/unfold_accel_button" />
+
+            <com.github.michaelbrunn3r.maschinenanalyse.views.SpectrogramView
+                android:id="@+id/accel_spectrogram"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:autoScaleYAxis="true"
+                app:drawGridLines="x|left"
+                app:enableDragging="x|y"
+                app:enableScaling="x|y"
+                app:graphColor="?attr/colorAccent"
+                app:graphWidth="0.8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/unfold_accel_button"
+                app:layout_constraintVertical_bias="1.0"
+                app:showLegend="false"
+                tools:leftRange="0..10"
+                tools:xRange="0..100" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/audio_wrapper"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/accel_spectrogram"
-            app:drawGridLines="x|left"
-            app:enableDragging="x|y"
-            app:enableScaling="x|y"
-            app:graphColor="?attr/colorAccent"
-            app:graphWidth="0.8dp"
-            app:leftRange="0..300"
-            app:showLegend="false"
-            tools:xRange="0..22050"/>
+            app:layout_constraintTop_toBottomOf="@+id/accel_wrapper">
+
+            <ImageButton
+                android:id="@+id/unfold_audio_button"
+                android:layout_width="25dp"
+                android:layout_height="22dp"
+                android:scaleType="center"
+                android:src="@drawable/unfold_more"
+                android:tint="?attr/textColor"
+                app:layout_constraintStart_toStartOf="@+id/audio_spectrogram"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/audio_spectrogram_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Audio Spectrogram"
+                app:layout_constraintBottom_toBottomOf="@+id/unfold_audio_button"
+                app:layout_constraintStart_toEndOf="@+id/unfold_audio_button"
+                app:layout_constraintTop_toTopOf="@+id/unfold_audio_button" />
+
+            <com.github.michaelbrunn3r.maschinenanalyse.views.SpectrogramView
+                android:id="@+id/audio_spectrogram"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:autoScaleYAxis="true"
+                app:drawGridLines="x|left"
+                app:enableDragging="x|y"
+                app:enableScaling="x|y"
+                app:graphColor="?attr/colorAccent"
+                app:graphWidth="0.8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/audio_spectrogram_label"
+                app:showLegend="false"
+                tools:layout_editor_absoluteX="0dp"
+                tools:leftRange="0..300"
+                tools:xRange="0..22050" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

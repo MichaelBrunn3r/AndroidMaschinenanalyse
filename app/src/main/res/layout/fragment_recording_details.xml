@@ -177,7 +177,7 @@
                 app:showLegend="false"
                 tools:layout_editor_absoluteX="0dp"
                 tools:leftRange="0..10"
-                tools:xRange="0..100" />
+                tools:xRange="0..22050" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
