@@ -15,13 +15,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/accel_wrapper"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/audio_wrapper"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="@dimen/margin_half"
+            android:layout_marginBottom="@dimen/margin_half"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/audio_wrapper"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -66,18 +69,17 @@
                 tools:xRange="0..100" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/audio_wrapper"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="@dimen/margin_half"
+            android:layout_marginBottom="@dimen/margin_half"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/accel_wrapper">
+            app:layout_constraintStart_toEndOf="@+id/accel_wrapper"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageButton
                 android:id="@+id/unfold_audio_button"
@@ -110,6 +112,7 @@
                 app:graphWidth="0.8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/audio_spectrogram_label"
+                app:layout_constraintVertical_bias="1.0"
                 app:leftRange="0.."
                 app:showLegend="false"
                 tools:layout_editor_absoluteX="0dp"

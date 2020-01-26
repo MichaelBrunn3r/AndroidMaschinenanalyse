@@ -140,6 +140,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/unfold_accel_button"
+                app:leftRange="0.."
                 app:showLegend="false"
                 tools:leftRange="0..10"
                 tools:xRange="0..100" />
@@ -187,6 +188,7 @@
                 app:graphWidth="0.8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/audio_spectrogram_label"
+                app:leftRange="0.."
                 app:showLegend="false"
                 tools:layout_editor_absoluteX="0dp"
                 tools:leftRange="0..10"
