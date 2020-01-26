@@ -20,7 +20,7 @@
         android:id="@+id/accelCfgLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Accelerometer: "
+        android:text="@string/title_accelerometer_configuration"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/name" />
 
@@ -28,8 +28,7 @@
         android:id="@+id/accelCfg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:text="@string/number_placeholder"
+        android:layout_marginStart="@dimen/colon_space"
         app:layout_constraintStart_toEndOf="@+id/accelCfgLabel"
         app:layout_constraintTop_toTopOf="@+id/accelCfgLabel"
         tools:text="@sample/recordings.json/recordings/sample_rate" />
@@ -38,7 +37,7 @@
         android:id="@+id/audioCfgLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Audio: "
+        android:text="@string/title_audio_configuration"
         app:layout_constraintStart_toStartOf="@+id/accelCfgLabel"
         app:layout_constraintTop_toBottomOf="@+id/accelCfgLabel" />
 
@@ -46,8 +45,7 @@
         android:id="@+id/audioCfg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:text="@string/number_placeholder"
+        android:layout_marginStart="@dimen/colon_space"
         app:layout_constraintStart_toEndOf="@+id/audioCfgLabel"
         app:layout_constraintTop_toTopOf="@+id/audioCfgLabel"
         tools:text="@sample/recordings.json/recordings/sample_size" />

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/miSettings"
-        app:showAsAction="always"
         android:icon="@drawable/settings"
-        android:title="Settings" />
+        android:title="@string/title_settings_fragment"
+        app:showAsAction="always" />
 </menu>

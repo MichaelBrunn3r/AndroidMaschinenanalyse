@@ -84,8 +84,8 @@ class RecordingListAdapter internal constructor(val context: Context, val record
 
         fun bind(recording: Recording) {
             nameView.text = recording.name
-            accelCfgView.text = "${recording.numAccelSamples} @ ${recording.accelSampleRate.toInt()}Hz"
-            audioCfgView.text = "${recording.numAudioSamples} @ ${recording.audioSampleRate}Hz"
+            accelCfgView.text = context.getString(R.string.accelerometer_configuration, recording.numAccelSamples, recording.accelSampleRate)
+            audioCfgView.text = context.getString(R.string.audio_configuration, recording.numAudioSamples, recording.audioSampleRate)
 
             val cal = Calendar.getInstance()
             cal.timeInMillis = recording.captureDate

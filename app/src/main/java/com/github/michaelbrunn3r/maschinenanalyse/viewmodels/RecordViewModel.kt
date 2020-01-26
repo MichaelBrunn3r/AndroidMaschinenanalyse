@@ -111,7 +111,6 @@ class RecordViewModel : ViewModel() {
         mAccelFrequenciesBuffer?.let { buf ->
             val floatBuffer = FloatArray(buf.size)
             for (i in buf.indices) {
-                val x = buf[i]
                 floatBuffer[i] = buf[i] / mNumRecordedAccelFrames
             }
 

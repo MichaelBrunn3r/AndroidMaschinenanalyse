@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/miStartStop"
-        app:showAsAction="always"
         android:icon="@drawable/play_btn"
-        android:title="StartStop" />
+        android:title="@string/start_stop_monitoring"
+        app:showAsAction="always" />
 </menu>

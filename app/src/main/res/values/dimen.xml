@@ -4,4 +4,5 @@
     <dimen name="padding">16dp</dimen>
     <dimen name="margin">16dp</dimen>
     <dimen name="margin_half">8dp</dimen>
+    <dimen name="colon_space">4dp</dimen>
 </resources>

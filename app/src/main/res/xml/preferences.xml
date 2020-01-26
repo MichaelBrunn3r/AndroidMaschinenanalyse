@@ -3,45 +3,45 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
-        android:title="Sampling"
-        android:icon="@drawable/sampling">
+        android:icon="@drawable/sampling"
+        android:title="@string/category_sampling">
         <EditTextPreference
             android:key="audioSampleRate"
-            android:title="Audio sample Rate"
+            android:title="@string/audio_sample_rate"
             app:defaultValue="44100"
-            app:useSimpleSummaryProvider="true"
-            app:enabled="false" />
+            app:enabled="false"
+            app:useSimpleSummaryProvider="true" />
         <ListPreference
-            android:key="numAudioSamples"
-            android:title="Number of audio samples"
-            app:useSimpleSummaryProvider="true"
             android:defaultValue="4096"
             android:entries="@array/numAudioSamplesEntries"
-            android:entryValues="@array/numAudioSamples" />
+            android:entryValues="@array/numAudioSamples"
+            android:key="numAudioSamples"
+            android:title="@string/number_of_audio_samples"
+            app:useSimpleSummaryProvider="true" />
         <ListPreference
-            android:key="numAccelSamples"
-            android:title="Number of accelerometer samples"
-            app:useSimpleSummaryProvider="true"
             android:defaultValue="4096"
             android:entries="@array/numAccelSamplesEntries"
-            android:entryValues="@array/numAccelsamples" />
+            android:entryValues="@array/numAccelsamples"
+            android:key="numAccelSamples"
+            android:title="@string/number_of_accelerometer_samples"
+            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Recording"
-        android:icon="@drawable/microphone">
+        android:icon="@drawable/microphone"
+        android:title="@string/category_recording">
         <EditTextPreference
+            android:defaultValue="10000"
             android:key="recordingDuration"
-            app:title="Duration"
-            android:defaultValue="10000" />
+            app:title="@string/recording_duration" />
     </PreferenceCategory>
     <PreferenceCategory
-        android:title="Monitoring"
-        android:icon="@drawable/eye">
+        android:icon="@drawable/eye"
+        android:title="@string/category_monitoring">
         <EditTextPreference
+            android:defaultValue="500"
             android:key="compTimeWindow"
-            app:title="Length Realtime Mean"
-            android:defaultValue="500" />
+            app:title="Length Realtime Mean" />
     </PreferenceCategory>
 
 </PreferenceScreen>

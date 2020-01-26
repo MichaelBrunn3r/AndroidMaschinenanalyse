@@ -69,7 +69,7 @@ abstract class MachineanalysisDatabase : RoomDatabase() {
 
 class MachineanalysisViewModel(application: Application): AndroidViewModel(application) {
     private var mRecordingsDao: RecordingDao
-    lateinit var recordings:LiveData<List<Recording>>
+    var recordings:LiveData<List<Recording>>
 
     init {
         mRecordingsDao = MachineanalysisDatabase.instance(application).recordingDao()

@@ -39,7 +39,7 @@
                 android:id="@+id/accel_spectrogram_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Acceleration Spectrogram"
+                android:text="@string/accelerometer_spectrogram"
                 app:layout_constraintBottom_toBottomOf="@+id/unfold_accel_button"
                 app:layout_constraintStart_toEndOf="@+id/unfold_accel_button"
                 app:layout_constraintTop_toTopOf="@+id/unfold_accel_button" />
@@ -92,7 +92,7 @@
                 android:id="@+id/audio_spectrogram_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Audio Spectrogram"
+                android:text="@string/audio_spectrogram"
                 app:layout_constraintBottom_toBottomOf="@+id/unfold_audio_button"
                 app:layout_constraintStart_toEndOf="@+id/unfold_audio_button"
                 app:layout_constraintTop_toTopOf="@+id/unfold_audio_button" />

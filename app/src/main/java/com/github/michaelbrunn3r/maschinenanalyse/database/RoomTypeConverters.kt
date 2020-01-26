@@ -11,10 +11,6 @@ class RoomTypeConverters {
 
     @TypeConverter
     fun jsonStringToList(data:String): List<Float> {
-        if(data == null) {
-            return emptyList()
-        }
-
         return gson.fromJson(data, object : TypeToken<List<Float>>() {}.type)
     }
 

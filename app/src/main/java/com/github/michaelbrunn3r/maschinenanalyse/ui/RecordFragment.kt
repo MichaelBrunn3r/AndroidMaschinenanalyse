@@ -148,7 +148,7 @@ class RecordFragment : Fragment() {
 
         SaveRecordingAsDialogFragment { dialog ->
             mVM.saveRecording(dialog.recordingName, mMachineanalysisViewModel)
-            Toast.makeText(context, "Saving recording '${dialog.recordingName}'", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.saving_recording, dialog.recordingName), Toast.LENGTH_SHORT).show()
             Handler().postDelayed( {
                 mNavController.navigateUp()
             }, 200)

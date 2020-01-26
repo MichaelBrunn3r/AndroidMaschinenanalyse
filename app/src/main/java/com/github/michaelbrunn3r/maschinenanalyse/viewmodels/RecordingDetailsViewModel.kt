@@ -29,9 +29,6 @@ class RecordingDetailsViewModel : ViewModel() {
 
     init {
         recording.observeForever {
-            audioCfg.value = "${it.numAudioSamples} @ ${it.audioSampleRate}Hz"
-            accelCfg.value = "${it.numAccelSamples} @ ${it.accelSampleRate.toInt()}Hz"
-
             val cal = Calendar.getInstance()
             cal.timeInMillis = it.captureDate
             captureDate.value = dateFormat?.format(cal.time) ?: "?"

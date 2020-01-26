@@ -69,6 +69,9 @@ class RecordingDetailsFragment : Fragment() {
 
                 mBinding.accelSpectrogram.setFrequencyRange(0f, FFT.nyquist(it.accelSampleRate))
                 mBinding.accelSpectrogram.update(it.accelAmplitudesMean.toFloatArray())
+
+                accelCfg.value = getString(R.string.accelerometer_configuration, it.numAccelSamples, it.accelSampleRate)
+                audioCfg.value = getString(R.string.audio_configuration, it.numAudioSamples, it.audioSampleRate)
             })
             accelSpectrogramUnfolded.observe(this@RecordingDetailsFragment, Observer {
                 if(it) {
@@ -143,7 +146,7 @@ class DeleteRecordingDialogFragment(val onPositive: (DeleteRecordingDialogFragme
         return activity?.let {
             // Build the dialog and set up the button click handlers
             AlertDialog.Builder(it)
-                    .setTitle(R.string.dialog_delete_recording)
+                    .setTitle(R.string.title_delete_recording)
                     .setPositiveButton(R.string.delete) { _, _ -> onPositive(this) }
                     .setNegativeButton(R.string.cancel) { _, _ -> }
                     .create()
