@@ -36,8 +36,8 @@ class RecordViewModel : ViewModel() {
     val accelFrequency = MutableLiveData<Float>(200f)
     private val mAccelFrequenciesSource = FrequenciesLiveData()
     private var mAccelerationSource: NormalizedAccelerationMagnitudeSamplesSource? = null
-    private var mNumRecordedAccelFrames = 0
     private var mAccelFrequenciesBuffer: ArrayList<Float>? = null
+    private var mNumRecordedAccelFrequenciesPerBucket: ArrayList<Int>? = null
     private var mMaxAccelFrequency = 0f
 
     init {
@@ -59,23 +59,33 @@ class RecordViewModel : ViewModel() {
                 mAudioFrequenciesBuffer!![i] += frequencies[i]
             }
         }
-        mAccelFrequenciesSource.observeForever { samples ->
-            mNumRecordedAccelFrames++
+
+        val bucketsPerHz = 3 // Don't change!!!
+        mAccelFrequenciesSource.observeForever { frequencies ->
+            // Remember the maximum update frequency during the recording
             val currentFrequency = mAccelerationSource!!.updateFrequency
             mMaxAccelFrequency = max(mMaxAccelFrequency, currentFrequency)
 
+            val numberOfFrequencyBuckets = ceil(FFT.nyquist(mMaxAccelFrequency)*bucketsPerHz)
+
             // Make sure buffer can hold all frequencies
-            if (mAccelFrequenciesBuffer!!.size < FFT.nyquist(mMaxAccelFrequency)) {
-                val difference = ceil(FFT.nyquist(mMaxAccelFrequency) - mAccelFrequenciesBuffer!!.size).toInt()
+            if (mAccelFrequenciesBuffer!!.size < numberOfFrequencyBuckets) {
+                // Fill missing capacity with zeros
+                val difference = (numberOfFrequencyBuckets - mAccelFrequenciesBuffer!!.size).toInt()
                 for (i in 0..difference) {
                     mAccelFrequenciesBuffer!!.add(0f)
+                    mNumRecordedAccelFrequenciesPerBucket!!.add(0)
                 }
             }
 
-            val step = FFT.nyquist(currentFrequency / samples.size)
-            for (i in samples.indices) {
-                val frequency = round(i * step).toInt()
-                mAccelFrequenciesBuffer!![frequency] += samples[i]
+            val step = numberOfFrequencyBuckets / frequencies.size
+            var frequencyOfIdx = 0f  // Frequency of the i-th element
+            for (i in frequencies.indices) {
+                val bucketIdx = round(frequencyOfIdx).toInt()
+                mAccelFrequenciesBuffer!![bucketIdx] += frequencies[i]
+                mNumRecordedAccelFrequenciesPerBucket!![bucketIdx]++
+
+                frequencyOfIdx += step
             }
         }
     }
@@ -84,10 +94,11 @@ class RecordViewModel : ViewModel() {
         if (audioCfg.value == null) return
 
         // Start recording accelerometer
-        mNumRecordedAccelFrames = 0
         mMaxAccelFrequency = 0f
         mAccelFrequenciesBuffer = ArrayList(100)
         mAccelFrequenciesBuffer!!.fill(0f)
+        mNumRecordedAccelFrequenciesPerBucket = ArrayList(100)
+        mNumRecordedAccelFrequenciesPerBucket!!.fill(0)
         mAccelFrequenciesSource.setSamplingState(true)
 
         // Start recording audio
@@ -111,7 +122,8 @@ class RecordViewModel : ViewModel() {
         mAccelFrequenciesBuffer?.let { buf ->
             val floatBuffer = FloatArray(buf.size)
             for (i in buf.indices) {
-                floatBuffer[i] = buf[i] / mNumRecordedAccelFrames
+                val numRecordedFrequencies = mNumRecordedAccelFrequenciesPerBucket!![i]
+                if(numRecordedFrequencies != 0) floatBuffer[i] = buf[i] / numRecordedFrequencies
             }
 
             recordedAccelFrequencies.value = floatBuffer

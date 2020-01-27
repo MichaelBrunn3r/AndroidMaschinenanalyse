@@ -58,6 +58,7 @@
             android:id="@+id/audio_spectrogram"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/margin_half"
             app:drawGridLines="x|left"
             app:enableDragging="x|y"
             app:enableScaling="x|y"
